@@ -1,0 +1,179 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace CommonUtils;
+
+[Credits("选择部分")]
+// 初始化所有已注册的钩子（Hooks）。
+// 根据钩子是否要求单线程执行，分别采用并行或串行方式初始化。
+public static class HookManager
+{
+	public static Dictionary<string, HookData> datas = [];
+	private static readonly object _dataLock = new();
+
+	public static void Initialize()
+	{
+		// 并行挂钩
+		List<KeyValuePair<string, HookData>> parallelHooks = datas.Where(kv => !kv.Value.RequireSingleThread).ToList();
+
+		if (parallelHooks.Count > 0)
+		{
+			// 并行选项
+			ParallelOptions options = new ParallelOptions
+			{
+				// 最大并行度
+				MaxDegreeOfParallelism = 15
+			};
+			Parallel.ForEach(parallelHooks, options, delegate (KeyValuePair<string, HookData> kv)
+			{
+				HookData data = kv.Value;
+
+				if (data.InitializeHooks != null && !data.isInitialized)
+				{
+					try
+					{
+						HookData hookData = data;
+						lock (hookData)
+						{
+							if (!data.isInitialized)
+							{
+								data.InitializeHooks();
+								data.isInitialized = true;
+								Log.LogDebug($"Initialized hooks for {kv.Key}");
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Log.LogError($"Error initializing {kv.Key}: {ex.Message}");
+					}
+				}
+			});
+		}
+
+
+		List<KeyValuePair<string, HookData>> singleThreadHooks = datas.Where(kv => kv.Value.RequireSingleThread)
+			.OrderBy(kv => kv.Value.Priority).ToList();
+		foreach (KeyValuePair<string, HookData> kv in singleThreadHooks)
+		{
+			HookData data = kv.Value;
+
+			if (data.InitializeHooks != null && !data.isInitialized)
+			{
+				try
+				{
+					data.InitializeHooks();
+					data.isInitialized = true;
+					Log.LogDebug($"Initialized {kv.Key} (single-threaded), priority {data.Priority})");
+				}
+				catch (Exception ex)
+				{
+					Log.LogError($"Error initializing {kv.Key}: {ex.Message}");
+				}
+			}
+		}
+	}
+	public static void UninitializeAll()
+	{
+		var uninitHooks = datas.Where(kv => kv.Value.isInitialized)
+			.OrderByDescending(kv => kv.Value.Priority)
+			.ToList();
+
+		// 串行注销（保证顺序和线程安全）
+		foreach (var kv in uninitHooks)
+		{
+			var data = kv.Value;
+
+			if (data.UnInitializeHooks != null)
+			{
+				try
+				{
+					data.UnInitializeHooks();
+					data.isInitialized = false;
+					Log.LogDebug($"Uninitialized {kv.Key}");
+				}
+				catch (Exception ex)
+				{
+					Log.LogError($"Error uninitializing {kv.Key}: {ex.Message}");
+				}
+			}
+		}
+
+		// 清空字典（需加锁）
+		lock (_dataLock)
+		{
+			datas.Clear();
+		}
+	}
+
+
+    public static void Register(string ID, HookData data)
+	{
+		if (data == null)
+		{
+			throw new ArgumentNullException("Hook data can not be null");
+		}
+		data.ID = ID;
+
+		if (!datas.Keys.Contains(ID))
+		{
+			datas.Add(ID, data);
+		}
+		else
+		{
+			Log.LogError("Hook already registered: " + ID);
+		}
+	}
+	public static void Unregister(string ID)
+	{
+		lock (_dataLock)
+		{
+			if (datas.TryGetValue(ID, out var data))
+			{
+				// 先注销再移除
+				if (data.UnInitializeHooks != null && data.isInitialized)
+				{
+					try
+					{
+						data.UnInitializeHooks();
+						data.isInitialized = false;
+						Log.LogDebug($"Unregistered {ID}");
+					}
+					catch (Exception ex)
+					{
+						Log.LogError($"Error unregistering {ID}: {ex.Message}");
+					}
+				}
+				datas.Remove(ID);
+			}
+			else
+			{
+				Log.LogError($"Hook not registered: {ID}");
+				return;
+			}
+		}
+	}
+
+	public class HookData
+	{
+		// 要求单线程。
+		// 若为 true，则在 Initialize 中会串行执行；
+		// 若为 false（默认），则允许并行初始化以提高启动速度。
+		public bool RequireSingleThread { get; set; } = false;
+		// 优先级
+		// 数值越小，优先级越高
+		public int Priority { get; set; } = 0;
+
+		public string ID = string.Empty;
+
+		// 标记该钩子是否已经初始化，防止重复执行。
+		public bool isInitialized;
+
+		// 初始化钩子的委托，由外部注册者提供具体逻辑。
+		public Action? InitializeHooks;
+		// 反初始化钩子的委托
+		public Action? UnInitializeHooks;
+	}
+}
