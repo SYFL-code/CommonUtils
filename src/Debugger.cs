@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static CommonUtils.Core.Debugger;
+
 
 // <DefineConstants>ENDERPEARL</DefineConstants>
 #if ENDERPEARL
@@ -21,48 +23,116 @@ using Translator;
 
 #endregion
 
-namespace CommonUtils;
+namespace CommonUtils.Core;
 
-public static class Debugger
+public class Debugger: IUpdatable
 {
-    private enum ArrayType { None, Float, Bool, Vector }
+	private enum ArrayType { None, Float, Bool, Vector }
 	private enum InputState { None, SelectingIndex, EnteringValue }
 
 	private static ArrayType _selectedType = ArrayType.None;
 	private static int _selectedIndex = -1;
 	private static InputState _state = InputState.None;
 
-	// 公共访问方法
-	public static float GetFloat(int index, float defaultValue = default, string name = "")
+	#region Get
+	public static float GetFloat(int index, float defaultValue = default, string? name = null)
 	{
-		_floats[index].Item2 = name;
-		return _floats[index].Item1 ??= defaultValue;
+		return floats[index, defaultValue, name];
 	}
-	public static bool GetBool(int index, bool defaultValue = default, string name = "")
+	public static bool GetBool(int index, bool defaultValue = default, string? name = null)
 	{
-		_bools[index].Item2 = name;
-		return _bools[index].Item1 ??= defaultValue;
+		return bools[index, defaultValue, name];
 	}
-	public static Vector2 GetVector(int index, Vector2 defaultValue = default, string name = "")
+	public static Vector2 GetVector(int index, Vector2 defaultValue = default, string? name = null)
 	{
-		_Vectors[index].Item2 = name;
-		return _Vectors[index].Item1 ??= defaultValue;
+		return vectors[index, defaultValue, name];
 	}
+	#endregion
 
-	public static void SetFloat(int index, float value, string name = "")
-		=> _floats[index] = (value, name);
-	public static void SetBool(int index, bool value, string name = "")
-		=> _bools[index] = (value, name);
-	public static void SetVector(int index, Vector2 value, string name = "")
-		=> _Vectors[index] = (value, name);
+	#region Set
+	public static void SetFloat(int index, float value, string? name = null)
+	{
+		floats[index, default, name] = value;
+	}
+	public static void SetBool(int index, bool value, string? name = null)
+	{
+		bools[index, default, name] = value;
+	}
+	public static void SetVector(int index, Vector2 value, string? name = null)
+	{
+		vectors[index, default, name] = value;
+	}
+	#endregion
 
+	#region Indexer
+	public static Floats floats { get; } = new();
+	public class Floats
+	{
+		public float this[int index, float defaultValue = default, string? name = null]
+		{
+			get
+			{
+				if (name != null && name != _floats[index].name)
+				{
+					_floats[index].name = name;
+				}
+				return _floats[index].value ??= defaultValue;
+			}
+			set
+			{
+				_floats[index] = (value, name ?? _floats[index].name);
+			}
+		}
+	}
+	public static Bools bools { get; } = new();
+	public class Bools
+	{
+		public bool this[int index, bool defaultValue = default, string? name = null]
+		{
+			get
+			{
+				if (name != null && name != _bools[index].name)
+				{
+					_bools[index].name = name;
+				}
+				return _bools[index].value ??= defaultValue;
+			}
+			set
+			{
+				_bools[index] = (value, name ?? _bools[index].name);
+			}
+		}
+	}
+	public static Vectors vectors { get; } = new();
+	public class Vectors
+	{
+		public Vector2 this[int index, Vector2 defaultValue = default, string? name = null]
+		{
+			get
+			{
+				if (name != null && name != _Vectors[index].name)
+				{
+					_Vectors[index].name = name;
+				}
+				return _Vectors[index].value ??= defaultValue;
+			}
+			set
+			{
+				_Vectors[index] = (value, name ?? _Vectors[index].name);
+			}
+		}
+	}
+	#endregion
+
+	#region 数据
 	// 数据存储
-	private static (float?, string)[] _floats = new (float?, string)[10];
-	private static (bool?, string)[] _bools = new (bool?, string)[10];
-	private static (Vector2?, string)[] _Vectors = new (Vector2?, string)[10];
+	private static (float? value, string name)[] _floats = new (float?, string)[100];
+	private static (bool? value, string name)[] _bools = new (bool?, string)[100];
+	private static (Vector2? value, string name)[] _Vectors = new (Vector2?, string)[100];
 
 	// 输入缓存
 	private static string _inputBuffer = "";
+	#endregion
 
 	#region 标记
 	// 用 object 作为 Value，存一个静态占位符即可
@@ -72,128 +142,90 @@ public static class Debugger
 	// 标记某个实例
 	public static object Mark(object instance)
 	{
-		// 如果 instance 已存在，直接返回旧值；不存在则调用回调创建新值
 		_markedInstances.GetValue(instance, _ => MarkerValue);
 		return MarkerValue;
 	}
-
 	// 检查某个实例是否被标记
-	public static bool IsMarked(object instance)
+	public static bool IsMarked(object instance, out object value)
 	{
-		return _markedInstances.TryGetValue(instance, out _);
+		return _markedInstances.TryGetValue(instance, out value);
 	}
-
-	//public static bool IsMarked(object instance, object type, RainWorldGame? game = null)
-	//{
-	//	bool isMarked = false;
-
-	//	if (IsMarked(instance))
-	//	{
-	//		isMarked = true;
-	//	}
-
-	//	if (type is bool forceMark)
-	//	{
-	//		if (forceMark)
-	//			Mark(instance);
-	//		else
-	//			_markedInstances.Remove(instance);
-
-	//		return forceMark;
-	//	}
-	//	else if (type is Vector2 pos)
-	//	{
-	//		if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-	//		{
-	//			Vector2 mouse = new Vector2(Futile.mousePosition.x, Futile.mousePosition.y) + (game?.cameras[0].pos ?? Vector2.zero);
-	//			float distance = Vector2.Distance(pos, mouse);
-
-	//			Log.LogInfo($"distance: {distance}");
-	//			if (distance < 6f)
-	//			{
-	//				if (Input.GetMouseButton(0))
-	//				{
-	//					Log.LogInfo($"鼠标左键按住中");
-
-	//					Mark(instance);
-	//					isMarked = true;
-	//				}
-	//				if (Input.GetMouseButton(1))
-	//				{
-	//					Log.LogInfo($"鼠标右键按住中");
-
-	//					_markedInstances.Remove(instance);
-	//					isMarked = false;
-	//				}
-	//			}
-	//		}
-	//	}
-	//	return isMarked;
-	//}
-	public static bool IsMarked(object instance, object type)
+	public static bool IsMarked(object instance, object MarkType)
 	{
-		if (type is bool forceMark)
+		if (MarkType is bool forceMark)
 		{
 			if (forceMark)
 				Mark(instance);
 			else
 				_markedInstances.Remove(instance);
-
 			return forceMark;
 		}
+		else if (MarkType is Vector2 worldPos)
+		{
+			RainWorldGame? game = GlobalVar.game;
+			if (instance is PhysicalObject physicalObject)
+			{
+				game ??= physicalObject?.abstractPhysicalObject?.world?.game;
+			}
+			else if (instance is AbstractPhysicalObject abstractPhysicalObject)
+			{
+				game ??= abstractPhysicalObject?.world?.game;
+			}
 
-		//if (type is Vector2 worldPos)
-		//{
-		//	RainWorldGame? game = GlobalVar.game;
+			Vector2 camPos = (game?.cameras != null && game.cameras.Length > 0) ? game.cameras[0].pos: Vector2.zero;
+			Vector2 mouseWorld = new Vector2(Futile.mousePosition.x, Futile.mousePosition.y) + camPos;
+			float distance = Vector2.Distance(worldPos, mouseWorld);
 
-		//	Vector2 camPos = (game?.cameras != null && game.cameras.Length > 0)
-		//		? game.cameras[0].pos
-		//		: Vector2.zero;
+			if (distance < GetFloat(9, 6f, "Debug Distance Threshold"))
+			{
+				bool leftBtn = Input.GetMouseButton(0);
+				bool rightBtn = Input.GetMouseButton(1);
 
-		//	Vector2 mouseWorld = new Vector2(Futile.mousePosition.x, Futile.mousePosition.y) + camPos;
-		//	float distance = Vector2.Distance(worldPos, mouseWorld);
+				if (leftBtn)
+				{
+					//Log.LogDebug($"鼠标左键按住中");
+					Mark(instance);
+					return true;
+				}
 
-		//	if (GetBool(9, false, "Debug Distance"))
-		//	{
-		//		Log.LogDebug($"distance:{distance}");
-		//	}
-		//	if (distance < GetFloat(9, 6f, "Debug Distance Threshold"))
-		//	{
-		//		bool leftBtn = Input.GetMouseButton(0);
-		//		bool rightBtn = Input.GetMouseButton(1);
+				if (rightBtn)
+				{
+					//Log.LogDebug($"鼠标右键按住中");
+					_markedInstances.Remove(instance);
+					return false;
+				}
+			}
 
-		//		if (leftBtn)
-		//		{
-		//			Log.LogDebug($"鼠标左键按住中");
-		//			Mark(instance);
-		//			return true;
-		//		}
-
-		//		if (rightBtn)
-		//		{
-		//			Log.LogDebug($"鼠标右键按住中");
-		//			_markedInstances.Remove(instance);
-		//			return false;
-		//		}
-		//	}
-
-		//	// 不在范围内或未点击时，返回当前已存在的标记状态
-		//	return IsMarked(instance);
-		//}
-		return IsMarked(instance);
+			// 不在范围内或未点击时，返回当前已存在的标记状态
+			return IsMarked(instance, out _);
+		}
+		return IsMarked(instance, out _);
 	}
-    #endregion
+	#endregion
 
-	public static void SetUpdate()
+	private static string _buildTime = File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("mm:ss");
+
+	public static readonly Debugger Instance = new Debugger();
+	public Debugger()
 	{
-        Plugin.OnUpdate += Update;
-    }
-    public static void Update()
+		Log.LogDebug($"Debugger");
+	}
+
+	public bool active => true;
+	public int Priority => 1;
+	public void Update()
 	{
+		if (!bools[99, false, "Debugger.Update"])
+		{
+			bools[99] = true;
+
+			Log.LogDebug($"DebugMode: {Plugin.DebugMode}");
+		}
+
 		if (Plugin.DebugMode)
 		{
-			// 1. 选择类型
-			if (Input.GetKeyDown(KeyCode.Slash))
+			// 已安装的模组
+			if (Input.GetKeyDown("/"))
 			{
 				//Log.LogInfo($"ParticleEffectType:{MyConfig.ParticleEffectType}");
 				Log.LogInfo($"已安装的模组数量: {ModManager.InstalledMods.Count}");
@@ -215,25 +247,25 @@ public static class Debugger
 			}
 
 			// 1. 选择类型
-			if (Input.GetKeyDown(KeyCode.Semicolon))
+			if (Input.GetKeyDown("["))
 			{
 				_selectedType = ArrayType.Float;
 				_state = InputState.SelectingIndex;
 				Log.LogInfo("选择: Float 数组");
 			}
-			else if (Input.GetKeyDown(KeyCode.Quote))
+			else if (Input.GetKeyDown("]"))
 			{
 				_selectedType = ArrayType.Bool;
 				_state = InputState.SelectingIndex;
 				Log.LogInfo("选择: Bool 数组");
 			}
-			else if (Input.GetKeyDown(KeyCode.Backslash))
+			else if (Input.GetKeyDown("\\"))
 			{
 				_selectedType = ArrayType.Vector;
 				_state = InputState.SelectingIndex;
 				Log.LogInfo("选择: Vector2 数组");
 			}
-			else if (Input.GetKeyDown(KeyCode.RightBracket))
+			else if (Input.GetKeyDown("'"))
 			{
 				_selectedType = ArrayType.None;
 				_state = InputState.None;
@@ -241,7 +273,7 @@ public static class Debugger
 				Log.LogInfo("取消选择");
 				return;
 			}
-			if (Input.GetKeyDown(KeyCode.LeftBracket))
+			if (Input.GetKeyDown(";"))
 			{
 				PrintAllArrays();
 			}
@@ -272,7 +304,6 @@ public static class Debugger
 		}
 	}
 
-	private static string _buildTime = File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("mm:ss");
 	private static void PrintAllArrays()
 	{
 		Log.LogInfo($"{_buildTime}========== 调试数组内容 ==========");
@@ -360,7 +391,7 @@ public static class Debugger
 		{
 			if (float.TryParse(_inputBuffer, NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
 			{
-				_floats[_selectedIndex] = (result, _floats[_selectedIndex].Item2);
+				_floats[_selectedIndex] = (result, _floats[_selectedIndex].name);
 				Log.LogInfo($"float_{_selectedIndex} = {result}");
 				_state = InputState.SelectingIndex;
 				_inputBuffer = "";
@@ -377,13 +408,13 @@ public static class Debugger
 	{
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
-			_bools[_selectedIndex] = (true, _bools[_selectedIndex].Item2);
+			_bools[_selectedIndex] = (true, _bools[_selectedIndex].name);
 			Log.LogInfo($"bool_{_selectedIndex} = true");
 			_state = InputState.SelectingIndex;
 		}
 		else if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			_bools[_selectedIndex] = (false, _bools[_selectedIndex].Item2);
+			_bools[_selectedIndex] = (false, _bools[_selectedIndex].name);
 			Log.LogInfo($"bool_{_selectedIndex} = false");
 			_state = InputState.SelectingIndex;
 		}
@@ -399,9 +430,9 @@ public static class Debugger
 		{
 			if (float.TryParse(_inputBuffer, NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
 			{
-				Vector2 vec = _Vectors[_selectedIndex].Item1 ?? default;  // 获取值
+				Vector2 vec = _Vectors[_selectedIndex].value ?? default;  // 获取值
 				vec.x = result;
-				_Vectors[_selectedIndex] = (vec, _Vectors[_selectedIndex].Item2);  // 重新赋值
+				_Vectors[_selectedIndex] = (vec, _Vectors[_selectedIndex].name);  // 重新赋值
 
 				Log.LogInfo($"Vec_{_selectedIndex}.x = {result}");
 				_inputBuffer = "";
@@ -419,9 +450,9 @@ public static class Debugger
 		{
 			if (float.TryParse(_inputBuffer, NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
 			{
-				Vector2 vec = _Vectors[_selectedIndex].Item1 ?? default;  // 获取值
+				Vector2 vec = _Vectors[_selectedIndex].value ?? default;  // 获取值
 				vec.y = result;
-				_Vectors[_selectedIndex] = (vec, _Vectors[_selectedIndex].Item2);  // 重新赋值
+				_Vectors[_selectedIndex] = (vec, _Vectors[_selectedIndex].name);  // 重新赋值
 				Log.LogInfo($"Vec_{_selectedIndex}.y = {result}");
 				Log.LogInfo($"Vec_{_selectedIndex} = {_Vectors[_selectedIndex]}");
 				_state = InputState.SelectingIndex;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CommonUtils;
+namespace CommonUtils.Core;
 
 [Credits("选择部分")]
 // 初始化所有已注册的钩子（Hooks）。
@@ -75,7 +75,7 @@ public static class HookManager
 			}
 		}
 	}
-	public static void UninitializeAll()
+	public static void UnInitializeAll()
 	{
 		var uninitHooks = datas.Where(kv => kv.Value.isInitialized)
 			.OrderByDescending(kv => kv.Value.Priority)

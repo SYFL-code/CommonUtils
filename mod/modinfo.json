@@ -1,0 +1,8 @@
+﻿{
+	"id": "common-utils.redlyn",
+	"name": "Common Utils",
+	"version": "0.1.0",
+	"authors": "redlyn",
+	"description": "A utility mod designed to assist modders in developing mods.",
+	"tags": [ "Dependency" ]
+}

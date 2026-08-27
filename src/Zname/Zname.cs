@@ -1,6 +1,8 @@
 ﻿#region using
 using BepInEx;
 using BepInEx.Logging;
+using CommonUtils;
+using CommonUtils.Core;
 using Expedition;
 using HarmonyLib;
 using HUD;
@@ -68,7 +70,7 @@ internal class Zname//Scrap 废案
 
 	// mklink /H "C:\Users\Revision-Extra\AppData\LocalLow\Videocult\Rain World\ly.ModRename_stringsSave.txt" "C:\Users\Revision-Extra\AppData\LocalLow\Videocult\Rain World\ModConfigs\ly.ModRename_stringsSave.txt"
 	// mklink "E:\SteamLibrary\steamapps\workshop\content\312520\3759456473\text\text_chi\strings.txt" "C:\Users\Revision-Extra\AppData\LocalLow\Videocult\Rain World\ModConfigs\ly.ModRename_stringsSave.txt"
-	// mklink /j "E:\SteamLibrary\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\EnderPearl" "E:\Other\EnderPearl\mod"
+	// mklink /j "E:\SteamLibrary\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\EnderPearl" "E:\Modding\EnderPearl\mod"
 	// fsutil hardlink list "C:\你的文件.txt"
 	// certutil -hashfile D:\setup.exe SHA256
 
@@ -990,7 +992,7 @@ xml
     }
     #endregion
 
-    //#region Hook
+    #region Hook
 
     //// 调度器
     //public static class HookDispatcher
@@ -1223,7 +1225,7 @@ xml
     //	// ...
     //}
 
-    //#endregion
+    #endregion
 
     #region 文件目录
     static string save = UnityEngine.Application.persistentDataPath;

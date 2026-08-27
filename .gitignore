@@ -360,12 +360,12 @@ MigrationBackup/
 .ionide/
 
 # 编译产物
-*.dll
-*.pdb
-*.xml
-*.exe
-lib/
-mod/newest/plugins/
+# *.dll
+# *.pdb
+# *.xml
+# *.exe
+# lib/
+# mod/newest/plugins/
 
 # Windows 系统文件
 Desktop.ini
