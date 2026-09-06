@@ -1295,22 +1295,42 @@ internal class Zname//Scrap 废案
 	public static void OnEnable()
 	{
         //On.Player.Grabability += Player_GrababilityA;
+        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability3));
         //Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
+        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability2));
+        /*
+		加载顺序
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1597]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1485]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1542]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1623]Postfix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1511]Postfix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1568]Postfix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1597]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1485]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1542]Prefix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1623]Postfix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1511]Postfix 尝试抓取 Player
+		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1568]Postfix 尝试抓取 Player
+		*/
         //On.Player.Grabability += Player_GrababilityB;
         // 执行内容 On => Harmony
         // 挂载顺序（逻辑上）：A → Harmony → B
         // 物理执行顺序（运行时）：B → A → Harmony（逆序，因为 On 是链式包裹）
         // Player_GrababilityB => Player_GrababilityA => Patch_Grabability
 
-        Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
-		IL.Player.AddFood += Player_AddFood;
+        //Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
+        //IL.Player.AddFood += Player_AddFood;
         // 挂载内容 Patch_AddFood_Transpiler => Player_AddFood (顺序)
         // 执行内容 Player_AddFood => Patch_AddFood_Transpiler (逆序)(如果在同一个地方向后添加)
 
-        //IL.Player.AddFood += Player_AddFood;
-        //Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
+        Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Tra));
+        IL.Player.AddFood += Player_AddFood2;
+		IL.Player.AddFood += Player_AddFood;
+		Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
         // 挂载内容 Player_AddFood => Patch_AddFood_Transpiler (顺序)
         // 执行内容 Patch_AddFood_Transpiler => Player_AddFood (逆序)(如果在同一个地方向后添加)
+        // Harmony 连一起
 
 
         //IL.Player.Grabability
@@ -1463,13 +1483,61 @@ internal class Zname//Scrap 废案
 			});
 		}
 
+		Log.Instance.AppendLogText("Player_AddFood");
+		Log.Instance.AppendLogText(il.ToString());
 		Log.Instance.AppendLogText("1");
+	}
+	private static void Player_AddFood2(ILContext il)
+	{
+		ILCursor c = new ILCursor(il);
+
+		/*
+			// add = Math.Min(add, MaxFoodInStomach - this.playerState.foodInStomach);
+			IL_0014: br IL_0150
+
+			IL_0019: ldarg.1
+			IL_001a: ldarg.0
+			IL_001b: call instance int32 Player::get_MaxFoodInStomach()
+			IL_0020: ldarg.0
+			IL_0021: call instance class PlayerState Player::get_playerState()
+			IL_0026: ldfld int32 PlayerState::foodInStomach
+			IL_002b: sub
+			IL_002c: call int32 [mscorlib]System.Math::Min(int32, int32)
+			IL_0031: starg.s 'add'
+		*/
+
+		bool logged = false;
+
+		if (c.TryGotoNext(MoveType.After,
+			(i) => i.Match(OpCodes.Br),
+			(i) => i.MatchLdarg(1),
+			(i) => i.MatchLdarg(0),
+			(i) => i.MatchCall<Player>("get_MaxFoodInStomach")
+		))
+		{
+			c.Emit(OpCodes.Ldarg_0);
+			c.Emit(OpCodes.Ldarg_0);
+			c.EmitDelegate<Func<int, Player, Player, int>>((origMaxFood, self, player) =>
+			{
+				if (!logged || Input.GetKey("c"))
+				{
+					logged = true;
+
+					Log.LogInfo($"Player orig maxFoodInStomach {origMaxFood}");
+				}
+
+				return origMaxFood - 1;
+			});
+		}
+
+		Log.Instance.AppendLogText("Player_AddFood2");
 		Log.Instance.AppendLogText(il.ToString());
 		Log.Instance.AppendLogText("1");
 	}
 	#endregion
 	#region Harmony
 	[HarmonyPatch(typeof(Player), "Grabability")] // 私有方法直接用字符串名字
+	[HarmonyPriority(500)]
 	public static class Patch_Grabability
 	{
 		[HarmonyPrefix]
@@ -1525,8 +1593,119 @@ internal class Zname//Scrap 废案
 
 	// 挂载：Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
 
+	[HarmonyPatch(typeof(Player), "Grabability")] // 私有方法直接用字符串名字
+	[HarmonyPriority(200)]
+	public static class Patch_Grabability2
+	{
+		[HarmonyPrefix]
+		public static bool Prefix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return true;
+
+			try
+			{
+				Log.LogInfo($"Prefix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.CantGrab;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.CantGrab;
+					return false; // 跳过原方法，但是仍然会执行 Postfix
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+			return true; // 返回 true 继续执行原方法，返回 false 则跳过原方法
+		}
+
+		[HarmonyPostfix]
+		public static void Postfix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return;
+
+			try
+			{
+				Log.LogInfo($"Postfix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.OneHand;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.OneHand;
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "Grabability")] // 私有方法直接用字符串名字
+	[HarmonyPriority(100)]
+	public static class Patch_Grabability3
+	{
+		[HarmonyPrefix]
+		public static bool Prefix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return true;
+
+			try
+			{
+				Log.LogInfo($"Prefix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.CantGrab;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.CantGrab;
+					return false; // 跳过原方法，但是仍然会执行 Postfix
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+			return true; // 返回 true 继续执行原方法，返回 false 则跳过原方法
+		}
+
+		[HarmonyPostfix]
+		public static void Postfix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return;
+
+			try
+			{
+				Log.LogInfo($"Postfix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.Drag;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.Drag;
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+		}
+	}
+
 
 	[HarmonyPatch(typeof(Player), "AddFood")]
+	[HarmonyPriority(200)]
 	public static class Patch_AddFood_Transpiler
 	{
 		// 静态日志锁（防止高频刷屏，但 Release 下用 #if DEBUG 屏蔽）
@@ -1581,7 +1760,76 @@ internal class Zname//Scrap 废案
 				}
 			}
 
+			Log.Instance.AppendLogText("Patch_AddFood_Transpiler");
+			Log.Instance.AppendLogText(codes.ToString());
 			Log.Instance.AppendLogText("1");
+			for (int i = 0; i < codes.Count; i++)
+			{
+				Log.Instance.AppendLogText(codes[i].ToString());
+			}
+			Log.Instance.AppendLogText("1");
+
+			return codes;
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "AddFood")]
+	[HarmonyPriority(100)]
+	public static class Patch_AddFood_Tra
+	{
+		// 静态日志锁（防止高频刷屏，但 Release 下用 #if DEBUG 屏蔽）
+		private static bool _hasLogged = false;
+
+		// 核心修改方法（静态，供 IL 注入调用）
+		private static int ModifyMaxFood0(int originalMaxFood, Player self)
+		{
+#if DEBUG
+			if (!_hasLogged)
+			{
+				_hasLogged = true;
+				Log.LogInfo($"[Transpiler] 胃容量上限: {originalMaxFood} -> {originalMaxFood - 2}");
+			}
+#endif
+
+			// 核心逻辑：将最大胃容量永久减少 1
+			return originalMaxFood - 1;
+		}
+
+		[HarmonyTranspiler]
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			// 1. 转为可修改的列表
+			var codes = new List<CodeInstruction>(instructions);
+
+			// 2. 缓存关键 MethodInfo（避免在循环中重复反射）
+			MethodInfo targetMethod = AccessTools.Method(typeof(Player), "get_MaxFoodInStomach");
+			MethodInfo modifyMethod = AccessTools.Method(typeof(Patch_AddFood_Tra), nameof(ModifyMaxFood0));
+
+			if (targetMethod == null || modifyMethod == null)
+			{
+				Log.LogWarning("[Tra] 获取方法失败，Player.get_MaxFoodInStomach 或 ModifyMaxFood 不存在");
+				return codes;
+			}
+
+			// 3. 遍历查找 call Player::get_MaxFoodInStomach
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (codes[i].opcode == System.Reflection.Emit.OpCodes.Call &&
+					codes[i].operand is MethodInfo mi &&
+					mi == targetMethod)
+				{
+					// 4. 在该指令后插入我们的修改逻辑
+					// 此时栈状态：[add 参数, MaxFood(返回值)]
+					// 我们需要压入 this，然后调用 ModifyMaxFood(Player, int) 替换栈顶值
+					codes.Insert(i + 1, new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_0));          // 压入 this
+					codes.Insert(i + 2, new CodeInstruction(System.Reflection.Emit.OpCodes.Call, modifyMethod)); // 调用修改方法
+
+					// 修改后栈状态：[add 参数, newMaxFood] 与原 IL 预期完全一致
+					break; // 只修改第一个匹配项（实际 AddFood 中只会有一处调用）
+				}
+			}
+
+			Log.Instance.AppendLogText("Patch_AddFood_Tra");
 			Log.Instance.AppendLogText(codes.ToString());
 			Log.Instance.AppendLogText("1");
 			for (int i = 0; i < codes.Count; i++)
@@ -1727,66 +1975,66 @@ internal class Zname//Scrap 废案
 
 	#region Harmony
 	// 1. 定义补丁类
-	[HarmonyPatch(typeof(Player), "CanBeSwallowed")] // 定位目标类和方法
-	public static class Player_CanBeSwallowed_Patch
-	{
-		// 2. Prefix：在原方法执行前运行
-		//    __instance 指 Player 实例，ref int damage 允许修改传入的参数
-		static bool Prefix(Player __instance, PhysicalObject testObj, ref bool __result)
-		{
-			if (testObj is Rock)
-			{
-				__result = true;
-				return false; // 跳过原方法
-			}
-			return true;
-		}
+	//[HarmonyPatch(typeof(Player), "CanBeSwallowed")] // 定位目标类和方法
+	//public static class Player_CanBeSwallowed_Patch
+	//{
+	//	// 2. Prefix：在原方法执行前运行
+	//	//    __instance 指 Player 实例，ref int damage 允许修改传入的参数
+	//	static bool Prefix(Player __instance, PhysicalObject testObj, ref bool __result)
+	//	{
+	//		if (testObj is Rock)
+	//		{
+	//			__result = true;
+	//			return false; // 跳过原方法
+	//		}
+	//		return true;
+	//	}
 
-		// 也可以写 Postfix（执行后）或 Transpiler（修改IL中间码）
+	//	// 也可以写 Postfix（执行后）或 Transpiler（修改IL中间码）
 
-		static bool Postfix(Player __instance, PhysicalObject testObj, ref bool __result)
-		{
-			return true;
-		}
+	//	static bool Postfix(Player __instance, PhysicalObject testObj, ref bool __result)
+	//	{
+	//		return true;
+	//	}
 
-		// Transpiler 必须返回 IEnumerable<CodeInstruction>
-		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-		{
-			// 1. 转为 List 方便遍历和修改
-			var codes = new List<CodeInstruction>(instructions);
+	//	// Transpiler 必须返回 IEnumerable<CodeInstruction>
+	//	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+	//	{
+	//		// 1. 转为 List 方便遍历和修改
+	//		var codes = new List<CodeInstruction>(instructions);
 
-			// 2. 遍历每一条 IL 指令
-			for (int i = 0; i < codes.Count; i++)
-			{
-				CodeInstruction instruction = codes[i];
+	//		// 2. 遍历每一条 IL 指令
+	//		for (int i = 0; i < codes.Count; i++)
+	//		{
+	//			CodeInstruction instruction = codes[i];
 
-				// 此处省略...
-				/*if (instruction.opcode == System.Reflection.Emit.OpCodes.Ldc_I4_S && instruction.operand is sbyte val && val == 100)
-				{
-					// 4. 替换指令：改成加载常量 200
-					codes[i] = new CodeInstruction(System.Reflection.Emit.OpCodes.Ldc_I4_S, (sbyte)200);
-					break; // 改完退出循环（当然如果多处硬编码，可以不 break）
-				}*/
-			}
+	//			// 此处省略...
+	//			/*if (instruction.opcode == System.Reflection.Emit.OpCodes.Ldc_I4_S && instruction.operand is sbyte val && val == 100)
+	//			{
+	//				// 4. 替换指令：改成加载常量 200
+	//				codes[i] = new CodeInstruction(System.Reflection.Emit.OpCodes.Ldc_I4_S, (sbyte)200);
+	//				break; // 改完退出循环（当然如果多处硬编码，可以不 break）
+	//			}*/
+	//		}
 
-			// 5. 返回修改后的 IL 指令集
-			return codes;
-		}
+	//		// 5. 返回修改后的 IL 指令集
+	//		return codes;
+	//	}
 
-		// 用 CodeMatcher 改写上面的例子（更稳健）
-		static void Transpiler(CodeMatcher matcher)
-		{
-			matcher.MatchForward(false,
-				new CodeMatch(System.Reflection.Emit.OpCodes.Ldc_I4_S, 100) // 查找 100
-			).SetOperandAndAdvance(200); // 改成 200
-		}
+	//	// 用 CodeMatcher 改写上面的例子（更稳健）
+	//	static void Transpiler(CodeMatcher matcher)
+	//	{
+	//		matcher.MatchForward(false,
+	//			new CodeMatch(System.Reflection.Emit.OpCodes.Ldc_I4_S, 100) // 查找 100
+	//		).SetOperandAndAdvance(200); // 改成 200
+	//	}
 
-		static void A()
-		{
-			// 在模组加载时执行一次：
-			Harmony.CreateAndPatchAll(typeof(Player_CanBeSwallowed_Patch));
-		}
-	}
+	//	static void A()
+	//	{
+	//		// 在模组加载时执行一次：
+	//		Harmony.CreateAndPatchAll(typeof(Player_CanBeSwallowed_Patch));
+	//	}
+	//}
 	#endregion
 
 	#region MonoMod.RuntimeDetour
