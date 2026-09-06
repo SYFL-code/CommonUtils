@@ -22,7 +22,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -48,7 +47,7 @@ namespace CommonUtils.Core;
 
 public static class Helper
 {
-
+	#region PhysicalObject
 	public static void SetObjectPosition(PhysicalObject obj, Vector2 newPos)
 	{
 		if (obj is not Creature)
@@ -104,7 +103,6 @@ public static class Helper
 			num++;
 		}
 	}
-
 
 	public static void SuperHardSetPosition(Player player, Vector2 pos)
 	{
@@ -240,8 +238,65 @@ public static class Helper
 			creature.LoseAllGrasps();
 		}
 	}
+	#endregion
 
-	/// <summary> 寻找当前房间中距离自身最近的生物 </summary>
+	#region Food
+	// 玩家胃里的食物格数
+	public static float? PlayerStomachFood(Player player)
+	{
+		if (player == null || player.playerState == null) return null;
+		int FoodInt = 0;
+		FoodInt = player.FoodInStomach;
+		float FoodFloat = player.playerState.quarterFoodPoints * 0.25f;
+		return FoodInt + FoodFloat;
+		/*if (player.FoodInStomach == player.playerState.foodInStomach)
+		{
+			FoodInt = player.FoodInStomach;
+		}*/
+	}
+
+	// 从玩家胃里扣除指定数量的 ¼ 格食物
+	public static bool SubtractQuarterFood(Player player, int quartersToRemove)
+	{
+		if (quartersToRemove <= 0) return false;
+		if (player == null || player.room == null) return false;
+
+		int Deduct = 0;
+
+		var hud = player.room.game.cameras[0]?.hud;
+		var meter = hud?.foodMeter;
+		var sound = SoundID.HUD_Food_Meter_Deplete_Plop_A;
+
+		for (int i = 0; i < quartersToRemove; i++)
+		{
+			if (player.playerState.quarterFoodPoints > 0)
+			{
+				// 扣 ¼ 格
+				player.playerState.quarterFoodPoints--;
+			}
+			else if (player.FoodInStomach > 0)
+			{
+				// 整格扣除
+				player.SubtractFood(1);
+				player.playerState.quarterFoodPoints = 3;
+			}
+			else
+			{
+				break;
+			}
+
+			// 每扣一次都刷新 UI
+			Deduct += 1;
+			hud?.PlaySound(sound);
+			meter?.Update();
+			meter?.quarterPipShower?.Reset();
+		}
+		return Deduct == quartersToRemove;
+	}
+	#endregion
+
+	#region Find
+	// 寻找当前房间中距离自身最近的生物
 	public static Creature? FindNearestCreature(Vector2 centerPos, Room room,
 		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool excludeDead = true)
 	{
@@ -322,8 +377,8 @@ public static class Helper
 
 			Vector2 toTarget = c.mainBodyChunk.pos - sourcePos;
 			float dist = toTarget.magnitude;
-            //float dist = Vector2.Distance(sourcePos, c.mainBodyChunk.pos);
-            if (dist > maxRadius) continue;
+			//float dist = Vector2.Distance(sourcePos, c.mainBodyChunk.pos);
+			if (dist > maxRadius) continue;
 
 			// 角度检测
 			Vector2 dirToTarget = toTarget / dist;
@@ -371,9 +426,72 @@ public static class Helper
 		isTerrain = false;
 		return start;
 	}
+    #endregion
 
-	#region 文件
-	private static string? _cachedModRoot;
+    #region GetRoomWaterColor
+    public static Color GetRoomWaterColor(AbstractRoom abstractRoom)
+    {
+        if (abstractRoom == null || abstractRoom.world == null)
+        {
+            return Color.white;
+        }
+
+        try
+        {
+            RoomSettings? settings = null;
+            if (abstractRoom.realizedRoom != null)
+            {
+                settings = abstractRoom.realizedRoom.roomSettings;
+            }
+            if (settings == null)
+            {
+                settings = new RoomSettings(null, WorldLoader.RoomNameManipulator(abstractRoom.FileName, abstractRoom.world.game), abstractRoom.world.region,
+					template: false, firstTemplate: false, abstractRoom.world.game?.TimelinePoint, abstractRoom.world.game);
+            }
+            if (settings == null)
+            {
+                return Color.white;
+            }
+            Texture2D paletteTex = LoadRoomPalette(settings.Palette);
+            if (paletteTex == null)
+            {
+                return Color.white;
+            }
+            Color waterColor = Color.Lerp(paletteTex.GetPixel(4, 15), paletteTex.GetPixel(4, 7), 0.5f);
+            return waterColor;
+        }
+        catch
+        {
+            return Color.white;
+        }
+    }
+
+    private static Texture2D LoadRoomPalette(int paletteNumber)
+    {
+        Texture2D texture = new Texture2D(32, 16, TextureFormat.ARGB32, mipChain: false);
+
+        string path = AssetManager.ResolveFilePath(
+            "palettes" + Path.DirectorySeparatorChar +
+            "palette" + paletteNumber.ToString(CultureInfo.InvariantCulture) + ".png"
+        );
+
+        try
+        {
+            AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
+        }
+        catch
+        {
+            path = AssetManager.ResolveFilePath("palettes" + Path.DirectorySeparatorChar + "palette-1.png");
+            AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
+        }
+
+        texture.Apply(updateMipmaps: false);
+        return texture;
+    }
+    #endregion
+
+    #region 文件
+    private static string? _cachedModRoot;
 	public static string GetModRootPath()
 	{
 		if (_cachedModRoot != null) return _cachedModRoot;
@@ -501,20 +619,5 @@ public static class Helper
 	//public static string T(string key, object arg0) => string.Format(T(key), arg0);
 	//public static string T(string key, object arg0, object arg1) => string.Format(T(key), arg0, arg1);
 	//public static string T(string key, params object[] args) => string.Format(T(key), args);
-	#endregion
-
-	#region String
-	public static string Left(this string str, int length)
-	{
-		if (string.IsNullOrEmpty(str)) return str;
-		return str.Length <= length ? str : str.Substring(0, length);
-	}
-
-	public static string ReplaceLineEndings(this string s, string lineEndings = "\r\n")
-	{
-		return s.Replace("\r\n", "\n")
-				.Replace("\r", "\n")
-				.Replace("\n", lineEndings);
-	}
 	#endregion
 }

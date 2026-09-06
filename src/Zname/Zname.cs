@@ -188,27 +188,29 @@ internal class Zname//Scrap 废案
 		//Debug.GetBool(0, false);
 		return "";
 	}
-    #endregion
+	#endregion
 
-    // bool ? true : false
+	// bool ? true : false
 
-    // tree /f
-    // 文件目录树
+	// tree /f
+	// 文件目录树
 
-    // Before
-    // After
+	// Before
+	// After
 
-    #region 吞咽Mod 测试
-    /*
+	// 如果有类似问题的朋友们可以看看自己给GetPupButtonOffName挂的钩子里面的PlayerClass是不是大写的
+
+	#region 吞咽Mod 测试
+	/*
 	测试	多场景测试：吞咽、吐出、消化、存档读档、容量满、超容读档
 	日志	保留关键日志，方便排查问题
 	配置	考虑将容量设为可配置选项
 	兼容性	测试与其他 Mod 的兼容性
 	*/
-    #endregion
+	#endregion
 
-    #region 暴力攻击
-    /*
+	#region 暴力攻击
+	/*
 	public static DamageType Blunt = new DamageType("Blunt", register: true); 钝击
 	public static DamageType Stab = new DamageType("Stab", register: true); 刺击
 	public static DamageType Bite = new DamageType("Bite", register: true); 咬伤 切割
@@ -218,11 +220,11 @@ internal class Zname//Scrap 废案
 	public static DamageType None = new DamageType("None", register: true); 无
 	*/
 
-    /*public virtual void 暴力攻击(
-		BodyChunk 攻击源,
+	/*public virtual void 暴力攻击(
+		BodyChunk? 攻击源,
 		Vector2? 方向与动量,
-		BodyChunk 受击部位,
-		PhysicalObject.Appendage.Pos 受击附属肢体,
+		BodyChunk? 受击部位,
+		PhysicalObject.Appendage.Pos? 受击附属肢体,
 		Creature.DamageType 伤害类型,
 		float 基础伤害值,
 		float 眩晕加成)
@@ -320,10 +322,10 @@ internal class Zname//Scrap 废案
 			this.死亡();
 		}
 	}*/
-    #endregion
+	#endregion
 
-    #region AI_Behavior
-    private static void AI_Behavior()
+	#region AI_Behavior
+	private static void AI_Behavior()
 	{
 		//ScavengerAI.Behavior.Attack;                  // 攻击
 		//ScavengerAI.Behavior.CommunicateWithPlayer;   // 与玩家交流
@@ -1289,13 +1291,387 @@ internal class Zname//Scrap 废案
 	#endregion
 
 	#region 反编译
+	#region MonoMod.RuntimeDetour
+	public static void OnEnable()
+	{
+        //On.Player.Grabability += Player_GrababilityA;
+        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
+        //On.Player.Grabability += Player_GrababilityB;
+        // 执行内容 On => Harmony
+        // 挂载顺序（逻辑上）：A → Harmony → B
+        // 物理执行顺序（运行时）：B → A → Harmony（逆序，因为 On 是链式包裹）
+        // Player_GrababilityB => Player_GrababilityA => Patch_Grabability
+
+        Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
+		IL.Player.AddFood += Player_AddFood;
+        // 挂载内容 Patch_AddFood_Transpiler => Player_AddFood (顺序)
+        // 执行内容 Player_AddFood => Patch_AddFood_Transpiler (逆序)(如果在同一个地方向后添加)
+
+        //IL.Player.AddFood += Player_AddFood;
+        //Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
+        // 挂载内容 Player_AddFood => Patch_AddFood_Transpiler (顺序)
+        // 执行内容 Patch_AddFood_Transpiler => Player_AddFood (逆序)(如果在同一个地方向后添加)
+
+
+        //IL.Player.Grabability
+
+        try
+        {
+			if (Input.GetKeyDown(","))
+			{
+				Player? player = null;
+				if (player?.grasps[0]?.grabbed != null)
+				{
+					var 反射 = Zname.反射.GetGrabability(player, player.grasps[0].grabbed);
+					Log.LogInfo($"反射: {反射}");
+					var 委托 = Zname.委托.GetGrabability(player, player.grasps[0].grabbed);
+					Log.LogInfo($"委托: {委托}");
+					var AccessTools = Zname.Harmony_AccessTools.GetGrabability(player, player.grasps[0].grabbed);
+					Log.LogInfo($"AccessTools: {AccessTools}");
+				}
+
+				try
+				{
+					//Scrap.Zname.OnEnable();
+				}
+				catch (Exception ex)
+				{
+					Log.LogError($"Error registering hooks: {ex}");
+				}
+
+			}
+		}
+		catch (Exception e)
+		{
+			Log.LogError("Error in Camouflage: " + e.Message);
+		}
+
+
+		/*
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1329]OnB 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1304]OnA 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Pref:1363]Prefix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Post:1389]Postfix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1329]OnB 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1304]OnA 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Pref:1363]Prefix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Post:1389]Postfix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1329]OnB 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1304]OnA 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Pref:1363]Prefix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Post:1389]Postfix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1329]OnB 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1304]OnA 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Pref:1363]Prefix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Post:1389]Postfix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1329]OnB 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Play:1304]OnA 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Pref:1363]Prefix 尝试抓取 Player
+		[Info   : MySlugcat] v15|23:41:56[Zna.Post:1389]Postfix 尝试抓取 Player
+		*/
+	}
+
+	private static Player.ObjectGrabability Player_GrababilityA(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
+	{
+		Log.LogInfo($"OnA 尝试抓取 {obj.GetType()}");
+		if (obj is Spear)
+		{
+			return Player.ObjectGrabability.Drag;
+		}
+		if (obj is Rock)
+		{
+			return Player.ObjectGrabability.Drag;
+		}
+
+		var __result = orig(player, obj);
+
+		if (obj is Spear)
+		{
+			return Player.ObjectGrabability.CantGrab;
+		}
+		if (obj is Rock)
+		{
+			return Player.ObjectGrabability.CantGrab;
+		}
+		return __result;
+
+	}
+	private static Player.ObjectGrabability Player_GrababilityB(On.Player.orig_Grabability orig, Player player, PhysicalObject obj)
+	{
+		Log.LogInfo($"OnB 尝试抓取 {obj.GetType()}");
+		if (obj is Spear)
+		{
+			return Player.ObjectGrabability.OneHand;
+		}
+		if (obj is Rock)
+		{
+			return Player.ObjectGrabability.OneHand;
+		}
+
+		var __result = orig(player, obj);
+
+		if (obj is Spear)
+		{
+			return Player.ObjectGrabability.Drag;
+		}
+		if (obj is Rock)
+		{
+			return Player.ObjectGrabability.Drag;
+		}
+		return __result;
+	}
+
+	private static void Player_AddFood(ILContext il)
+	{
+		ILCursor c = new ILCursor(il);
+
+		/*
+			// add = Math.Min(add, MaxFoodInStomach - this.playerState.foodInStomach);
+			IL_0014: br IL_0150
+
+			IL_0019: ldarg.1
+			IL_001a: ldarg.0
+			IL_001b: call instance int32 Player::get_MaxFoodInStomach()
+			IL_0020: ldarg.0
+			IL_0021: call instance class PlayerState Player::get_playerState()
+			IL_0026: ldfld int32 PlayerState::foodInStomach
+			IL_002b: sub
+			IL_002c: call int32 [mscorlib]System.Math::Min(int32, int32)
+			IL_0031: starg.s 'add'
+		*/
+
+		bool logged = false;
+
+		if (c.TryGotoNext(MoveType.After,
+			(i) => i.Match(OpCodes.Br),
+			(i) => i.MatchLdarg(1),
+			(i) => i.MatchLdarg(0),
+			(i) => i.MatchCall<Player>("get_MaxFoodInStomach")
+		))
+		{
+			c.Emit(OpCodes.Ldarg_0);
+			c.EmitDelegate<Func<int, Player, int>>((origMaxFood, self) =>
+			{
+				if (!logged || Input.GetKey("c"))
+				{
+					logged = true;
+
+					Log.LogInfo($"Player orig maxFoodInStomach {origMaxFood}");
+				}
+
+				return origMaxFood - 2;
+			});
+		}
+
+		Log.Instance.AppendLogText("1");
+		Log.Instance.AppendLogText(il.ToString());
+		Log.Instance.AppendLogText("1");
+	}
+	#endregion
+	#region Harmony
+	[HarmonyPatch(typeof(Player), "Grabability")] // 私有方法直接用字符串名字
+	public static class Patch_Grabability
+	{
+		[HarmonyPrefix]
+		public static bool Prefix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return true;
+
+			try
+			{
+				Log.LogInfo($"Prefix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.TwoHands;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.TwoHands;
+					return false; // 跳过原方法，但是仍然会执行 Postfix
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+			return true; // 返回 true 继续执行原方法，返回 false 则跳过原方法
+		}
+
+		[HarmonyPostfix]
+		public static void Postfix(Player __instance, PhysicalObject obj, ref Player.ObjectGrabability __result)
+		{
+			if (__instance == null || obj == null) return;
+
+			try
+			{
+				Log.LogInfo($"Postfix 尝试抓取 {obj.GetType()}");
+
+				if (obj is Spear)
+				{
+					__result = Player.ObjectGrabability.BigOneHand;
+				}
+				if (obj is Rock)
+				{
+					__result = Player.ObjectGrabability.BigOneHand;
+				}
+			}
+			catch (Exception e)
+			{
+				Log.LogError($"抓取判定补丁出错: {e.Message}");
+			}
+		}
+	}
+
+	// 挂载：Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
+
+
+	[HarmonyPatch(typeof(Player), "AddFood")]
+	public static class Patch_AddFood_Transpiler
+	{
+		// 静态日志锁（防止高频刷屏，但 Release 下用 #if DEBUG 屏蔽）
+		private static bool _hasLogged = false;
+
+		// 核心修改方法（静态，供 IL 注入调用）
+		private static int ModifyMaxFood(int originalMaxFood, Player self)
+		{
+#if DEBUG
+			if (!_hasLogged)
+			{
+				_hasLogged = true;
+				Log.LogInfo($"[Transpiler] 胃容量上限: {originalMaxFood} -> {originalMaxFood - 2}");
+			}
+#endif
+
+			// 核心逻辑：将最大胃容量永久减少 2
+			return originalMaxFood - 2;
+		}
+
+		[HarmonyTranspiler]
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			// 1. 转为可修改的列表
+			var codes = new List<CodeInstruction>(instructions);
+
+			// 2. 缓存关键 MethodInfo（避免在循环中重复反射）
+			MethodInfo targetMethod = AccessTools.Method(typeof(Player), "get_MaxFoodInStomach");
+			MethodInfo modifyMethod = AccessTools.Method(typeof(Patch_AddFood_Transpiler), nameof(ModifyMaxFood));
+
+			if (targetMethod == null || modifyMethod == null)
+			{
+				Log.LogWarning("[Transpiler] 获取方法失败，Player.get_MaxFoodInStomach 或 ModifyMaxFood 不存在");
+				return codes;
+			}
+
+			// 3. 遍历查找 call Player::get_MaxFoodInStomach
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (codes[i].opcode == System.Reflection.Emit.OpCodes.Call &&
+					codes[i].operand is MethodInfo mi &&
+					mi == targetMethod)
+				{
+					// 4. 在该指令后插入我们的修改逻辑
+					// 此时栈状态：[add 参数, MaxFood(返回值)]
+					// 我们需要压入 this，然后调用 ModifyMaxFood(Player, int) 替换栈顶值
+					codes.Insert(i + 1, new CodeInstruction(System.Reflection.Emit.OpCodes.Ldarg_0));          // 压入 this
+					codes.Insert(i + 2, new CodeInstruction(System.Reflection.Emit.OpCodes.Call, modifyMethod)); // 调用修改方法
+
+					// 修改后栈状态：[add 参数, newMaxFood] 与原 IL 预期完全一致
+					break; // 只修改第一个匹配项（实际 AddFood 中只会有一处调用）
+				}
+			}
+
+			Log.Instance.AppendLogText("1");
+			Log.Instance.AppendLogText(codes.ToString());
+			Log.Instance.AppendLogText("1");
+			for (int i = 0; i < codes.Count; i++)
+			{
+				Log.Instance.AppendLogText(codes[i].ToString());
+			}
+			Log.Instance.AppendLogText("1");
+
+			return codes;
+		}
+	}
+	#endregion
+
+	#region Harmony_AccessTools
+	public static class Harmony_AccessTools
+	{
+		/*
+		| AccessTools 方法 | 作用 | 对应聊天内容 |
+		| --- | --- | --- |
+		| AccessTools.Method(Type, string) | 获取方法（含私有/公有） | 选部分用来挂钩 prefix 时定位方法 |
+		| AccessTools.Field(Type, string) | 获取字段 | 访问其他模组的私有变量 |
+		| AccessTools.Property(Type, string) | 获取属性（getter/setter） | 访问带 { get; set; } 的属性 |
+		| AccessTools.Constructor(Type, Type[]) | 获取构造函数 | 动态实例化私有类 |
+		| AccessTools.TypeByName(string) | 通过字符串全名找类型 | 跨程序集联动（不用引用对方DLL） |
+		*/
+
+		// 1. 缓存 MethodInfo，避免每次调用都反射查找（性能优化关键）
+		private static readonly MethodInfo _grababilityMethod =
+			AccessTools.Method(typeof(Player), "Grabability", new Type[] { typeof(PhysicalObject) });
+
+		// 2. 封装一个公开的静态方法供调用
+		public static Player.ObjectGrabability? GetGrabability(Player player, PhysicalObject obj)
+		{
+			if (player == null || obj == null)
+				return null;
+
+			// 调用私有方法并强制转换返回值
+			return (Player.ObjectGrabability)_grababilityMethod.Invoke(player, new object[] { obj });
+		}
+	}
+	#endregion
+	#region 反射
+	public static class 反射
+	{
+		private static MethodInfo? _grababilityMethod;
+
+		public static Player.ObjectGrabability GetGrabability(Player player, PhysicalObject obj)
+		{
+			if (_grababilityMethod == null)
+			{
+				// 第一次调用时查找并缓存
+				_grababilityMethod = typeof(Player).GetMethod("Grabability",
+					BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			}
+
+			return (Player.ObjectGrabability)_grababilityMethod.Invoke(player, new object[] { obj });
+		}
+	}
+	#endregion
+	#region 委托
+	public static class 委托
+	{
+		// 定义一个匹配原方法签名的委托类型
+		private delegate Player.ObjectGrabability GrababilityDelegate(Player player, PhysicalObject obj);
+
+		private static GrababilityDelegate? _grababilityDelegate;
+
+		public static Player.ObjectGrabability GetGrabability(Player player, PhysicalObject obj)
+		{
+			if (_grababilityDelegate == null)
+			{
+				MethodInfo method = typeof(Player).GetMethod("Grabability",
+					BindingFlags.NonPublic | BindingFlags.Instance);
+
+				// 创建强类型委托（零反射开销）
+				_grababilityDelegate = (GrababilityDelegate)Delegate.CreateDelegate(
+					typeof(GrababilityDelegate), method);
+			}
+
+			return _grababilityDelegate(player, obj);
+		}
+	}
+	#endregion
+
 
 	#region On 钩子
-	public void OnEnable()
+	public void OnEnable_()
 	{
 		On.Player.CanBeSwallowed += On_Player_CanBeSwallowed;
 		IL.Player.CanBeSwallowed += IL_Player_CanBeSwallowed;
-
 
 		// 插件 A
 		On.Player.Update += (orig, self, eu) => {
@@ -1461,8 +1837,8 @@ internal class Zname//Scrap 废案
 	*/
 
 	// 定义一个静态委托（只需初始化一次）
-	static readonly AccessTools.FieldRef<Player, int> HealthRef =
-		AccessTools.FieldRefAccess<Player, int>("_health");
+	//static readonly AccessTools.FieldRef<Player, int> HealthRef =
+	//	AccessTools.FieldRefAccess<Player, int>("_health");
 	public static string AccessTools_(Player player)
 	{
 		// ❌ 原生反射（又臭又长）
@@ -1474,7 +1850,7 @@ internal class Zname//Scrap 废案
 		int health_ = (int)AccessTools.Field(typeof(Player), "_health").GetValue(player);
 
 		// 在游戏循环里高频调用（极快，无反射损耗）
-		int currentHP = HealthRef(player);
+		//int currentHP = HealthRef(player);
 
 		// 直接挂钩其他模组的私有方法，名字用字符串传
 		/*
@@ -1651,7 +2027,6 @@ xml
 
 	*/
 	#endregion
-
 	#endregion
 
 	#region Hooks

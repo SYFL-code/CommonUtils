@@ -116,7 +116,7 @@ public static class HookManager
 	}
 
 
-	private static int _hookCounter = 0;
+	//private static int _hookCounter = 0;
 
 	public static void Register(bool RequireSingleThread = true, [CallerLineNumber] int Priority = 0,
 		Action? Hook = null, Action? UnHook = null,
