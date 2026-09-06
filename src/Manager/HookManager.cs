@@ -1,7 +1,12 @@
-﻿using System;
+﻿using CommonUtils.Misc;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace CommonUtils.Core;
 
@@ -12,6 +17,8 @@ public static class HookManager
 {
 	public static Dictionary<string, HookData> datas = [];
 	private static readonly object _dataLock = new();
+
+	public const int Top = int.MaxValue;
 
 	public static void Initialize()
 	{
@@ -55,7 +62,7 @@ public static class HookManager
 
 
 		List<KeyValuePair<string, HookData>> singleThreadHooks = datas.Where(kv => kv.Value.RequireSingleThread)
-			.OrderBy(kv => kv.Value.Priority).ToList();
+			.OrderByDescending(kv => kv.Value.Priority).ToList();
 		foreach (KeyValuePair<string, HookData> kv in singleThreadHooks)
 		{
 			HookData data = kv.Value;
@@ -78,7 +85,7 @@ public static class HookManager
 	public static void UnInitializeAll()
 	{
 		var uninitHooks = datas.Where(kv => kv.Value.isInitialized)
-			.OrderByDescending(kv => kv.Value.Priority)
+			.OrderBy(kv => kv.Value.Priority)
 			.ToList();
 
 		// 串行注销（保证顺序和线程安全）
@@ -109,7 +116,32 @@ public static class HookManager
 	}
 
 
-    public static void Register(string ID, HookData data)
+	private static int _hookCounter = 0;
+
+	public static void Register(bool RequireSingleThread = true, [CallerLineNumber] int Priority = 0,
+		Action? Hook = null, Action? UnHook = null,
+		[CallerArgumentExpression(nameof(Hook))] string hookExpression = "", [CallerFilePath] string filePath = "")
+	{
+		HookData data = new HookData
+		{
+			RequireSingleThread = RequireSingleThread,
+			Priority = Priority,
+			InitializeHooks = Hook,
+			UnInitializeHooks = UnHook
+		};
+
+		int arrowIndex = hookExpression.IndexOf("=>");
+		string hookCode = arrowIndex >= 0 ? hookExpression[(arrowIndex + "=>".Length)..].Trim() : "";
+
+		string hookName = Regex.Split(hookCode, @"\+=")[0].Trim();
+        string className = Regex.Split(hookCode, @"\.")[1].Trim();
+        //string className = Path.GetFileNameWithoutExtension(filePath);
+
+
+		Log.LogDebug($"hookExpression:{hookCode} #{Priority}");
+		Register($"{hookCode} ({className})", data);
+	}
+	public static void Register(string ID, HookData data)
 	{
 		if (data == null)
 		{
@@ -160,8 +192,8 @@ public static class HookManager
 	{
 		// 要求单线程。
 		// 若为 true，则在 Initialize 中会串行执行；
-		// 若为 false（默认），则允许并行初始化以提高启动速度。
-		public bool RequireSingleThread { get; set; } = false;
+		// 若为 false，则允许并行初始化以提高启动速度。
+		public bool RequireSingleThread { get; set; } = true;
 		// 优先级
 		// 数值越小，优先级越高
 		public int Priority { get; set; } = 0;

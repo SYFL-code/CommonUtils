@@ -105,48 +105,6 @@ public static class Helper
 		}
 	}
 
-	public static void ReleaseAllGrasps(PhysicalObject obj)
-	{
-		if (((obj != null) ? obj.grabbedBy : null) != null && obj != null)
-		{
-			for (int i = obj.grabbedBy.Count - 1; i >= 0; i--)
-			{
-				Creature.Grasp grasp = obj.grabbedBy[i];
-				if (grasp != null)
-				{
-					grasp.Release();
-				}
-			}
-		}
-		if (obj is Creature creature)
-		{
-			if (obj is Player player)
-			{
-				Player.SlugOnBack slugOnBack = player.slugOnBack;
-				if (slugOnBack != null)
-				{
-					slugOnBack.DropSlug();
-				}
-				Player onBack = player.onBack;
-				if (onBack != null)
-				{
-					Player.SlugOnBack slugOnBack2 = onBack.slugOnBack;
-					if (slugOnBack2 != null)
-					{
-						slugOnBack2.DropSlug();
-					}
-				}
-				player.slugOnBack = null;
-				player.onBack = null;
-				Player.SpearOnBack spearOnBack = player.spearOnBack;
-				if (spearOnBack != null)
-				{
-					spearOnBack.DropSpear();
-				}
-			}
-			creature.LoseAllGrasps();
-		}
-	}
 
 	public static void SuperHardSetPosition(Player player, Vector2 pos)
 	{
@@ -240,7 +198,179 @@ public static class Helper
 		}
 	}
 
+	public static void ReleaseAllGrasps(PhysicalObject obj)
+	{
+		if (((obj != null) ? obj.grabbedBy : null) != null && obj != null)
+		{
+			for (int i = obj.grabbedBy.Count - 1; i >= 0; i--)
+			{
+				Creature.Grasp grasp = obj.grabbedBy[i];
+				if (grasp != null)
+				{
+					grasp.Release();
+				}
+			}
+		}
+		if (obj is Creature creature)
+		{
+			if (obj is Player player)
+			{
+				Player.SlugOnBack slugOnBack = player.slugOnBack;
+				if (slugOnBack != null)
+				{
+					slugOnBack.DropSlug();
+				}
+				Player onBack = player.onBack;
+				if (onBack != null)
+				{
+					Player.SlugOnBack slugOnBack2 = onBack.slugOnBack;
+					if (slugOnBack2 != null)
+					{
+						slugOnBack2.DropSlug();
+					}
+				}
+				player.slugOnBack = null;
+				player.onBack = null;
+				Player.SpearOnBack spearOnBack = player.spearOnBack;
+				if (spearOnBack != null)
+				{
+					spearOnBack.DropSpear();
+				}
+			}
+			creature.LoseAllGrasps();
+		}
+	}
 
+	/// <summary> 寻找当前房间中距离自身最近的生物 </summary>
+	public static Creature? FindNearestCreature(Vector2 centerPos, Room room,
+		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool excludeDead = true)
+	{
+		Creature? nearest = null;        // 最近生物对象
+		float minSqrDistance = float.MaxValue;  // 最小平方距离
+		excludeTypes ??= [typeof(Player), typeof(Fly)];
+
+		if (room == null || room.abstractRoom == null || room.abstractRoom.creatures == null || room.abstractRoom.creatures.Count <= 0)
+		{
+			return null;
+		}
+
+		// 遍历当前房间所有生物
+		foreach (AbstractCreature abstractCreature in room.abstractRoom.creatures)
+		{
+			Creature c = abstractCreature.realizedCreature;
+
+			if (c == null ||
+				c.mainBodyChunk == null ||
+				c.mainBodyChunk.pos == null)
+			{
+				continue;
+			}
+			if (exclude != null)
+			{
+				if (exclude.Contains(c))
+				{
+					continue;
+				}
+			}
+			if (excludeTypes.Count > 0)
+			{
+				if (excludeTypes.Contains(c.GetType()))
+				{
+					continue;
+				}
+			}
+			if (excludeDead)// 死亡的生物
+			{
+				if (c.dead)
+				{
+					continue;
+				}
+			}
+
+			// 计算位置差（目标位置 - 自身位置）
+			Vector2 offset = c.mainBodyChunk.pos - centerPos;
+			float sqrDistance = offset.sqrMagnitude;
+
+			// 检查是否为更近的生物
+			if (sqrDistance < minSqrDistance)
+			{
+				minSqrDistance = sqrDistance;
+				nearest = c;
+			}
+		}
+		return nearest;
+	}
+
+	public static List<Creature> FindCreaturesInCone(Vector2 sourcePos, Vector2 direction, Room room, float halfAngleDeg, float maxRadius,
+		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool excludeDead = true)
+	{
+		List<Creature> candidates = [];
+		if (room == null || room.abstractRoom == null) return candidates;
+		excludeTypes ??= [typeof(Player), typeof(Fly)];
+
+		float halfAngleRad = halfAngleDeg * Mathf.Deg2Rad;
+
+		foreach (AbstractCreature absCreature in room.abstractRoom.creatures)
+		{
+			Creature c = absCreature.realizedCreature;
+
+			if (c == null) continue;
+			if (c.mainBodyChunk == null) continue;
+			if (c.dead && excludeDead) continue;
+			if (excludeTypes.Contains(c.GetType())) continue;
+			if (exclude != null && exclude.Contains(c)) continue;
+
+			Vector2 toTarget = c.mainBodyChunk.pos - sourcePos;
+			float dist = toTarget.magnitude;
+            //float dist = Vector2.Distance(sourcePos, c.mainBodyChunk.pos);
+            if (dist > maxRadius) continue;
+
+			// 角度检测
+			Vector2 dirToTarget = toTarget / dist;
+			float angle = Vector2.Angle(direction, dirToTarget);
+			if (angle > halfAngleRad * Mathf.Rad2Deg) continue;
+
+			// 视线检测（地形阻挡）
+			if (!IsLineOfSight(room, sourcePos, c.mainBodyChunk.pos))
+				continue;
+
+			candidates.Add(c);
+		}
+
+		return candidates;
+	}
+
+	// 检测两点之间是否有地形阻挡
+	public static bool IsLineOfSight(Room room, Vector2 start, Vector2 end)
+	{
+		bool isTerrain;
+		Vector2 adjustedEnd = Trace(start, end, room, out isTerrain);
+		// 如果有地形阻挡，返回 false
+		return !isTerrain;
+	}
+	// 检测路径是否碰撞地形
+	public static Vector2 Trace(Vector2 start, Vector2 end, Room room, out bool isTerrain)
+	{
+		Vector2 Direction = Custom.DegToVec(Custom.AimFromOneVectorToAnother(start, end));
+
+		// 检测起点到终点之间是否碰撞地形
+		// 返回值intVector为碰撞的格子坐标（若无碰撞则返回null）
+		IntVector2? intVector = SharedPhysics.RayTraceTilesForTerrainReturnFirstSolid(room, start, end);
+
+		if (intVector != null)
+		{
+			// 标记碰撞到地形
+			isTerrain = true;
+
+			// 计算修正后的终点位置
+			// 方案：取碰撞格子的中心坐标，并向反方向微调7单位
+			return room.MiddleOfTile(intVector.Value) - (Direction * 7f);
+		}
+
+		// 无碰撞时保持原始终点
+		isTerrain = false;
+		return start;
+	}
 
 	#region 文件
 	private static string? _cachedModRoot;
@@ -323,64 +453,64 @@ public static class Helper
 		}
 		return items.ToArray();
 	}
-    #endregion
+	#endregion
 
-    #region UITranslate
-    //public static string? currentLang;
-    //private static Dictionary<string, string> _dict = [];
-    //private static Dictionary<string, string> Dict
-    //{
-    //    get
-    //    {
-    //        if (currentLang != LocalizationTranslator.LangShort(Translator.currentLanguage))
-    //        {
-    //            currentLang = LocalizationTranslator.LangShort(Translator.currentLanguage);
+	#region UITranslate
+	//public static string? currentLang;
+	//private static Dictionary<string, string> _dict = [];
+	//private static Dictionary<string, string> Dict
+	//{
+	//    get
+	//    {
+	//        if (currentLang != LocalizationTranslator.LangShort(Translator.currentLanguage))
+	//        {
+	//            currentLang = LocalizationTranslator.LangShort(Translator.currentLanguage);
 
-    //            string path = MyOptions.GetTranslatorPath();
-    //            if (File.Exists(path))
-    //            {
-    //                _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
-    //            }
-    //            else
-    //            {
-    //                Log.LogError("找不到语言文件: " + currentLang);
+	//            string path = MyOptions.GetTranslatorPath();
+	//            if (File.Exists(path))
+	//            {
+	//                _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
+	//            }
+	//            else
+	//            {
+	//                Log.LogError("找不到语言文件: " + currentLang);
 
-    //                path = MyOptions.GetTranslatorPath("eng");
-    //                if (File.Exists(path))
-    //                {
-    //                    _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
-    //                }
-    //                else
-    //                {
-    //                    Log.LogError("找不到默认语言文件: eng");
-    //                    _dict = [];
-    //                }
-    //            }
-    //            return _dict;
-    //        }
-    //        else
-    //        {
-    //            return _dict;
-    //        }
-    //    }
-    //}
-    //public static string T(string key)
-    //{
-    //    return Dict.TryGetValue(key, out var val) ? val : key;
-    //}
-    //public static string T(string key, object arg0) => string.Format(T(key), arg0);
-    //public static string T(string key, object arg0, object arg1) => string.Format(T(key), arg0, arg1);
-    //public static string T(string key, params object[] args) => string.Format(T(key), args);
-    #endregion
+	//                path = MyOptions.GetTranslatorPath("eng");
+	//                if (File.Exists(path))
+	//                {
+	//                    _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
+	//                }
+	//                else
+	//                {
+	//                    Log.LogError("找不到默认语言文件: eng");
+	//                    _dict = [];
+	//                }
+	//            }
+	//            return _dict;
+	//        }
+	//        else
+	//        {
+	//            return _dict;
+	//        }
+	//    }
+	//}
+	//public static string T(string key)
+	//{
+	//    return Dict.TryGetValue(key, out var val) ? val : key;
+	//}
+	//public static string T(string key, object arg0) => string.Format(T(key), arg0);
+	//public static string T(string key, object arg0, object arg1) => string.Format(T(key), arg0, arg1);
+	//public static string T(string key, params object[] args) => string.Format(T(key), args);
+	#endregion
 
-    #region String
-    public static string Left(this string str, int length)
-    {
-        if (string.IsNullOrEmpty(str)) return str;
-        return str.Length <= length ? str : str.Substring(0, length);
-    }
+	#region String
+	public static string Left(this string str, int length)
+	{
+		if (string.IsNullOrEmpty(str)) return str;
+		return str.Length <= length ? str : str.Substring(0, length);
+	}
 
-    public static string ReplaceLineEndings(this string s, string lineEndings = "\r\n")
+	public static string ReplaceLineEndings(this string s, string lineEndings = "\r\n")
 	{
 		return s.Replace("\r\n", "\n")
 				.Replace("\r", "\n")

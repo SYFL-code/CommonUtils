@@ -3,6 +3,8 @@ using BepInEx;
 using BepInEx.Logging;
 using CommonUtils;
 using CommonUtils.Core;
+using CommonUtils.Debug;
+using CommonUtils.Misc;
 using Expedition;
 using HarmonyLib;
 using HUD;
@@ -47,6 +49,18 @@ using static UnityEngine.Input;
 using Color = UnityEngine.Color;
 using ObjType = AbstractPhysicalObject.AbstractObjectType;
 using Random = UnityEngine.Random;
+
+// <DefineConstants>ENDERPEARL</DefineConstants>
+#if ENDERPEARL
+using EnderPearl;
+#elif EXTENSIONLIB
+using ExtensionLib;
+#elif TRANSLATOR
+using Translator;
+#else
+//
+#endif
+
 #endregion
 #pragma warning disable CS0169 // 从不使用字段
 namespace Scrap;
@@ -95,8 +109,13 @@ internal class Zname//Scrap 废案
 	// UnityExplorer
 	// HopToDesk
 
+	#region Rain World
 	// https://gist.github.com/EtiTheSpirit/655d8e81732ba516ca768dbd7410ddf4 这里有一个文档讲了一些关于rw shader的注意事项
 	// 可以看看Menu.StoryGameStasticsScreen里的AddBkgIllustration
+
+	/*
+	这个路径 Rain World\RainWorld_Data\StreamingAssets 下面放上noinitwarp.txt就防止游戏在你ilhook错误的时候踢出你的模组
+	*/
 
 	/*在用 slugbase 的情况下，将你的头像图片命名为 multiplayerportrait<X><Y>-<Z>.png，
 	其中 X 取 0~4，0~3 对应竞技场 1~4 号头像，4 对应探险模式头像；
@@ -112,8 +131,9 @@ internal class Zname//Scrap 废案
 	// n->拖动鼠标所在位置的贴图
 
 	// spawn_raw EnderPearl
+	#endregion
 
-
+	#region Z
 	public static string Z()
 	{
 		/*// 1. 获取整个字典
@@ -168,21 +188,1102 @@ internal class Zname//Scrap 废案
 		//Debug.GetBool(0, false);
 		return "";
 	}
+    #endregion
 
-	// bool ? true : false
+    // bool ? true : false
 
-	// tree /f
-	// 文件目录树
+    // tree /f
+    // 文件目录树
 
-	// Before
-	// After
+    // Before
+    // After
 
-	/*
+    #region 吞咽Mod 测试
+    /*
 	测试	多场景测试：吞咽、吐出、消化、存档读档、容量满、超容读档
 	日志	保留关键日志，方便排查问题
 	配置	考虑将容量设为可配置选项
 	兼容性	测试与其他 Mod 的兼容性
 	*/
+    #endregion
+
+    #region 暴力攻击
+    /*
+	public static DamageType Blunt = new DamageType("Blunt", register: true); 钝击
+	public static DamageType Stab = new DamageType("Stab", register: true); 刺击
+	public static DamageType Bite = new DamageType("Bite", register: true); 咬伤 切割
+	public static DamageType Water = new DamageType("Water", register: true); 水击
+	public static DamageType Explosion = new DamageType("Explosion", register: true); 爆炸
+	public static DamageType Electric = new DamageType("Electric", register: true); 电击
+	public static DamageType None = new DamageType("None", register: true); 无
+	*/
+
+    /*public virtual void 暴力攻击(
+		BodyChunk 攻击源,
+		Vector2? 方向与动量,
+		BodyChunk 受击部位,
+		PhysicalObject.Appendage.Pos 受击附属肢体,
+		Creature.DamageType 伤害类型,
+		float 基础伤害值,
+		float 眩晕加成)
+	{
+		// 波纹暴力效果检查
+		if (!this.波纹暴力效果检查(攻击源))
+		{
+			return;
+		}
+
+		// 设置击杀标记（如果攻击源来自生物）
+		if (攻击源 != null && 攻击源.owner is Creature)
+		{
+			this.设置击杀标记((攻击源.owner as Creature).abstractCreature);
+		}
+
+		// 处理物理击退效果
+		if (方向与动量 != null)
+		{
+			if (受击部位 != null)
+			{
+				受击部位.vel += Vector2.ClampMagnitude(方向与动量.Value / 受击部位.mass, 10f);
+			}
+			else if (受击附属肢体 != null && this is PhysicalObject.IHaveAppendages)
+			{
+				(this as PhysicalObject.IHaveAppendages).对附属肢体施加力(受击附属肢体, 方向与动量.Value);
+			}
+		}
+
+		// 计算实际伤害和眩晕值
+		float 实际伤害 = 基础伤害值 / this.Template.baseDamageResistance;
+		float 实际眩晕值 = ((基础伤害值 * 30f) + 眩晕加成) / this.Template.baseStunResistance;
+
+		// 生命状态下的伤害加成
+		if (this.State is HealthState)
+		{
+			实际眩晕值 *= 1.5f + (Mathf.InverseLerp(0.5f, 0f, (this.State as HealthState).health) * UnityEngine.Random.value);
+		}
+
+		// 伤害类型抗性计算
+		if (伤害类型.Index != -1)
+		{
+			if (this.Template.damageRestistances[伤害类型.Index, 0] > 0f)
+			{
+				实际伤害 /= this.Template.damageRestistances[伤害类型.Index, 0];
+			}
+			if (this.Template.damageRestistances[伤害类型.Index, 1] > 0f)
+			{
+				实际眩晕值 /= this.Template.damageRestistances[伤害类型.Index, 1];
+			}
+		}
+
+		// 竞技场模式特殊规则
+		if (ModManager.MSC)
+		{
+			if (this.room != null && this.room.world.game.IsArenaSession
+				&& this.room.world.game.GetArenaGameSession.chMeta != null
+				&& this.room.world.game.GetArenaGameSession.chMeta.resistMultiplier > 0f
+				&& !(this is Player))
+			{
+				实际伤害 /= this.room.world.game.GetArenaGameSession.chMeta.resistMultiplier;
+			}
+			if (this.room != null && this.room.world.game.IsArenaSession
+				&& this.room.world.game.GetArenaGameSession.chMeta != null
+				&& this.room.world.game.GetArenaGameSession.chMeta.invincibleCreatures
+				&& !(this is Player))
+			{
+				实际伤害 = 0f;
+			}
+		}
+
+		// 应用眩晕效果
+		this.stunDamageType = 伤害类型;
+		this.眩晕((int)实际眩晕值);
+		this.stunDamageType = Creature.DamageType.None;
+
+		// 生命值处理
+		if (this.State is HealthState)
+		{
+			(this.State as HealthState).health -= 实际伤害;
+
+			// 快速死亡判定
+			if (this.Template.quickDeath &&
+				(UnityEngine.Random.value < -(this.State as HealthState).health
+				 || (this.State as HealthState).health < -1f
+				 || ((this.State as HealthState).health < 0f && UnityEngine.Random.value < 0.33f)))
+			{
+				this.死亡();
+			}
+		}
+
+		// 即死伤害判定
+		if (实际伤害 >= this.Template.instantDeathDamageLimit)
+		{
+			this.死亡();
+		}
+	}*/
+    #endregion
+
+    #region AI_Behavior
+    private static void AI_Behavior()
+	{
+		//ScavengerAI.Behavior.Attack;                  // 攻击
+		//ScavengerAI.Behavior.CommunicateWithPlayer;   // 与玩家交流
+		//ScavengerAI.Behavior.EscapeRain;              // 避雨
+		//ScavengerAI.Behavior.FindPackLeader;          // 寻找首领
+		//ScavengerAI.Behavior.Flee;                    // 逃跑
+		//ScavengerAI.Behavior.GuardOutpost;            // 守卫前哨
+		//ScavengerAI.Behavior.Idle;                    // 待机
+		//ScavengerAI.Behavior.Injured;                 // 受伤
+		//ScavengerAI.Behavior.Investigate;             // 调查
+		//ScavengerAI.Behavior.LeaveRoom;               // 离开房间
+		//ScavengerAI.Behavior.Scavange;                // 搜刮
+		//ScavengerAI.Behavior.Travel;                  // 移动
+
+		//LizardAI.Behavior.ActingOutMission;  // 执行使命?
+		//LizardAI.Behavior.EscapeRain;        // 避雨
+		//LizardAI.Behavior.Fighting;          // 战斗
+		//LizardAI.Behavior.Flee;              // 逃离 逃跑
+		//LizardAI.Behavior.FollowFriend;      // 跟随伙伴 跟随朋友
+		//LizardAI.Behavior.Frustrated;        // 受挫 沮丧
+		//LizardAI.Behavior.GoToSpitPos;       // 前往喷射点 吐口水
+		//LizardAI.Behavior.Hunt;              // 狩猎
+		//LizardAI.Behavior.Idle;              // 待机
+		//LizardAI.Behavior.Injured;           // 受伤
+		//LizardAI.Behavior.InvestigateSound;  // 调查声响
+		//LizardAI.Behavior.Lurk;              // 潜伏
+		//LizardAI.Behavior.ReturnPrey;        // 带回猎物 返回猎物 归还猎物
+		//LizardAI.Behavior.Travelling;        // 移动 旅行
+	}
+	#endregion
+
+	#region CreatureTemplate_Relationship_Type
+	private static void CreatureTemplate_Relationship_Type()
+	{
+		//CreatureTemplate.Relationship.Type.Afraid;              // 害怕
+		//CreatureTemplate.Relationship.Type.AgressiveRival;      // 敌对竞争者
+		//CreatureTemplate.Relationship.Type.Antagonizes;         // 挑衅
+		//CreatureTemplate.Relationship.Type.Attacks;             // 攻击
+		//CreatureTemplate.Relationship.Type.DoesntTrack;         // 不追踪
+		//CreatureTemplate.Relationship.Type.Eats;                // 捕食
+		//CreatureTemplate.Relationship.Type.Ignores;             // 忽视
+		//CreatureTemplate.Relationship.Type.Pack;                // 群居
+		//CreatureTemplate.Relationship.Type.PlaysWith;           // 与之玩耍
+		//CreatureTemplate.Relationship.Type.SocialDependent;     // 社交依赖
+		//CreatureTemplate.Relationship.Type.StayOutOfWay;        // 避而远之
+		//CreatureTemplate.Relationship.Type.Uncomfortable;       // 感到不适
+
+		//CreatureTemplate.Relationship.Type.valueDictionary;     // 值字典
+		//CreatureTemplate.Relationship.Type.values;              // 值集合
+		//CreatureTemplate.Relationship.Type.valuesVersion;       // 值版本
+	}
+	#endregion
+
+	#region DamageType 测试
+	public class DamageType : ExtEnum<Creature.DamageType>
+	{
+		public DamageType(string value, bool register = false) : base(value, register)
+		{
+		}
+
+		public static readonly Creature.DamageType Blunt = new Creature.DamageType("Blunt", true);//钝击
+
+		public static readonly Creature.DamageType Stab = new Creature.DamageType("Stab", true);//穿刺
+
+		public static readonly Creature.DamageType Bite = new Creature.DamageType("Bite", true);//撕咬
+
+		public static readonly Creature.DamageType Water = new Creature.DamageType("Water", true);//水浸
+
+		public static readonly Creature.DamageType Explosion = new Creature.DamageType("Explosion", true);//爆炸
+
+		public static readonly Creature.DamageType Electric = new Creature.DamageType("Electric", true);//电击
+
+		public static readonly Creature.DamageType None = new Creature.DamageType("None", true);//无伤害
+	}
+	#endregion
+
+	#region 通行证
+	private static void 通行证()
+	{
+
+		//"The Survivor"        //"求生者"
+		//"The Hunter"          //"猎手"
+		//"The Saint"           //"圣徒"
+		//"The Wanderer"        //"漫游者"
+		//"The Chieftain"       //"酋长"
+		//"The Monk"            //"僧侣"
+		//"The Outlaw"          //"暴徒"
+		//"The Dragon Slayer"   //"屠龙者"
+		//"The Scholar"         //"学者"
+		//"The Friend"          //"朋友"
+		// ModManager.MSC
+		//"The Nomad"           //"流浪者"
+		//"The Martyr"          //"殉道者"
+		//"The Pilgrim"         //"朝圣者"
+		//"The Mother"          //"慈母"
+
+		// The Vanguard
+		//"The Dragonlord"      //"龙王"
+		// Rotund World
+		//"The Glutton"         //"贪食者"；暴食者；贪吃者；嗜食者；贪婪者
+
+
+
+		//"The Chieftain"       //"酋长" // 线状
+		/*return new WinState.FloatTracker(
+			this.PassageID,   // ID
+			dflt: 0f,          // 默认值
+			min: 0f,           // 最小值
+			showFrom: 0f,      // 开始显示的进度
+			max: 1f           // 最大值
+		);*/
+
+		//"The Survivor"        //"求生者" // 点状
+		/*return new WinState.IntegerTracker(
+			this.PassageID,   // ID
+			dflt: 0,          // 默认值
+			min: 0,           // 最小值
+			showFrom: 1,      // 开始显示的进度
+			max: 10           // 最大值
+		);*/
+
+		//"The Wanderer"        //"漫游者" // 布尔状 (点状不可逆?)
+		/*return new WinState.BoolArrayTracker(
+			this.PassageID,   // ID
+			SlugcatStats.SlugcatStoryRegions(RainWorld.lastActiveSaveSlot).Count
+		);*/
+
+		//"The Dragon Slayer"   //"屠龙者"   // 列表状 (点状不可逆?) 多个布尔条件（如任务清单）
+		/*return new WinState.ListTracker(
+			this.PassageID,   // ID
+			6
+		);*/                                 // 布尔状 (点状不可逆?)
+		/*return new WinState.BoolArrayTracker(
+			this.PassageID,   // ID
+			6
+		);*/
+
+		//"The Pilgrim"         //"朝圣者" 
+		/*int num = 0;
+		List<string> list = SlugcatStats.SlugcatStoryRegions(RainWorld.lastActiveSaveSlot);
+		for (int i = 0; i < list.Count; i++)
+		{
+			if (list[i] != "MS" && World.CheckForRegionGhost(RainWorld.lastActiveSaveSlot, list[i]))
+			{
+				num++;
+			}
+		}
+		endgameTracker = new WinState.BoolArrayTracker(ID, num);*/
+
+		// 美味佳肴 HUD状
+		/*return new WinState.GourFeastTracker(
+			this.PassageID,   // ID
+			WinState.GourmandPassageTracker.Length
+		);*/
+
+	}
+	#endregion
+
+	#region CosmeticSprite
+	private static void CosmeticSprite()//装饰品精灵集
+	{
+		Vector2 pos = new Vector2(0f, 0f);
+
+		MoreSlugcats.LightningMachine activateLightning =
+			new MoreSlugcats.LightningMachine
+			(pos, new Vector2(pos.x, pos.y), new Vector2(pos.x, pos.y + 10f), 0f, false, true, 0.3f, 1f, 1f);
+	}
+	#endregion
+
+	#region 着色器
+	private static void 着色器()
+	{
+		//Basic 默认无特效，最普通的纹理绘制
+		//Hologram 全息 / 幽灵：带扫描线、轻微噪点、半透明
+		//LightSource 发光体：把贴图当作光源，周围产生光晕
+		//Water 水流：波纹扭曲、折射
+		//Waterfall 瀑布：比
+		//Water 更剧烈的扭曲和滚动
+		//LensDistortion 镜头畸变：边缘放大、中心收缩的“鱼眼”效果
+		//Blur 高斯模糊
+		//Fog 雾：颜色叠加 + 深度雾
+		//Fire 火焰：滚动噪声、红黄调色
+		//HeatDistortion 热扭曲：透过火焰看背景时的空气抖动
+		//Lightning 闪电：高亮、闪烁
+		//Rain 雨滴：垂直条纹 + 滚动
+		//Sand 沙：细小滚动的颗粒
+		//Scavenger 拾荒者盔甲：金属高光、反射贴图
+		//Slugcat 蛞蝓猫：边缘描边（用于雨眠过场）
+		//SkyAndPressureGradient 天空：日夜颜色渐变
+		//Bloom 泛光：高亮区域向外晕染
+		//Multiply 正片叠底：将贴图与背景颜色相乘
+
+		//Grayscale 去色：变黑白
+		// 把精灵的所有颜色信息强行转成灰度亮度，只保留明暗关系。
+
+		//Palette 调色板映射：把灰度贴图按当前房间调色板重新上色  
+		// 把一张灰度贴图按当前房间的 调色板（palette） 重新上色。
+		// 灰度值 0 → 调色板最暗色
+		// 灰度值 1 → 调色板最亮色
+		// 介于 0~1 之间 → 插值颜色
+
+		//Shadow 阴影：半透明黑色 + 模糊
+		//Ice 冰：高光 + 反射 + 轻微扭曲
+		//Centipede 蜈蚣：节段滚动纹理
+		//Vulture 秃鹫：金属 + 虹彩
+		//JetFish 喷气鱼：带流线滚动
+		//SmallNeedleWorm 针虫：皮肤光泽
+		//TubeWorm 管虫：内部发光
+		//Lantern 灯笼：中心黄白光晕
+		//Overseer 观察者：脉冲扫描线 + 发光
+		//Glow 纯粹发光，可用于 UI 或特效
+
+		//Basic 基础
+
+		//LevelColor 关卡颜色
+
+		//Background 背景
+
+		//WaterSurface 水面
+
+		//DeepWater 深水区
+
+		//Shortcuts 捷径
+
+		//DeathRain 死亡之雨
+
+		//LizardLaser 蜥蜴激光
+
+		//WaterLight 水光
+
+		//WaterFall 瀑布
+
+		//ShockWave 冲击波
+
+		//Smoke 烟雾
+
+		//Spores 孢子
+
+		//Steam 蒸汽
+
+		//ColoredSprite 彩色精灵
+
+		//ColoredSprite2 彩色精灵2
+
+		//LightSource 光源
+
+		//LightSourceBothSides 双面光源
+
+		//LightSourceRippleSide 波纹面光源
+
+		//LightBloom 光晕
+
+		//SkyBloom 天光晕染
+
+		//Adrenaline 肾上腺素
+
+		//AdrenalineBothSides 双面肾上腺素
+
+		//CicadaWing 蝉翼
+
+		//BulletRain 弹雨
+
+		//CustomDepth 自定义深度
+
+		//CustomDepthBothSides 双面自定义深度
+
+		//UnderWaterLight 水下光源
+
+		//FlatLight 平面光
+
+		//FlatLightRippleSide 波纹面平面光
+
+		//FlatLightBothSides 双面平面光
+
+		//FlatLightBehindTerrain 地形后平面光
+
+		//VectorCircle 矢量圆环
+
+		//VectorCircleBothSides 双面矢量圆环
+
+		//VectorCircleRippleSide 波纹面矢量圆环
+
+		//VectorCircleFadable 可渐隐矢量圆环
+
+		//FlareBomb 闪光弹
+
+		//FlareBombBothSides 双面闪光弹
+
+		//Fog 雾气
+
+		//WaterSplash 水花
+
+		//EelFin 鳗鱼鳍
+
+		//EelBody 鳗鱼身体
+
+		//JaggedCircle 锯齿圆环
+
+		//JaggedCircleBothSides 双面锯齿圆环
+
+		//JaggedCircleRippleSide 波纹面锯齿圆环
+
+		//JaggedSquare 锯齿方块
+
+		//TubeWorm 管虫
+
+		//LizardAntenna 蜥蜴触须
+
+		//TentaclePlant 触手植物
+
+		//TentaclePlantBothSides 双面触手植物
+
+		//TentaclePlantRippleSide 波纹面触手植物
+
+		//LevelMelt 关卡溶解
+
+		//LevelMelt2 关卡溶解2
+
+		//CoralCircuit 珊瑚电路
+
+		//CoralCircuitBothSides 双面珊瑚电路
+
+		//DeadCoralCircuit 死珊瑚电路
+
+		//DeadCoralCircuitBothSides 双面死珊瑚电路
+
+		//CoralNeuron 珊瑚神经元
+
+		//CoralNeuronBothSides 双面珊瑚神经元
+
+		//Bloom 泛光
+
+		//GravityDisruptor 重力干扰器
+
+		//GlyphProjection 符文投影
+
+		//BlackGoo 黑色粘液
+
+		//BlackGooBothSides 双面黑色粘液
+
+		//Map 地图
+
+		//MapAerial 航拍地图
+
+		//MapShortcut 捷径地图
+
+		//LightAndSkyBloom 光与天光晕染
+
+		//SceneBlur 场景模糊
+
+		//EdgeFade 边缘褪色
+
+		//HeatDistortion 热浪扭曲
+
+		//Projection 投影
+
+		//SingleGlyph 单体符文
+
+		//DeepProcessing 深度处理
+
+		//Cloud 云层
+
+		//CloudDistant 远景云层
+
+		//DistantBkgObject 远景背景物体
+
+		//BkgFloor 背景地板
+
+		//House 房屋
+
+		//DistantBkgObjectRepeatHorizontal 水平重复远景物体
+
+		//Dust 尘埃
+
+		//RoomTransition 房间过渡
+
+		//VoidCeiling 虚空天花板
+
+		//FlatLightNoisy 噪点平面光
+
+		//VoidWormBody 虚空蠕虫身体
+
+		//VoidWormFin 虚空蠕虫鳍
+
+		//VoidWormPincher 虚空蠕虫钳
+
+		//FlatWaterLight 平面水光
+
+		//FlatWaterLightBothSides 双面平面水光
+
+		//FlatWaterLightRippleSpawn 波纹生成平面水光
+
+		//FlatWaterLightRippleSpawnRippleSide 波纹面生成平面水光
+
+		//WormLayerFade 蠕虫层渐隐
+
+		//OverseerZip 监视者瞬移
+
+		//GhostSkin 幽灵表皮
+
+		//GhostBall 幽灵球体
+
+		//GhostDistortion 幽灵扭曲
+
+		//GhostSkinRipple 波纹幽灵表皮
+
+		//GhostBallRipple 波纹幽灵球体
+
+		//GhostDistortionRipple 波纹幽灵扭曲
+
+		//GateHologram 门全息投影
+
+		//OutPostAntler 前哨鹿角
+
+		//WaterNut 水坚果
+
+		//Hologram 全息投影
+
+		//HologramBothSides 双面全息投影
+
+		//FireSmoke 火焰烟雾
+
+		//HoldButtonCircle 按钮保持圆环
+
+		//GoldenGlow 金色辉光
+
+		//ElectricDeath 电击死亡
+
+		//VoidSpawnBody 虚空孵化体
+
+		//SceneLighten 场景增亮
+
+		//SceneBlurLightEdges 场景光边模糊
+
+		//SceneRain 场景雨
+
+		//SceneOverlay 场景叠加
+
+		//SceneSoftLight 场景柔光
+
+		//SceneMultiply 场景相乘
+
+		//HologramImage 全息图像
+
+		//HologramBehindTerrain 地形后全息
+
+		//Decal 贴花
+
+		//SpecificDepth 特定深度
+
+		//LocalBloom 局部泛光
+
+		//MenuText 菜单文字
+
+		//DeathFall 坠落死亡
+
+		//DeathFallHeavy 重型坠落死亡
+
+		//KingTusk 帝王獠牙
+
+		//HoloGrid 全息网格
+
+		//SootMark 煤烟痕迹
+
+		//NewVultureSmoke 新秃鹫烟雾
+
+		//SmokeTrail 烟雾轨迹
+
+		//RedsIllness 红色病态
+
+		//HazerHaze 薄雾朦胧
+
+		//Rainbow 彩虹
+
+		//LightBeam 光束
+
+		//SlopedTerrainSurface 斜坡地形表面
+
+		//SlopedTerrainStain 斜坡地形污渍
+
+		//Rubble 碎石
+
+		//Whirlpool 漩涡
+
+		//GeyserWater 间歇泉水
+
+		//BackgroundAdditive 附加背景
+
+		//BackgroundJaggedCircle 背景锯齿圆环
+
+		//BackgroundNoHoles 无孔背景
+
+		//WaterCurrent 水流
+
+		//BlackSpot 黑斑
+
+		//SkyWhaleBody 天鲸身体
+
+		//SkyWhaleCuticle 天鲸角质层
+
+		//KarmicShield 业力护盾
+
+		//TemplarCircle 圣堂圆环
+
+		//TemplarCloak 圣堂斗篷
+
+		//Sandstorm 沙暴
+
+		//SlopedTerrainMask 斜坡地形遮罩
+
+		//SlopedTerrainMaskGrab 斜坡地形遮罩抓取
+
+		//DistantBkgObjectAlpha 远景物体透明度
+
+		//WaterSlush 雪泥水
+
+		//SporesSnow 孢子雪
+
+		//SnowFall 落雪
+
+		//OESphereTop 奥术球顶部
+
+		//OESphereLight 奥术球光源
+
+		//OESphereBase 奥术球基底
+
+		//MoonProjection 月亮投影
+
+		//LocalBlizzard 局部暴风雪
+
+		//LightningBolt 闪电束
+
+		//LevelHeat 关卡热度
+
+		//FastSnowFall 快速落雪
+
+		//FastLocalBlizzard 快速局部暴风雪
+
+		//FastBlizzard 快速暴风雪
+
+		//EnergySwirl 能量漩涡
+
+		//EnergyCell 能量细胞
+
+		//DisplaySnowShader 显示雪着色器
+
+		//BlizzardMapPrerender 暴风雪地图预渲染
+
+		//Blizzard 暴风雪
+
+		//LevelSnowShader 关卡雪着色器
+
+		//InterpolateWindMap 插值风图
+
+		//DustWaveLow 低强度尘埃波
+
+		//DustFlowRenderer 尘埃流渲染器
+
+		//DustWave 尘埃波
+
+		//DustWaveLevel 关卡尘埃波
+
+		//DustWaveLevelLow 低强度关卡尘埃波
+
+		//BlizzardReduction 暴风雪减弱
+
+		//BlizzardMap 暴风雪地图
+
+		//CellDist 细胞距离
+
+		//DisplayWind 显示风
+
+		//SingleGlyphHologram 单体符文全息
+
+		//WaterFallInverted 反向瀑布
+
+		//AquapedeBody 水蜈蚣身体
+
+		//MenuTextGold 金色菜单文字
+
+		//MenuTextCustom 自定义菜单文字
+
+		//WarpPointHoldFrame 跃迁点保持帧
+
+		//Warp 跃迁
+
+		//WarpNoRing 无环跃迁
+
+		//WarpCircleBasic 基础跃迁圆环
+
+		//WarpCircleRipple 波纹跃迁圆环
+
+		//WarpPlayerDistortion 玩家跃迁扭曲
+
+		//HugeTurbine 巨型涡轮
+
+		//RotWormBody 腐烂蠕虫身体
+
+		//RotWormFin 腐烂蠕虫鳍
+
+		//DynamicLevelElementGrab 动态关卡元素抓取
+
+		//DynamicLevelElement 动态关卡元素
+
+		//DevUI_TwinArrowVertical 开发UI垂直双箭头
+
+		//DevUI_TwinArrowHorizontal 开发UI水平双箭头
+
+		//DevUIDepthPreview 开发UI深度预览
+
+		//DynamicLevelRock 动态关卡岩石
+
+		//DynamicLevelRock_NoMovement 静态动态关卡岩石
+
+		//DynamicLevelBlob 动态关卡斑点
+
+		//DynamicLevelTubeSegment 动态关卡管段
+
+		//DynamicLevelWire 动态关卡线缆
+
+		//DynamicLevelUrbanCandle 动态关卡都市烛台
+
+		//DynamicLevelBowl 动态关卡碗
+
+		//DynamicLevelPole 动态关卡杆
+
+		//Aurora 极光
+
+		//AuroraForeground 前景极光
+
+		//AuroraRipple 波纹极光
+
+		//AuroraForegroundRipple 前景波纹极光
+
+		//RippleSpawnBody 波纹生成体
+
+		//RippleSpawnBodyRippleSide 波纹面生成体
+
+		//RippleGlow 波纹辉光
+
+		//RippleGlowRippleSide 波纹面辉光
+
+		//RippleDeath 波纹死亡
+
+		//BrainBall 脑球
+
+		//BrainStem 脑干
+
+		//BrainMold 脑霉菌
+
+		//BrainBallDark 暗黑脑球
+
+		//BrainStemDark 暗黑脑干
+
+		//LocustCluster 蝗虫群
+
+		//LocustClusterShadow 蝗虫群阴影
+
+		//AncientUrbanBuilding 远古都市建筑
+
+		//DustGradient 尘埃渐变
+
+		//BoxWormBody 箱虫身体
+
+		//BoxWormLarvaHolder 箱虫幼虫容器
+
+		//BoxWormBox 箱虫箱体
+
+		//BoxWormOpenBox 箱虫开箱
+
+		//BoxWormFakeLarva 箱虫假幼虫
+
+		//BoxWormLarvaFood 箱虫幼虫食物
+
+		//FireSpriteWing 火精灵翅膀
+
+		//FireSpriteBody 火精灵身体
+
+		//RippleHybrid 混合波纹
+
+		//RippleHybridRipple 混合波纹涟漪
+
+		//RippleHybridBoth 双面混合波纹
+
+		//FlameJet 火焰喷射
+
+		//FlameJetGlow 火焰喷射辉光
+
+		//SaltFlake 盐片
+
+		//SaltFlakeShadow 盐片阴影
+
+		//AetherRainbow 以太彩虹
+
+		//GildedWind 镀金之风
+
+		//Stardust 星尘
+
+		//BackgroundDune 背景沙丘
+
+		//OuterRimBackgroundBuilding 外环背景建筑
+
+		//OuterRimDustGradient 外环尘埃渐变
+
+		//FallingStar 流星
+
+		//WallLight 墙光
+
+		//WallLightSoftEdge 柔边墙光
+
+		//WallLightStaticNoise 静态噪点墙光
+
+		//WallLightHardShadow 硬阴影墙光
+
+		//WallLightFlat 平面墙光
+
+		//WarpTearMask 跃迁撕裂遮罩
+
+		//WarpTearBlocker 跃迁撕裂阻挡器
+
+		//WarpTear 跃迁撕裂
+
+		//WarpTearBad 不良跃迁撕裂
+
+		//WarpTearOuter 外部跃迁撕裂
+
+		//WarpTearRippleSide 波纹面跃迁撕裂
+
+		//WarpTearGrab 跃迁撕裂抓取
+
+		//SKLightning 天空闪电
+
+		//SKLightningForeground 前景天空闪电
+
+		//SKLightningBGFlash 背景天空闪电闪光
+
+		//Darken 暗化
+
+		//SKLightningFlash 天空闪电闪光
+
+		//PrinceStem 王子茎干
+
+		//SkinkStripes 石龙子条纹
+
+		//MothWing 蛾翼
+
+		//MudDecal 泥浆贴花
+
+		//MudPit 泥潭
+
+		//MudOverlay 泥浆覆盖
+
+		//UrbanLife 都市生命
+
+		//UrbanLifeShadow 都市生命阴影
+
+		//UrbanLifeFirstLayer 都市生命首层
+
+		//UrbanShadowsGrab 都市阴影抓取
+
+		//UrbanShadowsBlur 都市阴影模糊
+
+		//UrbanShadowsBlurGrab 都市阴影模糊抓取
+
+		//UrbanShadowGradient 都市阴影渐变
+
+		//SpinToy 旋转玩具
+
+		//SpinToyGlyph 旋转玩具符文
+
+		//BallToy 球玩具
+
+		//SoftToyBody 软玩具身体
+
+		//SoftToyEye 软玩具眼睛
+
+		//GreebleGrid 细节网格
+
+		//PlaceholderBackgroundElement 占位背景元素
+
+		//FirmamentCloud 苍穹云
+
+		//DustDunes 尘埃沙丘
+
+		//CamoMeter 伪装计量器
+
+		//UrbanCandleSSS 都市烛台次表面散射
+
+		//UrbanCandleFlame 都市烛台火焰
+
+		//DeepLightSource 深层光源
+
+		//PoisonSpearTip 毒矛尖
+
+		//ARZapper AR电击器
+
+		//ARZapperOmni AR全向电击器
+
+		//ARZapperOneSide AR单面电击器
+
+		//ARZapperGlow AR电击器辉光
+
+		//ShiftMask 位移遮罩
+
+		//WavesShiftMask 波浪位移遮罩
+
+		//RippleTearMask 波纹撕裂遮罩
+
+		//RippleRingMask 波纹环遮罩
+
+		//RippleBubbleMask 波纹气泡遮罩
+
+		//TransitionRippleMask 过渡波纹遮罩
+
+		//RippleFlow 波纹流
+
+		//RippleGrab 波纹抓取
+
+		//GameplayRippleGrab 游戏波纹抓取
+
+		//RippleBasic 基础波纹
+
+		//RippleBasicRippleSide 基础波纹面
+
+		//RippleBasicRippleSideAlt 基础波纹面替代
+
+		//RippleBasicBothSides 双面基础波纹
+
+		//RippleBasicClipDistortion 基础波纹裁剪扭曲
+
+		//PlayerCamoMask 玩家伪装遮罩
+
+		//PlayerCamoMaskBeforePlayer 玩家前伪装遮罩
+
+		//PlayerRippleTrail 玩家波纹轨迹
+
+	}
+	#endregion
+
+	#region MagicCat
+	private static void MagicCat(Player player)
+	{
+		int N = player.playerState.playerNumber;
+		Vector2 pos = player.mainBodyChunk.pos;
+		Room room = player.room;
+		var color = player.ShortCutColor();
+		//room.rainIntensity
+
+		//
+
+		/*                    for (int j = 0; j < room.abstractRoom.creatures.Count; j++)
+				{
+					Vector2 pos3 = room.abstractRoom.creatures[j].realizedCreature.mainBodyChunk.pos;
+				}*/
+
+		//
+		Vector2 vel = Custom.RNV() * 4f * (1f + UnityEngine.Random.value);
+		for (int i = 0; i < UnityEngine.Random.Range(5, 8); i++)
+		{
+			room.AddObject(new Spark(pos, vel, color, null, 20, 40));
+		}
+		room.PlaySound(SoundID.Bomb_Explode, pos, 0.75f, 1.25f);
+		room.AddObject(new Explosion.ExplosionSmoke(pos, vel, 1.1f));
+		room.AddObject(new Explosion.ExplosionLight(pos, 400f, 1f, 7, color));
+		room.AddObject(new ExplosionSpikes(room, pos, 14, 30f, 9f, 7f, 170f, color));
+		room.AddObject(new ShockWave(pos, 4000f, 0.05f, 20, true));
+
+		/*                    float num = UnityEngine.Random.Range(-0.1f, 0.1f);
+							room.AddObject(new Explosion.ExplosionLight(pos, 100f, 1f, 5, new Color(1f, 0.9f, 0f)));
+							room.AddObject(new ExplosionSpikes(room, pos, 14, 2f, 5f, 7f, 100f, new Color(1f, 0.9f, 0f)));
+							room.AddObject(new ShockWave(pos, 100f, 0.05f, 5, false));
+							room.PlaySound(SoundID.Spear_Bounce_Off_Wall, pos, 2f, 0.6f + num);
+							room.PlaySound(SoundID.SS_AI_Give_The_Mark_Boom, pos, 2f, 1.5f + num);*/
+
+		//
+
+		foreach (var item in room.updateList)
+		{
+			var creature = item as Creature;
+			if (creature != null)
+			{
+				var player1 = creature as Player;
+				if (player1 == null)
+				{
+					creature.Stun(200);
+				}
+			}
+		}
+
+		for (int j = 0; j < room.abstractRoom.creatures.Count; j++)
+		{
+			Creature creature = room.abstractRoom.creatures[j].realizedCreature;
+			var player1 = creature as Player;
+			if (player1 == null)
+			{
+				creature.Stun(200);
+			}
+		}
+
+		Debug.Log("1");
+
+		//9cf0a4/363636
+	}
+	#endregion
+
+	#region MOD启用
+	private static void MOD启用()
+	{
+		//ModManager.ActiveMods             //激活Mods
+		//ModManager.InstalledMods          //已存在的Mods
+		//ModManager.FailedRequirementIds   //需求ID失败的Mods
+		//ModManager.PrePackagedModIDs      //预包装ModsID
+
+
+		if (ModManager.GameVersionChangedOnThisLaunch)
+		{
+			//游戏版本在这次发布中发生了变化
+		}
+		if (ModManager.NonPrepackagedModsInstalled)
+		{
+			//安装了非预打包的Mods
+		}
+		if (ModManager.InitializationScreenFinished)
+		{
+			//初始化屏幕完成
+		}
+		if (ModManager.DLCShared)
+		{
+			//DLC共享?
+		}
+		if (ModManager.MSC)
+		{
+			//更多蛞蝓猫?_1
+		}
+		if (ModManager.MMF)
+		{
+			//更多蛞蝓猫?_2
+		}
+		if (ModManager.CoopAvailable)
+		{
+			//联机模式是否可用?
+		}
+		if (ModManager.JollyCoop)
+		{
+			//联机模式
+		}
+		if (ModManager.Expedition)
+		{
+			//远征模式
+		}
+		if (ModManager.DevTools)
+		{
+			//开发者工具
+		}
+		if (ModManager.Watcher)
+		{
+			//观望者
+		}
+	}
+	#endregion
 
 	#region DateTime
 	#endregion
@@ -877,13 +1978,13 @@ xml
 			}
 			newExprs.Add(Expression.Label(beforeBreakLabel));
 
-            // Orig call (only if !Block)
-            // 3. 调用 orig（条件：!Block）
-            var origCallArgs = argParams.Cast<Expression>().ToArray();
-            var origCall = Expression.Invoke(origParam, origCallArgs);
-            bool hasReturn = sig.ReturnType != typeof(void);
+			// Orig call (only if !Block)
+			// 3. 调用 orig（条件：!Block）
+			var origCallArgs = argParams.Cast<Expression>().ToArray();
+			var origCall = Expression.Invoke(origParam, origCallArgs);
+			bool hasReturn = sig.ReturnType != typeof(void);
 
-            var origCallExpr = hasReturn
+			var origCallExpr = hasReturn
 				? (Expression)Expression.Assign(resultVar, Expression.Convert(origCall, typeof(object)))
 				: (Expression)origCall;
 			var ifNotBlock = Expression.IfThen(
@@ -976,259 +2077,259 @@ xml
 		private static void LogError(string msg) => Debug.LogError($"[HookInstaller] {msg}");
 	}
 
-    #endregion
+	#endregion
 
-    #region IEnumerator
-    private static IEnumerator WaitForEndOfFrameCoroutine(TaskCompletionSource<bool> completionSource)
+	#region IEnumerator
+	private static IEnumerator WaitForEndOfFrameCoroutine(TaskCompletionSource<bool> completionSource)
 	{
 		yield return new WaitForEndOfFrame();
 		completionSource.SetResult(true);
-    }
+	}
 	private static Task WaitForEndOfFrameAsync(RainWorld rainWorld)
 	{
 		TaskCompletionSource<bool> completionSource = new();
 		rainWorld.StartCoroutine(WaitForEndOfFrameCoroutine(completionSource));
-        return completionSource.Task;
-    }
-    #endregion
+		return completionSource.Task;
+	}
+	#endregion
 
-    #region Hook
+	#region Hook
 
-    //// 调度器
-    //public static class HookDispatcher
-    //{
-    //	// <名称, 程序集>
-    //	private static readonly Dictionary<string, List<HandlerEntry>> _handlers = [];
+	//// 调度器
+	//public static class HookDispatcher
+	//{
+	//	// <名称, 程序集>
+	//	private static readonly Dictionary<string, List<HandlerEntry>> _handlers = [];
 
-    //	// 函数委托(上下文)
-    //	public delegate void HandlerDelegate(HookContext context);
-    //	// 程序项
-    //	private class HandlerEntry
-    //	{
-    //		public int Priority { get; }
-    //		public HandlerDelegate? Before { get; }
-    //		public HandlerDelegate? After { get; }
+	//	// 函数委托(上下文)
+	//	public delegate void HandlerDelegate(HookContext context);
+	//	// 程序项
+	//	private class HandlerEntry
+	//	{
+	//		public int Priority { get; }
+	//		public HandlerDelegate? Before { get; }
+	//		public HandlerDelegate? After { get; }
 
-    //		public HandlerEntry(int priority, HandlerDelegate? before, HandlerDelegate? after)
-    //		{
-    //			Priority = priority;
-    //			Before = before;
-    //			After = after;
-    //		}
-    //	}
+	//		public HandlerEntry(int priority, HandlerDelegate? before, HandlerDelegate? after)
+	//		{
+	//			Priority = priority;
+	//			Before = before;
+	//			After = after;
+	//		}
+	//	}
 
-    //	// 注册函数对
-    //	public static void Register(string hookName, int priority, HandlerDelegate? before, HandlerDelegate? after)
-    //	{
-    //		lock (_handlers)
-    //		{
-    //			if (!_handlers.TryGetValue(hookName, out var list))
-    //			{
-    //				list = [];
-    //				_handlers[hookName] = list;
-    //			}
-    //			list.Add(new HandlerEntry(priority, before, after));
-    //			// 按优先级排序（小->大）
-    //			list.Sort((a, b) => a.Priority.CompareTo(b.Priority));
-    //		}
-    //	}
-
-
-    //	// 调度执行（无返回值）
-    //	public static void Dispatch(string hookName, HookContext context, Action<HookContext> origAction)
-    //	{
-    //		Dispatch<object>(hookName, context, (ctx) =>
-    //		{
-    //			origAction(ctx);
-    //			return null;
-    //		});
-    //	}
-
-    //	// 调度执行（有返回值）
-    //	public static T? Dispatch<T>(string hookName, HookContext context, Func<HookContext, T?> origFunc)
-    //	{
-    //		if (!_handlers.TryGetValue(hookName, out var entries))
-    //		{
-    //			return origFunc(context);
-    //		}
-
-    //		context.Result = (T?)default;
-
-    //		// 执行 Before
-    //		foreach (var entry in entries)
-    //		{
-    //			if (!context.Block || entry.Priority <= context.BlockingPriority)
-    //			{
-    //				entry.Before?.Invoke(context);
-    //			}
-    //			if (context.Block && context.BlockingPriority == null)
-    //			{
-    //				context.BlockingPriority = entry.Priority;
-    //			}
-    //		}
-
-    //		// 执行 orig
-    //		if (!context.Block)
-    //		{
-    //			context.Result = origFunc(context);
-    //		}
-
-    //		// 执行 After
-    //		foreach (var entry in entries)
-    //		{
-    //			if (!context.Block || entry.Priority <= context.BlockingPriority)
-    //			{
-    //				entry.After?.Invoke(context);
-    //			}
-    //			if (context.Block && context.BlockingPriority == null)
-    //			{
-    //				context.BlockingPriority = entry.Priority;
-    //			}
-    //		}
-
-    //		return (T?)context.Result;
-    //	}
-
-    //	public static void Clear()
-    //	{
-    //		lock (_handlers)
-    //			_handlers.Clear();
-    //	}
-    //}
-
-    //// 上下文
-    //public abstract class HookContext
-    //{
-    //	public bool Block;
-    //	public int? BlockingPriority = null;
-    //	public object? Result;
-    //	public Dictionary<string, object> Data = [];
-    //}
-
-    //// Player.Update 的上下文
-    //public class PlayerUpdateContext : HookContext
-    //{
-    //	public required Player player;
-    //	public required bool eu;
-    //}
-    //private static void Hook_PlayerUpdate(On.Player.orig_Update orig, Player player, bool eu)
-    //{
-    //	var Context = new PlayerUpdateContext
-    //	{
-    //		player = player,
-    //		eu = eu
-    //	};
+	//	// 注册函数对
+	//	public static void Register(string hookName, int priority, HandlerDelegate? before, HandlerDelegate? after)
+	//	{
+	//		lock (_handlers)
+	//		{
+	//			if (!_handlers.TryGetValue(hookName, out var list))
+	//			{
+	//				list = [];
+	//				_handlers[hookName] = list;
+	//			}
+	//			list.Add(new HandlerEntry(priority, before, after));
+	//			// 按优先级排序（小->大）
+	//			list.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+	//		}
+	//	}
 
 
-    //	// 注册二段跳功能（优先级更高，先执行）
-    //	HookDispatcher.Register("Player.Update",
-    //		priority: 5,
-    //		before: (ctx) => { /* ... */ },
-    //		after: (ctx) => { /* 恢复状态 */ }
-    //	);
+	//	// 调度执行（无返回值）
+	//	public static void Dispatch(string hookName, HookContext context, Action<HookContext> origAction)
+	//	{
+	//		Dispatch<object>(hookName, context, (ctx) =>
+	//		{
+	//			origAction(ctx);
+	//			return null;
+	//		});
+	//	}
 
-    //	// 注册冲刺功能
-    //	HookDispatcher.Register("Player.Update",
-    //		priority: 10,
-    //		before: (ctx) =>
-    //		{
-    //			if (ctx is PlayerUpdateContext c)
-    //			{
-    //				if (Input.GetKey(KeyCode.LeftShift))
-    //				{
-    //					c.player.bodyChunks[0].vel.x = 20f;
-    //					// 阻断原逻辑和后续After（如果需要）
-    //					c.Block = true;
-    //					c.Data["isDashing"] = true; // 供其他部分读取
-    //				}
-    //			}
-    //		},
-    //		after: null
-    //	);
+	//	// 调度执行（有返回值）
+	//	public static T? Dispatch<T>(string hookName, HookContext context, Func<HookContext, T?> origFunc)
+	//	{
+	//		if (!_handlers.TryGetValue(hookName, out var entries))
+	//		{
+	//			return origFunc(context);
+	//		}
 
-    //	HookDispatcher.Dispatch("Player.Update", Context, (context) =>
-    //	{
-    //		var c = (PlayerUpdateContext)context;
+	//		context.Result = (T?)default;
 
-    //		orig(c.player, c.eu);
-    //	});
-    //}
+	//		// 执行 Before
+	//		foreach (var entry in entries)
+	//		{
+	//			if (!context.Block || entry.Priority <= context.BlockingPriority)
+	//			{
+	//				entry.Before?.Invoke(context);
+	//			}
+	//			if (context.Block && context.BlockingPriority == null)
+	//			{
+	//				context.BlockingPriority = entry.Priority;
+	//			}
+	//		}
 
-    //// PlayerGraphics.DrawSprites 的上下文
-    //public class PlayerGraphicsDrawContext : HookContext
-    //{
-    //	public required PlayerGraphics playerGraphics;
-    //	public required RoomCamera.SpriteLeaser sLeaser;
-    //	public required RoomCamera rCam;
-    //	public required float timeStacker;
-    //	public required Vector2 camPos;
-    //}
-    //private static void Hook_PlayerGraphicsDraw(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-    //{
-    //	var Context = new PlayerGraphicsDrawContext
-    //	{
-    //		playerGraphics = playerGraphics,
-    //		sLeaser = sLeaser,
-    //		rCam = rCam,
-    //		timeStacker = timeStacker,
-    //		camPos = camPos
-    //	};
+	//		// 执行 orig
+	//		if (!context.Block)
+	//		{
+	//			context.Result = origFunc(context);
+	//		}
 
-    //	HookDispatcher.Dispatch("PlayerGraphics.DrawSprites", Context, (context) =>
-    //	{
-    //		var c = (PlayerGraphicsDrawContext)context;
+	//		// 执行 After
+	//		foreach (var entry in entries)
+	//		{
+	//			if (!context.Block || entry.Priority <= context.BlockingPriority)
+	//			{
+	//				entry.After?.Invoke(context);
+	//			}
+	//			if (context.Block && context.BlockingPriority == null)
+	//			{
+	//				context.BlockingPriority = entry.Priority;
+	//			}
+	//		}
 
-    //		orig(c.playerGraphics, c.sLeaser, c.rCam, c.timeStacker, c.camPos);
-    //	});
-    //}
+	//		return (T?)context.Result;
+	//	}
 
-    //public class SpearHitContext : HookContext
-    //{
-    //	public required Spear spear;
-    //	public required SharedPhysics.CollisionResult result; // 值类型
-    //	public required bool eu;
-    //}
-    //private static bool Hook_SpearHitSomething(On.Spear.orig_HitSomething orig, Spear spear, SharedPhysics.CollisionResult result, bool eu)
-    //{
-    //	var Context = new SpearHitContext
-    //	{
-    //		spear = spear,
-    //		result = result,
-    //		eu = eu
-    //	};
+	//	public static void Clear()
+	//	{
+	//		lock (_handlers)
+	//			_handlers.Clear();
+	//	}
+	//}
 
-    //	return HookDispatcher.Dispatch<bool>("Spear.HitSomething", Context, (context) =>
-    //	{
-    //		var c = (SpearHitContext)context;
+	//// 上下文
+	//public abstract class HookContext
+	//{
+	//	public bool Block;
+	//	public int? BlockingPriority = null;
+	//	public object? Result;
+	//	public Dictionary<string, object> Data = [];
+	//}
 
-    //		// 调用原方法，将返回值存入上下文
-    //		return orig(c.spear, c.result, c.eu);
-    //	});
-    //}
+	//// Player.Update 的上下文
+	//public class PlayerUpdateContext : HookContext
+	//{
+	//	public required Player player;
+	//	public required bool eu;
+	//}
+	//private static void Hook_PlayerUpdate(On.Player.orig_Update orig, Player player, bool eu)
+	//{
+	//	var Context = new PlayerUpdateContext
+	//	{
+	//		player = player,
+	//		eu = eu
+	//	};
 
-    //// 挂载所有中央钩子
-    //public static void InstallHooks()
-    //{
-    //	On.Player.Update += Hook_PlayerUpdate;
-    //	On.PlayerGraphics.DrawSprites += Hook_PlayerGraphicsDraw;
-    //	On.Spear.HitSomething+= Hook_SpearHitSomething;
-    //	//On.Player.ctor += Hook_PlayerCtor;      // 类似写法
-    //											// ... 其余所有钩子
-    //}
 
-    //// 卸载时取消订阅
-    //public static void UninstallHooks()
-    //{
-    //	On.Player.Update -= Hook_PlayerUpdate;
-    //	On.PlayerGraphics.DrawSprites -= Hook_PlayerGraphicsDraw;
-    //	On.Spear.HitSomething -= Hook_SpearHitSomething;
-    //	// ...
-    //}
+	//	// 注册二段跳功能（优先级更高，先执行）
+	//	HookDispatcher.Register("Player.Update",
+	//		priority: 5,
+	//		before: (ctx) => { /* ... */ },
+	//		after: (ctx) => { /* 恢复状态 */ }
+	//	);
 
-    #endregion
+	//	// 注册冲刺功能
+	//	HookDispatcher.Register("Player.Update",
+	//		priority: 10,
+	//		before: (ctx) =>
+	//		{
+	//			if (ctx is PlayerUpdateContext c)
+	//			{
+	//				if (Input.GetKey(KeyCode.LeftShift))
+	//				{
+	//					c.player.bodyChunks[0].vel.x = 20f;
+	//					// 阻断原逻辑和后续After（如果需要）
+	//					c.Block = true;
+	//					c.Data["isDashing"] = true; // 供其他部分读取
+	//				}
+	//			}
+	//		},
+	//		after: null
+	//	);
 
-    #region 文件目录
-    static string save = UnityEngine.Application.persistentDataPath;
+	//	HookDispatcher.Dispatch("Player.Update", Context, (context) =>
+	//	{
+	//		var c = (PlayerUpdateContext)context;
+
+	//		orig(c.player, c.eu);
+	//	});
+	//}
+
+	//// PlayerGraphics.DrawSprites 的上下文
+	//public class PlayerGraphicsDrawContext : HookContext
+	//{
+	//	public required PlayerGraphics playerGraphics;
+	//	public required RoomCamera.SpriteLeaser sLeaser;
+	//	public required RoomCamera rCam;
+	//	public required float timeStacker;
+	//	public required Vector2 camPos;
+	//}
+	//private static void Hook_PlayerGraphicsDraw(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+	//{
+	//	var Context = new PlayerGraphicsDrawContext
+	//	{
+	//		playerGraphics = playerGraphics,
+	//		sLeaser = sLeaser,
+	//		rCam = rCam,
+	//		timeStacker = timeStacker,
+	//		camPos = camPos
+	//	};
+
+	//	HookDispatcher.Dispatch("PlayerGraphics.DrawSprites", Context, (context) =>
+	//	{
+	//		var c = (PlayerGraphicsDrawContext)context;
+
+	//		orig(c.playerGraphics, c.sLeaser, c.rCam, c.timeStacker, c.camPos);
+	//	});
+	//}
+
+	//public class SpearHitContext : HookContext
+	//{
+	//	public required Spear spear;
+	//	public required SharedPhysics.CollisionResult result; // 值类型
+	//	public required bool eu;
+	//}
+	//private static bool Hook_SpearHitSomething(On.Spear.orig_HitSomething orig, Spear spear, SharedPhysics.CollisionResult result, bool eu)
+	//{
+	//	var Context = new SpearHitContext
+	//	{
+	//		spear = spear,
+	//		result = result,
+	//		eu = eu
+	//	};
+
+	//	return HookDispatcher.Dispatch<bool>("Spear.HitSomething", Context, (context) =>
+	//	{
+	//		var c = (SpearHitContext)context;
+
+	//		// 调用原方法，将返回值存入上下文
+	//		return orig(c.spear, c.result, c.eu);
+	//	});
+	//}
+
+	//// 挂载所有中央钩子
+	//public static void InstallHooks()
+	//{
+	//	On.Player.Update += Hook_PlayerUpdate;
+	//	On.PlayerGraphics.DrawSprites += Hook_PlayerGraphicsDraw;
+	//	On.Spear.HitSomething+= Hook_SpearHitSomething;
+	//	//On.Player.ctor += Hook_PlayerCtor;      // 类似写法
+	//											// ... 其余所有钩子
+	//}
+
+	//// 卸载时取消订阅
+	//public static void UninstallHooks()
+	//{
+	//	On.Player.Update -= Hook_PlayerUpdate;
+	//	On.PlayerGraphics.DrawSprites -= Hook_PlayerGraphicsDraw;
+	//	On.Spear.HitSomething -= Hook_SpearHitSomething;
+	//	// ...
+	//}
+
+	#endregion
+
+	#region 文件目录
+	static string save = UnityEngine.Application.persistentDataPath;
 	static string gameRoot = System.AppDomain.CurrentDomain.BaseDirectory;
 	private static string? _cachedModRoot;
 	static string modRoot

@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using CommonUtils.Core;
+using CommonUtils.Debug;
 using SlugBase.Features;
 using System;
 using UnityEngine;
@@ -16,13 +17,15 @@ namespace CommonUtils
 		public static string NAME = "Common Utils";
 		public static string VERSION = "0.1.0";
 
-		public static string version = "01";
 		public static string Name = "CommonUtils";
-		#endregion
 
-		#region Release & DEBUG
+        public static string version = "01";
+        public static string buildTime = "1990-01-01 00:00:00";
+        #endregion
+
+        #region Release & DEBUG
 #if DEBUG
-		public static bool DebugMode { get; } = true;
+        public static bool DebugMode { get; } = true;
 		public static bool ForceLog { get; } = true;
 #else
 	public const bool DebugMode = false;
@@ -61,17 +64,18 @@ namespace CommonUtils
 			//	return;
 			//this.isEnabled = true;
 
-			UpdatableManager.Apply();
+            CommonUtils.Core.GlobalVar.Hook();
 
-			UpdatableManager.Register(Debugger.Instance);
+            UpdatableManager.Apply();
+            UpdatableManager.Register(Debugger.Instance);
 
-			// Put your custom hooks here!-在此放置你自己的钩子
-			//On.RainWorld.OnModsInit += On_RainWorld_OnModsInit;
-			//On.RainWorld.OnModsEnabled += On_RainWorld_OnModsEnabled;
-			//On.RainWorld.OnModsDisabled += On_RainWorld_OnModsDisabled;
+            // Put your custom hooks here!-在此放置你自己的钩子
+            //On.RainWorld.OnModsInit += On_RainWorld_OnModsInit;
+            //On.RainWorld.OnModsEnabled += On_RainWorld_OnModsEnabled;
+            //On.RainWorld.OnModsDisabled += On_RainWorld_OnModsDisabled;
 
-			//HookManager.Initialize();
-		}
+            //HookManager.Initialize();
+        }
 
 		public void OnDisable()
 		{
