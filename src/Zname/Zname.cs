@@ -43,6 +43,7 @@ using System.Windows.Forms;
 using System.Xml.Schema;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static MonoMod.InlineRT.MonoModRule;
 using static SlugBase.Features.FeatureTypes;
 using static UnityEngine.Input;
@@ -98,6 +99,79 @@ internal class Zname//Scrap 废案
 	// # 验证
 	// echo %RainWorldDir%
 	#endregion
+	private static void startup()
+	{
+		//E:\SteamLibrary\steamapps\common\Rain World\BepInEx\plugins\sinai - dev - UnityExplorer\Scripts\startup.cs
+
+		void Log(string message)
+		{
+			CommonUtils.Core.Log.LogInfo(message);
+		}
+#pragma warning disable CS8600
+#pragma warning disable IDE0028
+#pragma warning disable IDE0090
+
+
+		// System.Collections.Generic.List<System.Delegate> keepAlive = new System.Collections.Generic.List<System.Delegate>();
+		System.Collections.Generic.List<System.Delegate> keepAlive = new System.Collections.Generic.List<System.Delegate>();
+
+		string[] targets = new string[] { "MySlugcat", "EnderPearl" };
+
+		foreach (string asmName in targets)
+		{
+			System.Type lt = System.AppDomain.CurrentDomain.GetAssemblies()
+				.Where(a => a.GetName().Name == asmName)
+				.SelectMany(a => { try { return a.GetTypes(); } catch { return new System.Type[0]; } })
+				.FirstOrDefault(t => t.FullName == "CommonUtils.Core.Log");
+
+			if (lt == null) { Log("找不到 " + asmName); continue; }
+
+			// Instance 一般是静态字段
+			System.Reflection.PropertyInfo instF = lt.GetProperty("Instance",
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.Static);
+
+			object inst = null;
+			if (instF != null)
+			{
+				inst = instF.GetValue(null);
+			}
+			if (inst == null) { Log(asmName + ": instance 为 null"); continue; }
+
+			// 事件是 public instance
+			System.Reflection.EventInfo evt = lt.GetEvent("OnAppendLog",
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.NonPublic |
+				System.Reflection.BindingFlags.Instance);
+
+			if (evt == null) { Log(asmName + " 没有 OnAppendLog 事件"); continue; }
+
+			string tag = asmName;
+
+			int length = 4;
+			if (asmName.Length <= length)
+			{
+				tag = asmName;
+			}
+			else
+			{
+				tag = asmName.Substring(0, length);
+			}
+
+			System.Action<string> handler = new System.Action<string>(text =>
+				Log("["+tag+"]" + text));
+
+			// 用 EventInfo 添加，避免直接碰委托字段
+			evt.AddEventHandler(inst, handler);
+			keepAlive.Add(handler);
+
+			Log("已订阅 " + asmName);
+		}
+
+#pragma warning restore IDE0090
+#pragma warning restore IDE0028
+#pragma warning restore CS8600
+	}
 
 #if DEBUG
 	// 只在调试模式下生效的代码（比如打印日志）
@@ -112,6 +186,7 @@ internal class Zname//Scrap 废案
 	#region Rain World
 	// https://gist.github.com/EtiTheSpirit/655d8e81732ba516ca768dbd7410ddf4 这里有一个文档讲了一些关于rw shader的注意事项
 	// 可以看看Menu.StoryGameStasticsScreen里的AddBkgIllustration
+	// BodyChunk.CheckVerticalCollision 挂钩 检查垂直碰撞
 
 	/*
 	这个路径 Rain World\RainWorld_Data\StreamingAssets 下面放上noinitwarp.txt就防止游戏在你ilhook错误的时候踢出你的模组
@@ -136,6 +211,75 @@ internal class Zname//Scrap 废案
 	#region Z
 	public static string Z()
 	{
+		//#region Hooks
+		//{
+		//	// HitSomething
+		//	HookManager.Register(
+		//		Hook: () => On.Weapon.HitSomething += Weapon_HitSomething,
+		//		UnHook: () => On.Weapon.HitSomething -= Weapon_HitSomething
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => On.Spear.HitSomething += Weapon_HitSomething,
+		//		UnHook: () => On.Spear.HitSomething -= Weapon_HitSomething
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => On.Rock.HitSomething += Weapon_HitSomething,
+		//		UnHook: () => On.Rock.HitSomething -= Weapon_HitSomething
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => On.ScavengerBomb.HitSomething += Weapon_HitSomething,
+		//		UnHook: () => On.ScavengerBomb.HitSomething -= Weapon_HitSomething
+		//	);
+		//	if (ModManager.MSC)
+		//	{
+		//		HookManager.Register(
+		//			Hook: () => On.MoreSlugcats.LillyPuck.HitSomething += Weapon_HitSomething,
+		//			UnHook: () => On.MoreSlugcats.LillyPuck.HitSomething -= Weapon_HitSomething
+		//		);
+		//	}
+		//	if (ModManager.Watcher)
+		//	{
+		//		HookManager.Register(
+		//			Hook: () => On.Boomerang.HitSomething += Weapon_HitSomething,
+		//			UnHook: () => On.Boomerang.HitSomething -= Weapon_HitSomething
+		//		);
+		//	}
+		//}
+		//#endregion
+
+		//#region ModuleHooks
+		//{
+		//	HookManager.Register(
+		//		Hook: () => On.Weapon.Update += ModuleHooks.Weapon_Update,
+		//		UnHook: () => On.Weapon.Update -= ModuleHooks.Weapon_Update
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => On.Weapon.Thrown += ModuleHooks.Weapon_Thrown,
+		//		UnHook: () => On.Weapon.Thrown -= ModuleHooks.Weapon_Thrown
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => _hitSomethingHandlers.Add(ModuleHooks.Weapon_HitSomething),
+		//		UnHook: () => _hitSomethingHandlers.Remove(ModuleHooks.Weapon_HitSomething)
+		//	);
+		//}
+		//#endregion
+
+		//#region Deflagration
+		//{
+		//	HookManager.Register(
+		//		Hook: () => On.Player.Die += Deflagration.Player_Die,
+		//		UnHook: () => On.Player.Die -= Deflagration.Player_Die
+		//	);
+		//	HookManager.Register(
+		//		Hook: () => _hitSomethingHandlers.Add(Deflagration.Deflagration_HitSomething),
+		//		UnHook: () => _hitSomethingHandlers.Remove(Deflagration.Deflagration_HitSomething)
+		//	);
+		//}
+		//#endregion
+
+
+
+
 		/*// 1. 获取整个字典
 		var dict = ExtensionLib.GlobalVar.playerVars;
 
@@ -199,6 +343,36 @@ internal class Zname//Scrap 废案
 	// After
 
 	// 如果有类似问题的朋友们可以看看自己给GetPupButtonOffName挂的钩子里面的PlayerClass是不是大写的
+	// 微软Strings 可以提取目标dll的所有字符串文本
+
+	/*
+纠正AI误区（不用每句话重复此内容）：
+雨世界是单线程的
+雨世界通常每秒 40 次 Update
+社区的规范使用On钩子
+MonoMod.RuntimeDetour的On钩子 IL钩子 支持多播。On钩子顺序是栈式调用，IL钩子是先注册先调用
+MonoMod.RuntimeDetour的On钩子 IL钩子 与 Harmony 兼容
+执行顺序 On钩子 => Harmony的Prefix、Postfix
+IL钩子与Harmony的Transpiler的顺序无法确定
+每个类都有自己的On IL钩子，无关override等继承关系。
+HOOKS-Assembly-CSharp.dll有private 方法的 hook，但是没有属性的 hook
+访问原版私有成员的最快方式是直接把对面程序集生成一个public版本
+所以有PUBLIC-Assembly-CSharp.dll，不需要反射、AccessTools（除非访问其他模组）
+Harmony 钩子挂钩其他模组方便，或挂钩属性
+用雨世界的UI框架，而不使用unity的UI
+播放音频用原本播放器，不用协程
+	*/
+
+	/*
+	下载并替换游戏目录下的相应dll，建议备份原始dll。
+	打开游戏和dnSpy，选择调试-开始调试，在调试引擎下拉框里选择Unity（连接），点击确定。
+	选择调试-窗口-模块或者按Ctrl+Alt+U，找到相应的游戏dll后就可以开始调试了。
+	*/
+
+	/*
+	Unity UI没有XML注释的解决方案（UnityEngine.UI、TMPro……） - 知乎
+	https://zhuanlan.zhihu.com/p/2082285565089793827
+	*/
 
 	#region 吞咽Mod 测试
 	/*
@@ -218,6 +392,16 @@ internal class Zname//Scrap 废案
 	public static DamageType Explosion = new DamageType("Explosion", register: true); 爆炸
 	public static DamageType Electric = new DamageType("Electric", register: true); 电击
 	public static DamageType None = new DamageType("None", register: true); 无
+	*/
+
+	/*
+| 参数 | 类型 | 含义 |
+| --- | --- | --- |
+| obj | PhysicalObject | 被碰撞的物理对象（如生物、物品） |
+| chunk | BodyChunk | 被碰撞的具体身体块（obj 上的某个碰撞体） |
+| onAppendagePos | PhysicalObject.Appendage.Pos | 如果碰撞的是附肢（舌头、尾巴等），记录附肢上的位置；否则通常传 null |
+| hitSomething | bool | 是否真的命中了某个东西 |
+| collisionPoint | Vector2 | 碰撞发生的世界坐标 |
 	*/
 
 	/*public virtual void 暴力攻击(
@@ -379,6 +563,9 @@ internal class Zname//Scrap 废案
 	}
 	#endregion
 
+	#region WeaponArcField
+	#endregion
+
 	#region DamageType 测试
 	public class DamageType : ExtEnum<Creature.DamageType>
 	{
@@ -401,6 +588,91 @@ internal class Zname//Scrap 废案
 		public static readonly Creature.DamageType None = new Creature.DamageType("None", true);//无伤害
 	}
 	#endregion
+
+	/*
+	函数 命中某物(结果, eu):
+	若 结果.对象 为空:
+		返回 假
+
+	若 涟漪层不同 且 双方都不跨层:
+		返回 假
+
+	可喂食 = 本针.可喂食()
+	竞技场得分 = 假
+
+	若 是竞技场 且 矛得分≠0 且 投掷者是玩家 且 目标是生物:
+		竞技场得分 = 真
+		若 目标已死:
+			竞技场得分 = 假
+
+	命中前已死 = 假
+
+	若 目标是生物:
+		命中前已死 = 目标.已死
+
+		若 目标是蛋虫 且 可喂食 且 非火虫:
+			目标.掉蛋 = 假
+
+		若 非MSC 或 目标非玩家 或 目标.矛刺入(...):
+			伤害 = 本矛.伤害加成
+
+			若 目标是玩家 且 是饕餮 且 随机<15%:
+				伤害 /= 10
+
+			若 虫矛:
+				伤害 *= 3
+
+			目标.受暴力(刺伤, 伤害, 20)
+
+			若 目标是玩家:
+				永久伤害 += 伤害 / 目标.抗性
+				若 永久伤害 >= 1:
+					目标.死亡
+
+	否则若 有物理块:
+		物理块.速度 += 本矛.速度 * 本矛.质量 / 物理块.质量
+
+	否则若 有附肢:
+		附肢.施力(本矛.速度 * 本矛.质量)
+
+	若 目标是生物 且 目标.矛刺入(...):
+		若 MSC:
+			若 可喂食 且 命中前未死:
+				按生物类型给食物，并记录进食
+			断开针
+
+		播放刺入音效
+		卡入生物
+
+		若 竞技场得分:
+			玩家得分
+
+		返回 真
+
+	若 可喂食 且 目标是种子荚:
+		记录进食；加5食物；打开；断开；卡入
+		返回 真
+
+	若 (可喂食 或 脆弱水母配置) 且 目标是水母:
+		若 可喂食 且 水母未死:
+			加两次1/4食物；记录进食
+		水母.死亡 = 真
+		若 可喂食:
+			断开
+		卡入
+		返回 真
+
+	若 可喂食 且 目标是石榴 且 已砸碎:
+		记录进食；加5食物；标记；断开；卡入
+		返回 真
+
+	播放弹开音效
+	震动 = 20
+	切换自由模式
+	速度 = 速度 * -0.5 + 随机方向 * 随机力度
+	随机旋转
+	返回 假
+	*/
 
 	#region 通行证
 	private static void 通行证()
@@ -1294,11 +1566,11 @@ internal class Zname//Scrap 废案
 	#region MonoMod.RuntimeDetour
 	public static void OnEnable()
 	{
-        //On.Player.Grabability += Player_GrababilityA;
-        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability3));
-        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
-        //Harmony.CreateAndPatchAll(typeof(Patch_Grabability2));
-        /*
+		//On.Player.Grabability += Player_GrababilityA;
+		//Harmony.CreateAndPatchAll(typeof(Patch_Grabability3));
+		//Harmony.CreateAndPatchAll(typeof(Patch_Grabability));
+		//Harmony.CreateAndPatchAll(typeof(Patch_Grabability2));
+		/*
 		加载顺序
 		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1597]Prefix 尝试抓取 Player
 		[Info: MySlugcat] v21 | 01:10:05[Zna.Pref:1485]Prefix 尝试抓取 Player
@@ -1313,30 +1585,30 @@ internal class Zname//Scrap 废案
 		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1511]Postfix 尝试抓取 Player
 		[Info: MySlugcat] v21 | 01:10:05[Zna.Post:1568]Postfix 尝试抓取 Player
 		*/
-        //On.Player.Grabability += Player_GrababilityB;
-        // 执行内容 On => Harmony
-        // 挂载顺序（逻辑上）：A → Harmony → B
-        // 物理执行顺序（运行时）：B → A → Harmony（逆序，因为 On 是链式包裹）
-        // Player_GrababilityB => Player_GrababilityA => Patch_Grabability
+		//On.Player.Grabability += Player_GrababilityB;
+		// 执行内容 On => Harmony
+		// 挂载顺序（逻辑上）：A → Harmony → B
+		// 物理执行顺序（运行时）：B → A → Harmony（逆序，因为 On 是链式包裹）
+		// Player_GrababilityB => Player_GrababilityA => Patch_Grabability
 
-        //Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
-        //IL.Player.AddFood += Player_AddFood;
-        // 挂载内容 Patch_AddFood_Transpiler => Player_AddFood (顺序)
-        // 执行内容 Player_AddFood => Patch_AddFood_Transpiler (逆序)(如果在同一个地方向后添加)
+		//Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
+		//IL.Player.AddFood += Player_AddFood;
+		// 挂载内容 Patch_AddFood_Transpiler => Player_AddFood (顺序)
+		// 执行内容 Player_AddFood => Patch_AddFood_Transpiler (逆序)(如果在同一个地方向后添加)
 
-        Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Tra));
-        IL.Player.AddFood += Player_AddFood2;
+		Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Tra));
+		IL.Player.AddFood += Player_AddFood2;
 		IL.Player.AddFood += Player_AddFood;
 		Harmony.CreateAndPatchAll(typeof(Patch_AddFood_Transpiler));
-        // 挂载内容 Player_AddFood => Patch_AddFood_Transpiler (顺序)
-        // 执行内容 Patch_AddFood_Transpiler => Player_AddFood (逆序)(如果在同一个地方向后添加)
-        // Harmony 连一起
+		// 挂载内容 Player_AddFood => Patch_AddFood_Transpiler (顺序)
+		// 执行内容 Patch_AddFood_Transpiler => Player_AddFood (逆序)(如果在同一个地方向后添加)
+		// Harmony 连一起
 
 
-        //IL.Player.Grabability
+		//IL.Player.Grabability
 
-        try
-        {
+		try
+		{
 			if (Input.GetKeyDown(","))
 			{
 				Player? player = null;

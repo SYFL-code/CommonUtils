@@ -85,27 +85,50 @@ public class Log : CustomLogger
 
 	#region 参数
 	// 1个参数
-	public static void LogVar<T1>(T1 v1, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+	public static void LogVar<T1>(LogSeverity severity, T1 v1, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
 		[CallerArgumentExpression(nameof(v1))] string n1 = "")
-		 => Instance.BaseLog($"{n1}:{v1}", LogSeverity.Info, caller, filePath, lineNumber);
+		 => Instance.BaseLog($"{n1}:{v1}", severity, caller, filePath, lineNumber);
 	// 2个参数
-	public static void LogVar<T1, T2>(T1 v1, T2 v2, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+	public static void LogVar<T1, T2>(LogSeverity severity, T1 v1, T2 v2, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
 		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "")
-		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}", LogSeverity.Info, caller, filePath, lineNumber);
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}", severity, caller, filePath, lineNumber);
 	// 3个参数
-	public static void LogVar<T1, T2, T3>(T1 v1, T2 v2, T3 v3, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+	public static void LogVar<T1, T2, T3>(LogSeverity severity, T1 v1, T2 v2, T3 v3, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
 		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "")
-		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}", LogSeverity.Info, caller, filePath, lineNumber);
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}", severity, caller, filePath, lineNumber);
 	// 4个参数
-	public static void LogVar<T1, T2, T3, T4>(T1 v1, T2 v2, T3 v3, T4 v4, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+	public static void LogVar<T1, T2, T3, T4>(LogSeverity severity, T1 v1, T2 v2, T3 v3, T4 v4, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
 		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "",
 		[CallerArgumentExpression(nameof(v4))] string n4 = "")
-		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}", LogSeverity.Info, caller, filePath, lineNumber);
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}", severity, caller, filePath, lineNumber);
 	// 5个参数
-	public static void LogVar<T1, T2, T3, T4, T5>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+	public static void LogVar<T1, T2, T3, T4, T5>(LogSeverity severity, T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
 		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "",
 		[CallerArgumentExpression(nameof(v4))] string n4 = "", [CallerArgumentExpression(nameof(v5))] string n5 = "")
-		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}, {n5}:{v5}", LogSeverity.Info, caller, filePath, lineNumber);
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}, {n5}:{v5}", severity, caller, filePath, lineNumber);
+
+	// 1个参数
+	public static void LogVar<T1>(T1 v1, LogSeverity severity = LogSeverity.Info, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+		[CallerArgumentExpression(nameof(v1))] string n1 = "")
+		 => Instance.BaseLog($"{n1}:{v1}", severity, caller, filePath, lineNumber);
+	// 2个参数
+	public static void LogVar<T1, T2>(T1 v1, T2 v2, LogSeverity severity = LogSeverity.Info, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "")
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}", severity, caller, filePath, lineNumber);
+	// 3个参数
+	public static void LogVar<T1, T2, T3>(T1 v1, T2 v2, T3 v3, LogSeverity severity = LogSeverity.Info, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "")
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}", severity, caller, filePath, lineNumber);
+	// 4个参数
+	public static void LogVar<T1, T2, T3, T4>(T1 v1, T2 v2, T3 v3, T4 v4, LogSeverity severity = LogSeverity.Info, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "",
+		[CallerArgumentExpression(nameof(v4))] string n4 = "")
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}", severity, caller, filePath, lineNumber);
+	// 5个参数
+	public static void LogVar<T1, T2, T3, T4, T5>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, LogSeverity severity = LogSeverity.Info, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0,
+		[CallerArgumentExpression(nameof(v1))] string n1 = "", [CallerArgumentExpression(nameof(v2))] string n2 = "", [CallerArgumentExpression(nameof(v3))] string n3 = "",
+		[CallerArgumentExpression(nameof(v4))] string n4 = "", [CallerArgumentExpression(nameof(v5))] string n5 = "")
+		 => Instance.BaseLog($"{n1}:{v1}, {n2}:{v2}, {n3}:{v3}, {n4}:{v4}, {n5}:{v5}", severity, caller, filePath, lineNumber);
 	#endregion
 
 	public override void BaseLog<T>(T Message, LogSeverity severity, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
@@ -126,6 +149,9 @@ public class Log : CustomLogger
 
 			bool logPath = false;
 			string typeTag;
+
+
+			InvokeOnAppendLog(Msg);
 
 			switch (severity)
 			{

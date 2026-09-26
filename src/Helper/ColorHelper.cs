@@ -4,7 +4,7 @@ namespace CommonUtils.Core;
 
 public static class ColorHelper
 {
-	public static float Lerp(Color a, Color b, Color current)
+	public static float InverseLerp(Color a, Color b, Color current)
 	{
 		// Color 可以隐式转为 Vector4（RGBA 四维空间）
 		Vector4 vA = a;

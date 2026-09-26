@@ -19,13 +19,13 @@ namespace CommonUtils
 
 		public static string Name = "CommonUtils";
 
-        public static string version = "01";
-        public static string buildTime = "1990-01-01 00:00:00";
-        #endregion
+		public static string version = "01";
+		public static string buildTime = "1990-01-01 00:00:00";
+		#endregion
 
-        #region Release & DEBUG
+		#region Release & DEBUG
 #if DEBUG
-        public static bool DebugMode { get; } = true;
+		public static bool DebugMode { get; } = true;
 		public static bool ForceLog { get; } = true;
 #else
 	public const bool DebugMode = false;
@@ -35,7 +35,7 @@ namespace CommonUtils
 
 		public static Plugin plugin = new Plugin(); //
 
-		private bool isEnabled;
+		//public bool isEnabled;
 		public bool inited;
 
 		#region Unity
@@ -64,18 +64,18 @@ namespace CommonUtils
 			//	return;
 			//this.isEnabled = true;
 
-            CommonUtils.Core.GlobalVar.Hook();
+			CommonUtils.Core.GlobalVar.Hook();
 
-            UpdatableManager.Apply();
-            UpdatableManager.Register(Debugger.Instance);
+			UpdatableManager.Apply();
+			UpdatableManager.Register(Debugger._debugger.Instance);
 
-            // Put your custom hooks here!-在此放置你自己的钩子
-            //On.RainWorld.OnModsInit += On_RainWorld_OnModsInit;
-            //On.RainWorld.OnModsEnabled += On_RainWorld_OnModsEnabled;
-            //On.RainWorld.OnModsDisabled += On_RainWorld_OnModsDisabled;
+			// Put your custom hooks here!-在此放置你自己的钩子
+			//On.RainWorld.OnModsInit += On_RainWorld_OnModsInit;
+			//On.RainWorld.OnModsEnabled += On_RainWorld_OnModsEnabled;
+			//On.RainWorld.OnModsDisabled += On_RainWorld_OnModsDisabled;
 
-            //HookManager.Initialize();
-        }
+			//HookManager.Initialize();
+		}
 
 		public void OnDisable()
 		{

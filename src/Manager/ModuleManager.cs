@@ -18,12 +18,18 @@ public static class ModuleManager
 		where TTarget : class
 		where TData : class, new()
 	{
+		if (Storage<TTarget, TData>.Table.TryGetValue(target, out var value))
+			return value;
+
 		return Storage<TTarget, TData>.Table.GetOrCreateValue(target);
 	}
 	public static TData Get<TTarget, TData>(TTarget target, Func<TTarget, TData> factory)
 		where TTarget : class
 		where TData : class
 	{
+		if (Storage<TTarget, TData>.Table.TryGetValue(target, out var value))
+			return value;
+
 		var callback = new ConditionalWeakTable<TTarget, TData>.CreateValueCallback(factory);
 		return Storage<TTarget, TData>.Table.GetValue(target, callback);
 	}

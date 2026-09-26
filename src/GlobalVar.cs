@@ -24,7 +24,7 @@ namespace CommonUtils.Core
 		{
 			HookManager.Register("On.Player.ctor += Player_ctor (GlobalVar)", new HookManager.HookData
 			{
-				Priority = HookManager.Top,
+				Priority = -1,
 				InitializeHooks = () => On.Player.ctor += Player_ctor,
 				UnInitializeHooks = () => On.Player.ctor -= Player_ctor,
 			});

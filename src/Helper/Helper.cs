@@ -296,17 +296,17 @@ public static class Helper
 	#endregion
 
 	#region Find
-	// 寻找当前房间中距离自身最近的生物
-	public static Creature? FindNearestCreature(Vector2 centerPos, Room room,
-		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool excludeDead = true)
+	// 寻找当前房间的生物
+	public static List<Creature> FindCreature(Room room,
+		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool includeDead = false,
+		Func<Creature, bool>? includeFunc = null, Action<List<Creature>, Creature>? addAction = null)
 	{
-		Creature? nearest = null;        // 最近生物对象
-		float minSqrDistance = float.MaxValue;  // 最小平方距离
+		List<Creature> creatures = [];
 		excludeTypes ??= [typeof(Player), typeof(Fly)];
 
 		if (room == null || room.abstractRoom == null || room.abstractRoom.creatures == null || room.abstractRoom.creatures.Count <= 0)
 		{
-			return null;
+			return creatures;
 		}
 
 		// 遍历当前房间所有生物
@@ -315,8 +315,7 @@ public static class Helper
 			Creature c = abstractCreature.realizedCreature;
 
 			if (c == null ||
-				c.mainBodyChunk == null ||
-				c.mainBodyChunk.pos == null)
+				c.mainBodyChunk == null)
 			{
 				continue;
 			}
@@ -333,15 +332,43 @@ public static class Helper
 				{
 					continue;
 				}
-			}
-			if (excludeDead)// 死亡的生物
-			{
-				if (c.dead)
+				if (excludeTypes.Any(t => t.IsAssignableFrom(c.GetType())))
 				{
 					continue;
 				}
 			}
+			if (!includeDead && c.dead)// 死亡的生物
+			{
+				continue;
+			}
+			if (includeFunc != null && !includeFunc(c))
+			{
+				continue;
+			}
 
+
+			if (addAction != null)
+			{
+				addAction(creatures, c);
+			}
+			else
+			{
+				creatures.Add(c);
+			}
+		}
+		return creatures;
+	}
+
+	// 寻找当前房间中距离自身最近的生物
+	public static Creature? FindNearestCreature(Vector2 centerPos, Room room,
+		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool includeDead = false)
+	{
+		Creature? nearest = null;        // 最近生物对象
+		float minSqrDistance = float.MaxValue;  // 最小平方距离
+
+
+		Action<List<Creature>, Creature> addAction = (creatures, c) =>
+		{
 			// 计算位置差（目标位置 - 自身位置）
 			Vector2 offset = c.mainBodyChunk.pos - centerPos;
 			float sqrDistance = offset.sqrMagnitude;
@@ -352,47 +379,47 @@ public static class Helper
 				minSqrDistance = sqrDistance;
 				nearest = c;
 			}
-		}
+		};
+		FindCreature(room, exclude, excludeTypes, includeDead, null, addAction);
+
 		return nearest;
 	}
 
 	public static List<Creature> FindCreaturesInCone(Vector2 sourcePos, Vector2 direction, Room room, float halfAngleDeg, float maxRadius,
-		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool excludeDead = true)
+		List<Creature>? exclude = null, List<Type>? excludeTypes = null, bool includeDead = false)
 	{
-		List<Creature> candidates = [];
-		if (room == null || room.abstractRoom == null) return candidates;
-		excludeTypes ??= [typeof(Player), typeof(Fly)];
-
-		float halfAngleRad = halfAngleDeg * Mathf.Deg2Rad;
-
-		foreach (AbstractCreature absCreature in room.abstractRoom.creatures)
+		Func<Creature, bool> includeFunc = (c) =>
 		{
-			Creature c = absCreature.realizedCreature;
-
-			if (c == null) continue;
-			if (c.mainBodyChunk == null) continue;
-			if (c.dead && excludeDead) continue;
-			if (excludeTypes.Contains(c.GetType())) continue;
-			if (exclude != null && exclude.Contains(c)) continue;
-
 			Vector2 toTarget = c.mainBodyChunk.pos - sourcePos;
 			float dist = toTarget.magnitude;
 			//float dist = Vector2.Distance(sourcePos, c.mainBodyChunk.pos);
-			if (dist > maxRadius) continue;
+			if (dist > maxRadius) return false;
+			if (dist < 0.001f) return true;
 
 			// 角度检测
 			Vector2 dirToTarget = toTarget / dist;
 			float angle = Vector2.Angle(direction, dirToTarget);
-			if (angle > halfAngleRad * Mathf.Rad2Deg) continue;
+			if (angle > halfAngleDeg) return false;
 
 			// 视线检测（地形阻挡）
 			if (!IsLineOfSight(room, sourcePos, c.mainBodyChunk.pos))
-				continue;
+				return false;
 
-			candidates.Add(c);
-		}
+			return true;
+		};
+		return FindCreature(room, exclude, excludeTypes, includeDead, includeFunc, null);
+	}
 
-		return candidates;
+	public static void SortDistance(this List<Creature> creatures, Vector2 centerPos)
+	{
+		if (creatures == null || creatures.Count == 0)
+			return;
+		creatures.Sort((a, b) =>
+		{
+			float da = (a.mainBodyChunk.pos - centerPos).sqrMagnitude;
+			float db = (b.mainBodyChunk.pos - centerPos).sqrMagnitude;
+			return da.CompareTo(db);
+		});
 	}
 
 	// 检测两点之间是否有地形阻挡
@@ -426,72 +453,72 @@ public static class Helper
 		isTerrain = false;
 		return start;
 	}
-    #endregion
+	#endregion
 
-    #region GetRoomWaterColor
-    public static Color GetRoomWaterColor(AbstractRoom abstractRoom)
-    {
-        if (abstractRoom == null || abstractRoom.world == null)
-        {
-            return Color.white;
-        }
+	#region GetRoomWaterColor
+	public static Color GetRoomWaterColor(AbstractRoom abstractRoom)
+	{
+		if (abstractRoom == null || abstractRoom.world == null)
+		{
+			return Color.white;
+		}
 
-        try
-        {
-            RoomSettings? settings = null;
-            if (abstractRoom.realizedRoom != null)
-            {
-                settings = abstractRoom.realizedRoom.roomSettings;
-            }
-            if (settings == null)
-            {
-                settings = new RoomSettings(null, WorldLoader.RoomNameManipulator(abstractRoom.FileName, abstractRoom.world.game), abstractRoom.world.region,
+		try
+		{
+			RoomSettings? settings = null;
+			if (abstractRoom.realizedRoom != null)
+			{
+				settings = abstractRoom.realizedRoom.roomSettings;
+			}
+			if (settings == null)
+			{
+				settings = new RoomSettings(null, WorldLoader.RoomNameManipulator(abstractRoom.FileName, abstractRoom.world.game), abstractRoom.world.region,
 					template: false, firstTemplate: false, abstractRoom.world.game?.TimelinePoint, abstractRoom.world.game);
-            }
-            if (settings == null)
-            {
-                return Color.white;
-            }
-            Texture2D paletteTex = LoadRoomPalette(settings.Palette);
-            if (paletteTex == null)
-            {
-                return Color.white;
-            }
-            Color waterColor = Color.Lerp(paletteTex.GetPixel(4, 15), paletteTex.GetPixel(4, 7), 0.5f);
-            return waterColor;
-        }
-        catch
-        {
-            return Color.white;
-        }
-    }
+			}
+			if (settings == null)
+			{
+				return Color.white;
+			}
+			Texture2D paletteTex = LoadRoomPalette(settings.Palette);
+			if (paletteTex == null)
+			{
+				return Color.white;
+			}
+			Color waterColor = Color.Lerp(paletteTex.GetPixel(4, 15), paletteTex.GetPixel(4, 7), 0.5f);
+			return waterColor;
+		}
+		catch
+		{
+			return Color.white;
+		}
+	}
 
-    private static Texture2D LoadRoomPalette(int paletteNumber)
-    {
-        Texture2D texture = new Texture2D(32, 16, TextureFormat.ARGB32, mipChain: false);
+	private static Texture2D LoadRoomPalette(int paletteNumber)
+	{
+		Texture2D texture = new Texture2D(32, 16, TextureFormat.ARGB32, mipChain: false);
 
-        string path = AssetManager.ResolveFilePath(
-            "palettes" + Path.DirectorySeparatorChar +
-            "palette" + paletteNumber.ToString(CultureInfo.InvariantCulture) + ".png"
-        );
+		string path = AssetManager.ResolveFilePath(
+			"palettes" + Path.DirectorySeparatorChar +
+			"palette" + paletteNumber.ToString(CultureInfo.InvariantCulture) + ".png"
+		);
 
-        try
-        {
-            AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
-        }
-        catch
-        {
-            path = AssetManager.ResolveFilePath("palettes" + Path.DirectorySeparatorChar + "palette-1.png");
-            AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
-        }
+		try
+		{
+			AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
+		}
+		catch
+		{
+			path = AssetManager.ResolveFilePath("palettes" + Path.DirectorySeparatorChar + "palette-1.png");
+			AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + path, clampWrapMode: false, crispPixels: true);
+		}
 
-        texture.Apply(updateMipmaps: false);
-        return texture;
-    }
-    #endregion
+		texture.Apply(updateMipmaps: false);
+		return texture;
+	}
+	#endregion
 
-    #region 文件
-    private static string? _cachedModRoot;
+	#region 文件
+	private static string? _cachedModRoot;
 	public static string GetModRootPath()
 	{
 		if (_cachedModRoot != null) return _cachedModRoot;
@@ -571,53 +598,5 @@ public static class Helper
 		}
 		return items.ToArray();
 	}
-	#endregion
-
-	#region UITranslate
-	//public static string? currentLang;
-	//private static Dictionary<string, string> _dict = [];
-	//private static Dictionary<string, string> Dict
-	//{
-	//    get
-	//    {
-	//        if (currentLang != LocalizationTranslator.LangShort(Translator.currentLanguage))
-	//        {
-	//            currentLang = LocalizationTranslator.LangShort(Translator.currentLanguage);
-
-	//            string path = MyOptions.GetTranslatorPath();
-	//            if (File.Exists(path))
-	//            {
-	//                _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
-	//            }
-	//            else
-	//            {
-	//                Log.LogError("找不到语言文件: " + currentLang);
-
-	//                path = MyOptions.GetTranslatorPath("eng");
-	//                if (File.Exists(path))
-	//                {
-	//                    _dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path)) ?? [];
-	//                }
-	//                else
-	//                {
-	//                    Log.LogError("找不到默认语言文件: eng");
-	//                    _dict = [];
-	//                }
-	//            }
-	//            return _dict;
-	//        }
-	//        else
-	//        {
-	//            return _dict;
-	//        }
-	//    }
-	//}
-	//public static string T(string key)
-	//{
-	//    return Dict.TryGetValue(key, out var val) ? val : key;
-	//}
-	//public static string T(string key, object arg0) => string.Format(T(key), arg0);
-	//public static string T(string key, object arg0, object arg1) => string.Format(T(key), arg0, arg1);
-	//public static string T(string key, params object[] args) => string.Format(T(key), args);
 	#endregion
 }

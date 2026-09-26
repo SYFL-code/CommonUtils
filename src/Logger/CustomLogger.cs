@@ -67,6 +67,11 @@ public abstract class CustomLogger
 				File.WriteAllText(OutputLogFilePath, $"# Output Log File - created at {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}");
 				Logger?.LogDebug($"Create Output Log File: {OutputLogFilePath}");
 			}
+			else
+			{
+				File.AppendAllText(OutputLogFilePath, $"");
+				File.AppendAllText(OutputLogFilePath, $"# Output Log File - created at {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}");
+			}
 
 			// 启动定时器：每 3 秒自动刷盘一次
 			_flushTimer = new Timer(Flush, null, 3000, 3000);
@@ -99,7 +104,7 @@ public abstract class CustomLogger
 	private const int MaxMemoryLogs = 200;                               // 内存保留上限
 
 	private Timer? _flushTimer;
-	private bool _hasPendingWrites = false;
+	protected bool _hasPendingWrites = false;
 	private string _cachedLogText = "";                                 // 缓存拼接后的文本，避免每次 get 都遍历
 
 	// 日志文本
@@ -291,6 +296,20 @@ public abstract class CustomLogger
 		Fatal,       // 7
 	}
 
+
+	public event Action<string>? OnAppendLog;
+	public void InvokeOnAppendLog(string message)
+	{
+		try
+		{
+			OnAppendLog?.Invoke(message);
+		}
+		catch (Exception ex)
+		{
+			Logger?.LogError($"OnAppendLogText event error: {ex}");
+		}
+	}
+
 	public virtual void BaseLog<T>(T Message, LogSeverity severity, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
 	{
 		EnsureInitialized();
@@ -303,6 +322,9 @@ public abstract class CustomLogger
 			string className = Path.GetFileNameWithoutExtension(filePath);
 			bool logPath = false;
 			string typeTag;
+
+
+			InvokeOnAppendLog(Msg);
 
 			switch (severity)
 			{
