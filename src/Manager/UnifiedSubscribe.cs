@@ -40,6 +40,17 @@ public static class UnifiedSubscribe
 				HookEndpointManager.Remove(m, value);
 		}
 	}
+	public static event hook_IsWallClimber IsWallClimber
+	{
+		add
+		{
+			HookEndpointManager.Add(targets_IsWallClimber, value);
+		}
+		remove
+		{
+			HookEndpointManager.Remove(targets_IsWallClimber, value);
+		}
+	}
 }
 public static class UnifiedHooks
 {
@@ -56,6 +67,11 @@ public static class UnifiedHooks
 		BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage,
 		Creature.DamageType type, float damage, float stunBonus);
 	public static IEnumerable<MethodBase> targets_Violence() => HookScanner.GetMethods(typeof(Creature), nameof(Creature.Violence));
+
+	public delegate bool orig_IsWallClimber(Lizard self);
+	public delegate bool hook_IsWallClimber(orig_IsWallClimber orig, Lizard self);
+	public static MethodBase targets_IsWallClimber => AccessTools.PropertyGetter(typeof(Lizard), nameof(Lizard.IsWallClimber));
+
 }
 public static class HookScanner
 {
