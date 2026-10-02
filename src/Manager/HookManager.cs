@@ -120,26 +120,55 @@ public static class HookManager
 
 	public static void Register(bool RequireSingleThread = true, [CallerLineNumber] int Priority = 0,
 		Action? Hook = null, Action? UnHook = null,
-		[CallerArgumentExpression(nameof(Hook))] string hookExpression = "", [CallerFilePath] string filePath = "")
+		[CallerArgumentExpression(nameof(Hook))] string hookExpression = "",
+		[CallerArgumentExpression(nameof(UnHook))] string UnHookExpression = "",
+		[CallerFilePath] string filePath = "")
 	{
-		HookData data = new HookData
+		try
 		{
-			RequireSingleThread = RequireSingleThread,
-			Priority = Priority,
-			InitializeHooks = Hook,
-			UnInitializeHooks = UnHook
-		};
+			HookData data = new HookData
+			{
+				RequireSingleThread = RequireSingleThread,
+				Priority = Priority,
+				InitializeHooks = Hook,
+				UnInitializeHooks = UnHook
+			};
 
-		int arrowIndex = hookExpression.IndexOf("=>");
-		string hookCode = arrowIndex >= 0 ? hookExpression[(arrowIndex + "=>".Length)..].Trim() : "";
+			int arrowIndex = hookExpression.IndexOf("=>");
+			string hookCode = arrowIndex >= 0 ? hookExpression[(arrowIndex + "=>".Length)..].Trim() : hookExpression;
 
-		string hookName = Regex.Split(hookCode, @"\+=")[0].Trim();
-        string className = Regex.Split(hookCode, @"\.")[1].Trim();
-        //string className = Path.GetFileNameWithoutExtension(filePath);
+			string[] hookCodeParts = Regex.Split(hookCode, @"\+=");
+			string hookName = hookCodeParts.Length > 1 ? hookCodeParts[1].Trim() : "";
+			string[] hookNameParts = Regex.Split(hookName, @"\.");
+			string className = hookNameParts.Length > 0 ? hookNameParts[0].Trim() : "null";
+			//string className = Path.GetFileNameWithoutExtension(filePath);
 
+			if (hookExpression.Contains("+="))
+			{
+				string ReplaceExpression = hookExpression.Replace("+=", "-=");
+				if (ReplaceExpression != UnHookExpression)
+				{
+					Log.LogError($"Hook and UnHook do not match!!");
+					Log.LogError($"hookExpression:{hookExpression}");
+					Log.LogError($"UnHookExpression:{UnHookExpression}");
+					return;
+				}
+			}
+			if (hookExpression == UnHookExpression)
+			{
+				Log.LogError($"Hook is equal to UnHook!!");
+				Log.LogError($"hookExpression:{hookExpression}");
+				Log.LogError($"UnHookExpression:{UnHookExpression}");
+				return;
+			}
 
-		Log.LogDebug($"hookExpression:{hookCode} #{Priority}");
-		Register($"{hookCode} ({className})", data);
+			Log.LogDebug($"hookCode:{hookCode} #{Priority}");
+			Register($"{hookCode} ({className})", data);
+		}
+		catch (Exception ex)
+		{
+			Log.LogError($"Error in Register: {ex.Message}");
+		}
 	}
 	public static void Register(string ID, HookData data)
 	{

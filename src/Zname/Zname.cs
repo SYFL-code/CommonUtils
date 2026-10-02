@@ -47,9 +47,7 @@ using UnityEngine.UIElements;
 using static MonoMod.InlineRT.MonoModRule;
 using static SlugBase.Features.FeatureTypes;
 using static UnityEngine.Input;
-using Color = UnityEngine.Color;
 using ObjType = AbstractPhysicalObject.AbstractObjectType;
-using Random = UnityEngine.Random;
 
 // <DefineConstants>ENDERPEARL</DefineConstants>
 #if ENDERPEARL
@@ -1563,6 +1561,7 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 	#endregion
 
 	#region 反编译
+	//
 	#region MonoMod.RuntimeDetour
 	public static void OnEnable()
 	{
@@ -2244,7 +2243,6 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 		c.Emit(OpCodes.Brtrue, proceedCond);
 	}
 	#endregion
-
 	#region Harmony
 	// 1. 定义补丁类
 	//[HarmonyPatch(typeof(Player), "CanBeSwallowed")] // 定位目标类和方法
@@ -2308,7 +2306,6 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 	//	}
 	//}
 	#endregion
-
 	#region MonoMod.RuntimeDetour
 	public class MyModLoader
 	{
@@ -2344,7 +2341,6 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 		}
 	}
 	#endregion
-
 	#region AccessTools
 	/*
 	| AccessTools 方法 | 作用 | 对应聊天内容 |
@@ -2383,7 +2379,6 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 		return "反编译";
 	}
 	#endregion
-
 	#region 反射 + 委托
 	public static class LegacyHook
 	{
@@ -2413,7 +2408,6 @@ Harmony 钩子挂钩其他模组方便，或挂钩属性
 		}
 	}
 	#endregion
-
 	#region Public程序集
 	/*
 针对你关心的 “雨甸（Rain Meadow）频繁更新导致手动维护Public程序集太累” 这个问题，我直接给你两套 MSBuild PreBuildTask 脚本方案。
@@ -2547,6 +2541,7 @@ xml
 
 	*/
 	#endregion
+	//
 	#endregion
 
 	#region Hooks

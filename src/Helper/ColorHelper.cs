@@ -25,4 +25,15 @@ public static class ColorHelper
 		// 限制在 0~1 之间（防止浮点数越界）
 		return Mathf.Clamp01(t);
 	}
+
+	public static Color HSV(this Color color, float h1, float s1, float v1)
+	{
+		// RGB → HSV
+		Color.RGBToHSV(color, out float h, out float s, out float v);
+
+		// HSV → RGB
+		Color result = Color.HSVToRGB(h * h1, s * s1, v * v1, false);
+		result.a = color.a;  // HSVToRGB 返回的 alpha 是 1
+		return result;
+	}
 }

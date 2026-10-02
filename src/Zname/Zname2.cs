@@ -40,9 +40,7 @@ using UnityEngine;
 using static MonoMod.InlineRT.MonoModRule;
 using static SlugBase.Features.FeatureTypes;
 using static UnityEngine.Input;
-using Color = UnityEngine.Color;
 using ObjType = AbstractPhysicalObject.AbstractObjectType;
-using Random = UnityEngine.Random;
 #endregion
 namespace Scrap;
 [Obsolete("Scrap 废案")]

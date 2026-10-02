@@ -1,9 +1,11 @@
-﻿using BepInEx;
-using CommonUtils.Core;
+﻿global using CommonUtils.Core;
+global using System;
+global using UnityEngine;
+global using Color = UnityEngine.Color;
+global using Random = UnityEngine.Random;
+using BepInEx;
 using CommonUtils.Debug;
 using SlugBase.Features;
-using System;
-using UnityEngine;
 using static SlugBase.Features.FeatureTypes;
 
 

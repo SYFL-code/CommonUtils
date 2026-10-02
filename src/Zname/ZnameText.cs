@@ -47,9 +47,7 @@ using UnityEngine.UIElements;
 using static MonoMod.InlineRT.MonoModRule;
 using static SlugBase.Features.FeatureTypes;
 using static UnityEngine.Input;
-using Color = UnityEngine.Color;
 using ObjType = AbstractPhysicalObject.AbstractObjectType;
-using Random = UnityEngine.Random;
 
 // <DefineConstants>ENDERPEARL</DefineConstants>
 #if ENDERPEARL

@@ -17,7 +17,7 @@ namespace CommonUtils.Core;
 
 public class Log : CustomLogger
 {
-	public static Log Instance
+    public static Log Instance
 	{
 		get
 		{

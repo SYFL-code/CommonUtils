@@ -69,8 +69,9 @@ public abstract class CustomLogger
 			}
 			else
 			{
-				File.AppendAllText(OutputLogFilePath, $"");
-				File.AppendAllText(OutputLogFilePath, $"# Output Log File - created at {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}");
+				//File.AppendAllText(OutputLogFilePath, $"");
+				File.WriteAllText(OutputLogFilePath, $"# Output Log File - created at {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}");
+				//File.AppendAllText(OutputLogFilePath, $"# Output Log File - created at {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}");
 			}
 
 			// 启动定时器：每 3 秒自动刷盘一次
