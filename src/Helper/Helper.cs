@@ -6,7 +6,6 @@ using Expedition;
 using Fisobs.Core;
 using HUD;
 using ImprovedInput;
-using Jingle;
 using JollyCoop;
 using JollyCoop.JollyMenu;
 using Menu;

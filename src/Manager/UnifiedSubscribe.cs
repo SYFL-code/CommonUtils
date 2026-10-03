@@ -14,7 +14,7 @@ namespace CommonUtils.Core;
 
 public static class UnifiedSubscribe
 {
-	public static event hook_HitSomething HitSomething
+	public static event On.Weapon.hook_HitSomething HitSomething
 	{
 		add
 		{
@@ -27,7 +27,7 @@ public static class UnifiedSubscribe
 				HookEndpointManager.Remove(m, value);
 		}
 	}
-	public static event hook_Violence Violence
+	public static event On.Creature.hook_Violence Violence
 	{
 		add
 		{
@@ -54,16 +54,8 @@ public static class UnifiedSubscribe
 }
 public static class UnifiedHooks
 {
-	public delegate bool orig_HitSomething(Weapon weapon, SharedPhysics.CollisionResult result, bool eu);
-	public delegate bool hook_HitSomething(orig_HitSomething orig, Weapon weapon, SharedPhysics.CollisionResult result, bool eu);
 	public static IEnumerable<MethodBase> targets_HitSomething() => HookScanner.GetMethods(typeof(Weapon), nameof(Weapon.HitSomething));
 
-	public delegate void orig_Violence(Creature self, BodyChunk source, Vector2? directionAndMomentum,
-		BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage,
-		Creature.DamageType type, float damage, float stunBonus);
-	public delegate void hook_Violence(orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum,
-		BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage,
-		Creature.DamageType type, float damage, float stunBonus);
 	public static IEnumerable<MethodBase> targets_Violence() => HookScanner.GetMethods(typeof(Creature), nameof(Creature.Violence));
 
 	public delegate bool orig_IsWallClimber(Lizard self);

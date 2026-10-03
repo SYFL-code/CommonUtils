@@ -17,7 +17,7 @@ namespace CommonUtils.Core;
 
 public class Log : CustomLogger
 {
-    public static Log Instance
+	public static Log Instance
 	{
 		get
 		{
@@ -142,7 +142,7 @@ public class Log : CustomLogger
 			string className = Path.GetFileNameWithoutExtension(filePath);
 
 			string translatedMsg = (Message is string s) ? Translate(s) : Message?.ToString() ?? "null";
-			string Msg = $"{Plugin.version}|{DateTime.Now:HH:mm:ss}[{className.Left(3)}.{memberName.Left(4)}:{lineNumber}]{translatedMsg}";
+			string Msg = $"v{Plugin.version.Right(2)}|{DateTime.Now:HH:mm:ss}[{className.Left(3)}.{memberName.Left(4)}:{lineNumber}]{translatedMsg}";
 			/*
 			v01|13:34:26[Plu.OnEn:135]Mod OnEnable!
 			*/
