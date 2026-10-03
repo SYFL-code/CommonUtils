@@ -34,8 +34,10 @@ namespace CommonUtils
 	public const bool ForceLog = false;
 #endif
 		#endregion
-
 		public static Plugin plugin = new Plugin(); //
+		public static bool EnableLog => configLog?.Value ?? false;
+		public static Configurable<bool>? configLog = null;
+
 
 		//public bool isEnabled;
 		public bool inited;

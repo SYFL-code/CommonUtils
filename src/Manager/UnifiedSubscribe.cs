@@ -54,8 +54,6 @@ public static class UnifiedSubscribe
 }
 public static class UnifiedHooks
 {
-	const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
 	public delegate bool orig_HitSomething(Weapon weapon, SharedPhysics.CollisionResult result, bool eu);
 	public delegate bool hook_HitSomething(orig_HitSomething orig, Weapon weapon, SharedPhysics.CollisionResult result, bool eu);
 	public static IEnumerable<MethodBase> targets_HitSomething() => HookScanner.GetMethods(typeof(Weapon), nameof(Weapon.HitSomething));

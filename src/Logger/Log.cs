@@ -36,7 +36,7 @@ public class Log : CustomLogger
 	//public required bool DebugMode;
 
 	public override string ModName => Plugin.Name;
-	public override bool EnableLog => Plugin.ForceLog;
+	public override bool EnableLog => Plugin.ForceLog || Plugin.EnableLog;
 	public override LogSeverity CurrentSeverity { get; } = LogSeverity.Development;
 	public override bool isDevMod => Plugin.DebugMode;
 

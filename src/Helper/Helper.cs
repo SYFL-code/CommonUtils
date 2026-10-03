@@ -6,6 +6,7 @@ using Expedition;
 using Fisobs.Core;
 using HUD;
 using ImprovedInput;
+using Jingle;
 using JollyCoop;
 using JollyCoop.JollyMenu;
 using Menu;
@@ -519,32 +520,35 @@ public static class Helper
 
 	#region 文件
 	private static string? _cachedModRoot;
-	public static string GetModRootPath()
+	public static string ModRoot
 	{
-		if (_cachedModRoot != null) return _cachedModRoot;
-
-		// 获取当前 DLL 所在目录
-		string? dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-		// 从 DLL 目录逐级向上查找 modinfo.json
-		string? dir = dllDir;
-		while (dir != null)
+		get
 		{
-			if (File.Exists(Path.Combine(dir, "modinfo.json")))
-			{
-				_cachedModRoot = dir;
-				Log.LogInfo($"模组根目录已缓存: {dir}");
-				return dir;
-			}
-			dir = Path.GetDirectoryName(dir);
-		}
+			if (_cachedModRoot != null) return _cachedModRoot;
 
-		Log.LogError($"无法找到 modinfo.json, GUID: {Plugin.GUID}, DLL位置: {dllDir}");
-		throw new FileNotFoundException($"无法找到 modinfo.json, GUID: {Plugin.GUID}, DLL位置: {dllDir}");
+			// 获取当前 DLL 所在目录
+			string? dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+			// 从 DLL 目录逐级向上查找 modinfo.json
+			string? dir = dllDir;
+			while (dir != null)
+			{
+				if (File.Exists(Path.Combine(dir, "modinfo.json")))
+				{
+					_cachedModRoot = dir;
+					Log.LogInfo($"模组根目录已缓存: {dir}");
+					return dir;
+				}
+				dir = Path.GetDirectoryName(dir);
+			}
+
+			Log.LogError($"无法找到 modinfo.json, GUID: {Plugin.GUID}, DLL位置: {dllDir}");
+			throw new FileNotFoundException($"无法找到 modinfo.json, GUID: {Plugin.GUID}, DLL位置: {dllDir}");
+		}
 	}
 	public static string GetStringsPath(string? language = null)
 	{
-		string langDir = Path.Combine(GetModRootPath(), "text", "text_" + (language ?? lang));
+		string langDir = Path.Combine(ModRoot, "text", "text_" + (language ?? lang));
 		string path = Path.Combine(langDir, "strings.txt");
 
 		Directory.CreateDirectory(langDir);
@@ -555,9 +559,12 @@ public static class Helper
 		}
 		return path;
 	}
-	public static string GetGameRoot()
+	public static string GameRoot
 	{
-		return AppDomain.CurrentDomain.BaseDirectory;
+		get
+		{
+			return AppDomain.CurrentDomain.BaseDirectory;
+		}
 	}
 	#endregion
 
@@ -566,37 +573,42 @@ public static class Helper
 	public static InGameTranslator inGameTranslator => RainWorld.inGameTranslator;
 	public static InGameTranslator Translator => inGameTranslator;
 	public static InGameTranslator Trans => inGameTranslator;
-	public static string lang => LocalizationTranslator.LangShort(Trans.currentLanguage);
+	public static string lang => LocalizationTranslator.LangShort(inGameTranslator.currentLanguage);
 
-	public static string Tra(this string originalName)
+	extension(string originalName)
 	{
-		return Translator.Translate(originalName);
+		public string Translate => Translator.Translate(originalName);
 	}
-	public static string Translate(this string originalName)
+	extension(IEnumerable<string> originalNames)
 	{
-		return Translator.Translate(originalName);
-	}
-	public static string[] Translate(this IEnumerable<string> originalNames)
-	{
-		List<string> items = [];
-		foreach (string name in originalNames)
+		public string[] Translate
 		{
-			items.Add(Translator.Translate(name));
+			get
+			{
+				List<string> items = [];
+				foreach (string name in originalNames)
+				{
+					items.Add(Translator.Translate(name));
+				}
+				return items.ToArray();
+			}
 		}
-		return items.ToArray();
-	}
-	public static ListItem[] ToListItem(this IEnumerable<string> originalNames)
-	{
-		List<ListItem> items = [];
+		public ListItem[] ToListItem
+		{
+			get
+			{
+				List<ListItem> items = [];
 
-		int i = 0;
-		foreach (string name in originalNames)
-		{
-			// name 作为实际值，displayName 使用翻译后的文本
-			items.Add(new ListItem(name, Translator.Translate(name), i));
-			i += 1;
+				int i = 0;
+				foreach (string name in originalNames)
+				{
+					// name 作为实际值，displayName 使用翻译后的文本
+					items.Add(new ListItem(name, Translator.Translate(name), i));
+					i += 1;
+				}
+				return items.ToArray();
+			}
 		}
-		return items.ToArray();
 	}
 	#endregion
 }

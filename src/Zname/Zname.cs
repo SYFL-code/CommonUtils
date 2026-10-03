@@ -76,7 +76,7 @@ internal class Zname//Scrap 废案
 
 	#region Start
 
-	// | mklink /H（最稳）				| 链接 单个文件（如.csproj, .dll, .jpg）且不怕改文件名 |
+	// | mklink /H（最稳）				| 链接 单个文件（如.csproj, .dll, .jpg）且不怕改文件名 |md
 	// | mklink（不加参数）				| 链接 单个文件 但需要跨分区或想一眼看出是链接 |
 	// | mklink /J						| 链接 整个文件夹 且项目路径绝对固定（不搬家 |
 	// | mklink /D（推荐用相对路径创建）| 链接 整个文件夹 且项目可能会整体拷贝 / 迁移（如Git仓库） |
