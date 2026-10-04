@@ -1,8 +1,13 @@
 ﻿global using CommonUtils.Core;
 global using System;
+global using System.Collections.Generic;
 global using UnityEngine;
+global using Appendage = PhysicalObject.Appendage;
 global using Color = UnityEngine.Color;
+global using Custom = RWCustom.Custom;
+global using Mathf = UnityEngine.Mathf;
 global using Random = UnityEngine.Random;
+global using Vector2 = UnityEngine.Vector2;
 using BepInEx;
 using CommonUtils.Debug;
 using SlugBase.Features;

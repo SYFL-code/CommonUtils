@@ -6,147 +6,147 @@
     <members>
         <member name="T:Fisobs.Core.Content">
             <summary>
-            Used to register custom content.
+            用于注册自定义内容。
             </summary>
         </member>
         <member name="M:Fisobs.Core.Content.Register(Fisobs.Core.IContent[])">
             <summary>
-            Registers some content. Call this from your mod's entry point.
+            注册一些内容。请从你的模组入口点调用此方法。
             </summary>
-            <param name="content">A bunch of content. Currently, fisobs provides <see cref="T:Fisobs.Items.Fisob"/> and <see cref="T:Fisobs.Creatures.Critob"/> for content types.</param>
+            <param name="content">一堆内容。目前，fisobs 为内容类型提供了 <see cref="T:Fisobs.Items.Fisob"/> 和 <see cref="T:Fisobs.Creatures.Critob"/>。</param>
         </member>
         <member name="T:Fisobs.Core.EntitySaveData">
             <summary>
-            Represents saved information about <see cref="T:AbstractPhysicalObject"/> instances.
+            表示关于 <see cref="T:AbstractPhysicalObject"/> 实例的已保存信息。
             </summary>
         </member>
         <member name="F:Fisobs.Core.EntitySaveData.Type">
             <summary>
-            The APO's type.
+            APO 的类型。
             </summary>
         </member>
         <member name="F:Fisobs.Core.EntitySaveData.ID">
             <summary>
-            The APO's ID.
+            APO 的 ID。
             </summary>
         </member>
         <member name="F:Fisobs.Core.EntitySaveData.Pos">
             <summary>
-            The APO's position.
+            APO 的位置。
             </summary>
         </member>
         <member name="F:Fisobs.Core.EntitySaveData.CustomData">
             <summary>
-            Any extra data associated with the APO. This can be <see cref="F:System.String.Empty"/>, but not <see langword="null"/>.
+            与 APO 关联的任何额外数据。这可以是 <see cref="F:System.String.Empty"/>，但不能是 <see langword="null"/>。
             </summary>
-            <remarks>For creatures, this will be a stringified <see cref="T:CreatureState"/>.</remarks>
+            <remarks>对于生物，这将是字符串化的 <see cref="T:CreatureState"/>。</remarks>
         </member>
         <member name="M:Fisobs.Core.EntitySaveData.#ctor(Fisobs.Core.PhysobType,EntityID,WorldCoordinate,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Fisobs.Core.EntitySaveData"/> struct.
+            初始化 <see cref="T:Fisobs.Core.EntitySaveData"/> 结构的新实例。
             </summary>
-            <remarks>Do not use this constructor. Call <see cref="M:Fisobs.Core.EntitySaveData.CreateFrom(AbstractPhysicalObject,System.String)"/> instead.</remarks>
+            <remarks>不要使用此构造函数。请改为调用 <see cref="M:Fisobs.Core.EntitySaveData.CreateFrom(AbstractPhysicalObject,System.String)"/>。</remarks>
         </member>
         <member name="M:Fisobs.Core.EntitySaveData.CreateFrom(AbstractPhysicalObject,System.String)">
             <summary>
-            Creates an instance of the <see cref="T:Fisobs.Core.EntitySaveData"/> struct.
+            创建 <see cref="T:Fisobs.Core.EntitySaveData"/> 结构的新实例。
             </summary>
-            <param name="apo">The abstract physical object to get basic data from.</param>
-            <param name="customData">Extra data associated with the abstract physical object. This data should never contain &lt; characters.</param>
-            <returns>A new instance of <see cref="T:Fisobs.Core.EntitySaveData"/>.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when <paramref name="customData"/> contains &lt; characters.</exception>
+            <param name="apo">要从中获取基本数据的抽象物理对象。</param>
+            <param name="customData">与抽象物理对象关联的额外数据。此数据永远不应包含 &lt; 字符。</param>
+            <returns>一个新的 <see cref="T:Fisobs.Core.EntitySaveData"/> 实例。</returns>
+            <exception cref="T:System.ArgumentException">当 <paramref name="customData"/> 包含 &lt; 字符时抛出。</exception>
         </member>
         <member name="M:Fisobs.Core.EntitySaveData.ToString(World)">
             <summary>
-            Gets this entity's save data as a string.
+            将此实体的存档数据获取为字符串。
             </summary>
-            <returns>A string representation of this data.</returns>
+            <returns>此数据的字符串表示形式。</returns>
         </member>
         <member name="M:Fisobs.Core.EntitySaveData.ToString">
             <summary>
-            Gets this entity's save data as a string.
+            将此实体的存档数据获取为字符串。
             </summary>
-            <returns>A string representation of this data.</returns>
+            <returns>此数据的字符串表示形式。</returns>
         </member>
         <member name="T:Fisobs.Core.Ext">
             <summary>
-            Provides extension methods for POs and APOs.
+            为 PO 和 APO 提供扩展方法。
             </summary>
         </member>
         <member name="P:Fisobs.Core.Ext.MenuGrey">
             <summary>
-            The default color for menu items.
+            菜单项的默认颜色。
             </summary>
         </member>
         <member name="M:Fisobs.Core.Ext.Spawn(AbstractPhysicalObject,UnityEngine.Vector2,UnityEngine.Vector2)">
             <summary>
-            Realizes an APO at a position with a specified velocity.
+            在指定位置以指定速度实体化一个 APO。
             </summary>
-            <param name="apo">The abstract physical object.</param>
-            <param name="pos">The position of the object in the room.</param>
-            <param name="vel">The velocity of the object's body chunks.</param>
+            <param name="apo">抽象物理对象。</param>
+            <param name="pos">对象在房间中的位置。</param>
+            <param name="vel">对象身体块的速度。</param>
         </member>
         <member name="M:Fisobs.Core.Ext.Spawn(AbstractPhysicalObject,UnityEngine.Vector2)">
             <summary>
-            Realizes an APO at a position with a speed of zero.
+            在指定位置以零速度实体化一个 APO。
             </summary>
-            <param name="apo">The abstract physical object.</param>
-            <param name="pos">The position of the object in the room.</param>
+            <param name="apo">抽象物理对象。</param>
+            <param name="pos">对象在房间中的位置。</param>
         </member>
         <member name="M:Fisobs.Core.Ext.Spawn(AbstractPhysicalObject)">
             <summary>
-            Realizes an APO wherever it may be with a speed of zero.
+            在它可能在的任何位置以零速度实体化一个 APO。
             </summary>
-            <param name="apo">The abstract physical object.</param>
+            <param name="apo">抽象物理对象。</param>
         </member>
         <member name="M:Fisobs.Core.Ext.SaveToString(AbstractPhysicalObject,System.String)">
             <summary>
-            Gets a string representation of an APO.
+            获取 APO 的字符串表示形式。
             </summary>
-            <param name="apo">The abstract physical object.</param>
-            <param name="customData">Extra data associated with the abstract physical object. For creatures, this should be <see cref="T:CreatureState"/> data.</param>
-            <returns>A string representing this APO, for use in <see cref="M:AbstractPhysicalObject.ToString"/>.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when <paramref name="customData"/> contains &lt; characters.</exception>
+            <param name="apo">抽象物理对象。</param>
+            <param name="customData">与抽象物理对象关联的额外数据。对于生物，这应该是 <see cref="T:CreatureState"/> 数据。</param>
+            <returns>表示此 APO 的字符串，用于 <see cref="M:AbstractPhysicalObject.ToString"/>。</returns>
+            <exception cref="T:System.ArgumentException">当 <paramref name="customData"/> 包含 &lt; 字符时抛出。</exception>
         </member>
         <member name="M:Fisobs.Core.Ext.IsFreeSpace(AImap,RWCustom.IntVector2,System.Int32)">
             <summary>
-            Gets if the location <paramref name="tile"/> on <paramref name="map"/> is <paramref name="tilesOfFreeSpace"/>-or-more tiles away from any solid terrain.
+            获取地图上的位置 <paramref name="tile"/> 是否距离任何固体地形 <paramref name="tilesOfFreeSpace"/> 个或更多地块。
             </summary>
-            <returns>True if the space is clear.</returns>
+            <returns>如果空间畅通则为 true。</returns>
         </member>
         <member name="M:Fisobs.Core.Ext.IconAtlasName(System.String)">
             <summary>
-            Loads an icon for a critob named <paramref name="name"/> into <see cref="F:Futile.atlasManager"/> if the resource exists.
+            如果资源存在，则将名为 <paramref name="name"/> 的 critob 图标加载到 <see cref="F:Futile.atlasManager"/> 中。
             </summary>
-            <param name="name">The critob's name.</param>
-            <returns>If the resource was successfully loaded, the atlas; otherwise, <see langword="null"/>.</returns>
+            <param name="name">critob 的名称。</param>
+            <returns>如果资源成功加载，则为图集；否则为 <see langword="null"/>。</returns>
         </member>
         <member name="T:Fisobs.Core.Icon">
             <summary>
-            Determines how a physical object is displayed on the map screen and sandbox menus.
+            确定物理对象如何在地图屏幕和沙盒菜单中显示。
             </summary>
         </member>
         <member name="M:Fisobs.Core.Icon.SpriteName(System.Int32)">
             <summary>
-            Gets the name of the <see cref="T:FAtlasElement"/> to display.
+            获取要显示的 <see cref="T:FAtlasElement"/> 的名称。
             </summary>
-            <param name="data">The physob's custom data. This comes from <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> if viewed from the story mode map, or from <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/> if created from a sandbox unlock.</param>
+            <param name="data">physob 的自定义数据。如果从故事模式地图查看，则来自 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>；如果从沙盒解锁创建，则来自 <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/>。</param>
         </member>
         <member name="M:Fisobs.Core.Icon.SpriteColor(System.Int32)">
             <summary>
-            Gets the color of the sprite drawn on the screen.
+            获取屏幕上绘制的精灵颜色。
             </summary>
-            <param name="data">The physob's custom data. This comes from <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> if viewed from the story mode map, or from <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/> if created from a sandbox unlock.</param>
+            <param name="data">physob 的自定义数据。如果从故事模式地图查看，则来自 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>；如果从沙盒解锁创建，则来自 <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/>。</param>
         </member>
         <member name="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)">
             <summary>
-            Gets the custom data for a physob. This value is passed to <see cref="M:Fisobs.Core.Icon.SpriteName(System.Int32)"/> and <see cref="M:Fisobs.Core.Icon.SpriteColor(System.Int32)"/>.
+            获取 physob 的自定义数据。此值会传递给 <see cref="M:Fisobs.Core.Icon.SpriteName(System.Int32)"/> 和 <see cref="M:Fisobs.Core.Icon.SpriteColor(System.Int32)"/>。
             </summary>
-            <param name="apo">The physob in question.</param>
+            <param name="apo">所讨论的 physob。</param>
         </member>
         <member name="T:Fisobs.Core.DefaultIcon">
             <summary>
-            An icon whose sprite name is <c>"Futile_White"</c> and color is <see cref="P:Fisobs.Core.Ext.MenuGrey"/>.
+            一种图标，其精灵名称为 <c>"Futile_White"</c>，颜色为 <see cref="P:Fisobs.Core.Ext.MenuGrey"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Core.DefaultIcon.Data(AbstractPhysicalObject)">
@@ -160,15 +160,15 @@
         </member>
         <member name="T:Fisobs.Core.SimpleIcon">
             <summary>
-            An icon whose sprite name and color is unchanging.
+            一种精灵名称和颜色不变的图标。
             </summary>
         </member>
         <member name="M:Fisobs.Core.SimpleIcon.#ctor(System.String,UnityEngine.Color)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.SimpleIcon"/> instance.
+            创建新的 <see cref="T:Fisobs.Core.SimpleIcon"/> 实例。
             </summary>
-            <param name="spriteName">The name of the <see cref="T:FAtlasElement"/> to display.</param>
-            <param name="spriteColor">The color of the sprite drawn on the screen.</param>
+            <param name="spriteName">要显示的 <see cref="T:FAtlasElement"/> 的名称。</param>
+            <param name="spriteColor">屏幕上绘制的精灵颜色。</param>
         </member>
         <member name="M:Fisobs.Core.SimpleIcon.Data(AbstractPhysicalObject)">
             <inheritdoc/>
@@ -181,47 +181,47 @@
         </member>
         <member name="T:Fisobs.Core.IContent">
             <summary>
-            Some form of content that can be added to a <see cref="T:Fisobs.Core.Registry"/>.
+            某种可以添加到 <see cref="T:Fisobs.Core.Registry"/> 的内容形式。
             </summary>
         </member>
         <member name="M:Fisobs.Core.IContent.Registries">
             <summary>
-            Gets the registries this content belongs to. This is called when the object is passed to the <see cref="M:Fisobs.Core.Content.Register(Fisobs.Core.IContent[])"/> method.
+            获取此内容所属的注册表。当对象被传递给 <see cref="M:Fisobs.Core.Content.Register(Fisobs.Core.IContent[])"/> 方法时会调用此方法。
             </summary>
         </member>
         <member name="T:Fisobs.Core.PhysobType">
             <summary>
-            The type of an item (<see cref="T:AbstractPhysicalObject.AbstractObjectType"/>) or creature (<see cref="T:CreatureTemplate.Type"/>).
+            物品（<see cref="T:AbstractPhysicalObject.AbstractObjectType"/>）或生物（<see cref="T:CreatureTemplate.Type"/>）的类型。
             </summary>
         </member>
         <member name="P:Fisobs.Core.PhysobType.ObjectType">
             <summary>
-            If the object is an item, this is its type.
+            如果对象是物品，则这是其类型。
             </summary>
         </member>
         <member name="P:Fisobs.Core.PhysobType.CritType">
             <summary>
-            If the object is a creature, this is its type.
+            如果对象是生物，则这是其类型。
             </summary>
         </member>
         <member name="P:Fisobs.Core.PhysobType.IsCrit">
             <summary>
-            True if the object is a creature.
+            如果对象是生物，则为 true。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.#ctor(AbstractPhysicalObject.AbstractObjectType)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.PhysobType"/> that represents an object type.
+            创建一个表示对象类型的新 <see cref="T:Fisobs.Core.PhysobType"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.#ctor(CreatureTemplate.Type)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.PhysobType"/> that represents a creature type.
+            创建一个表示生物类型的新 <see cref="T:Fisobs.Core.PhysobType"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.Equals(System.Object)">
             <summary>
-            Checks if two <see cref="T:Fisobs.Core.PhysobType"/> instances refer to the same type.
+            检查两个 <see cref="T:Fisobs.Core.PhysobType"/> 实例是否引用同一类型。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.GetHashCode">
@@ -232,280 +232,280 @@
         </member>
         <member name="M:Fisobs.Core.PhysobType.op_Equality(Fisobs.Core.PhysobType,Fisobs.Core.PhysobType)">
             <summary>
-            Checks if two <see cref="T:Fisobs.Core.PhysobType"/> instances refer to the same type.
+            检查两个 <see cref="T:Fisobs.Core.PhysobType"/> 实例是否引用同一类型。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.op_Inequality(Fisobs.Core.PhysobType,Fisobs.Core.PhysobType)">
             <summary>
-            Checks if two <see cref="T:Fisobs.Core.PhysobType"/> instances refer to the same type.
+            检查两个 <see cref="T:Fisobs.Core.PhysobType"/> 实例是否引用同一类型。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.op_Implicit(AbstractPhysicalObject.AbstractObjectType)~Fisobs.Core.PhysobType">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.PhysobType"/> that represents an object type.
+            创建一个表示对象类型的新 <see cref="T:Fisobs.Core.PhysobType"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.op_Implicit(CreatureTemplate.Type)~Fisobs.Core.PhysobType">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.PhysobType"/> that represents a creature type.
+            创建一个表示生物类型的新 <see cref="T:Fisobs.Core.PhysobType"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Core.PhysobType.op_Implicit(IconSymbol.IconSymbolData)~Fisobs.Core.PhysobType">
             <summary>
-            Creates a new <see cref="T:Fisobs.Core.PhysobType"/> that represents an icon's object or creature type.
+            创建一个表示图标对象或生物类型的新 <see cref="T:Fisobs.Core.PhysobType"/>。
             </summary>
         </member>
         <member name="T:Fisobs.Core.Registry">
             <summary>
-            Registries hook into the vanilla game to simplify content creation.
+            注册表会接入原版游戏，以简化内容创建。
             </summary>
         </member>
         <member name="M:Fisobs.Core.Registry.Process(Fisobs.Core.IContent)">
             <summary>
-            Processes some content. The registry must ignore content not relevant to it and should throw an exception if content is relevant but malformed.
+            处理一些内容。注册表必须忽略与其无关的内容，并且如果内容相关但格式错误，则应抛出异常。
             </summary>
-            <param name="content">The content entry to process.</param>
+            <param name="content">要处理的内容条目。</param>
         </member>
         <member name="M:Fisobs.Core.Registry.Initialize">
             <summary>
-            Should contain initialization logic. This is called right before <see cref="M:Fisobs.Core.Registry.Process(Fisobs.Core.IContent)"/> is called and should be used to apply things like MonoMod hooks.
+            应包含初始化逻辑。此方法在调用 <see cref="M:Fisobs.Core.Registry.Process(Fisobs.Core.IContent)"/> 之前立即调用，应用于应用诸如 MonoMod 钩子之类的内容。
             </summary>
         </member>
         <member name="T:Fisobs.Creatures.AttackResist">
             <summary>
-            Damage and stun resistance to particular damage types. Damage and stun amount will be <i>divided by</i> these values, so higher values mean more resistance.
+            对特定伤害类型的伤害和眩晕抗性。伤害和眩晕量将被这些值<i>除</i>，因此值越高表示抗性越高。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Base">
             <summary>
-            Base resistance. This applies to all damage types.
+            基础抗性。这适用于所有伤害类型。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Blunt">
             <summary>
-            Blunt damage, like from rocks.
+            钝击伤害，例如来自石头的伤害。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Stab">
             <summary>
-            Stab damage, like from spears.
+            穿刺伤害，例如来自矛的伤害。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Bite">
             <summary>
-            Bite damage, like from lizards.
+            撕咬伤害，例如来自蜥蜴的伤害。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Water">
             <summary>
-            Seems unused?
+            似乎未使用？
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Explosion">
             <summary>
-            Explosion damage, like from <see cref="T:ScavengerBomb"/> items.
+            爆炸伤害，例如来自 <see cref="T:ScavengerBomb"/> 物品的伤害。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.AttackResist.Electric">
             <summary>
-            Electric damage, like from underwater shocks and Underhang storms.
+            电击伤害，例如来自水下电击和 Underhang 风暴的伤害。
             </summary>
         </member>
         <member name="T:Fisobs.Creatures.ConnectionResist">
             <summary>
-            Resistance to pathfinding over certain connections between tiles.
+            对在地块之间特定连接上进行寻路的抗性。
             </summary>
         </member>
         <member name="T:Fisobs.Creatures.CreatureFormula">
             <summary>
-            Simplifies the creation of <see cref="T:CreatureTemplate"/> instances.
+            简化 <see cref="T:CreatureTemplate"/> 实例的创建。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.Type">
             <summary>
-            The creature type.
+            生物类型。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.Name">
             <summary>
-            The name of the creature. This will be used in region file parsing and in logs.
+            生物的名称。这将用于区域文件解析和日志中。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.Ancestor">
             <summary>
-            The creature's ancestor. Field values are inherited by the ancestor unless present in this struct.
+            生物的祖先。除非此结构中存在，否则字段值将从祖先继承。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.Pathing">
-            <summary>How the creature uses prebaked pathing. Most critobs will set this to some <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/> value.</summary>
+            <summary>生物如何使用预烘焙寻路。大多数 critob 会将其设置为某个 <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/> 值。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.TileResistances">
-            <summary>How certain tiles impede the creature's movement.</summary>
+            <summary>某些地块如何阻碍生物移动。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.ConnectionResistances">
-            <summary>How certain tile connections impede the creature's movement.</summary>
+            <summary>某些地块连接如何阻碍生物移动。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.DamageResistances">
-            <summary>The creature's damage resistance.</summary>
+            <summary>生物的伤害抗性。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.StunResistances">
-            <summary>The creature's stun resistance.</summary>
+            <summary>生物的眩晕抗性。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.InstantDeathDamage">
-            <summary>How much damage the creature can take before instantly dying.</summary>
+            <summary>生物在立即死亡前能承受多少伤害。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.HasAI">
-            <summary>True if the creature has AI. If this is true, then <see cref="M:Fisobs.Creatures.Critob.CreateRealizedAI(AbstractCreature)"/> must return a non-null value.</summary>
+            <summary>如果生物有 AI，则为 true。如果为 true，则 <see cref="M:Fisobs.Creatures.Critob.CreateRealizedAI(AbstractCreature)"/> 必须返回非 null 值。</summary>
         </member>
         <member name="F:Fisobs.Creatures.CreatureFormula.DefaultRelationship">
-            <summary>The default relationship this creature has with other unknown creature types.</summary>
+            <summary>此生物与其他未知生物类型的默认关系。</summary>
         </member>
         <member name="M:Fisobs.Creatures.CreatureFormula.#ctor(Fisobs.Creatures.Critob)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Creatures.CreatureFormula"/> from a critob.
+            从 critob 创建新的 <see cref="T:Fisobs.Creatures.CreatureFormula"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.CreatureFormula.#ctor(CreatureTemplate.Type,Fisobs.Creatures.Critob)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Creatures.CreatureFormula"/> from a critob.
+            从 critob 创建新的 <see cref="T:Fisobs.Creatures.CreatureFormula"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.CreatureFormula.#ctor(CreatureTemplate.Type,CreatureTemplate.Type,System.String)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Creatures.CreatureFormula"/>.
+            创建新的 <see cref="T:Fisobs.Creatures.CreatureFormula"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.CreatureFormula.IntoTemplate">
             <summary>
-            Creates a new <see cref="T:CreatureTemplate"/> from this formula.
+            从此公式创建新的 <see cref="T:CreatureTemplate"/>。
             </summary>
             <returns></returns>
         </member>
         <member name="T:Fisobs.Creatures.Critob">
             <summary>
-            Represents the "metadata" for a custom creature.
+            表示自定义生物的“元数据”。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.#ctor(CreatureTemplate.Type)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Creatures.Critob"/> instance for the given <paramref name="type"/>.
+            为给定的 <paramref name="type"/> 创建新的 <see cref="T:Fisobs.Creatures.Critob"/> 实例。
             </summary>
         </member>
         <member name="P:Fisobs.Creatures.Critob.Type">
-            <summary>The critob's type.</summary>
+            <summary>critob 的类型。</summary>
         </member>
         <member name="P:Fisobs.Creatures.Critob.Icon">
-            <summary>The critob's icon; a <see cref="T:Fisobs.Core.DefaultIcon"/> by default.</summary>
-            <remarks>When <see cref="M:Fisobs.Creatures.Critob.LoadResources(RainWorld)"/> is called, an embedded resource with the name <c>$"icon_{Type}"</c> will be auto-loaded as a <see cref="T:Fisobs.Core.SimpleIcon"/>, if it exists.</remarks>
+            <summary>critob 的图标；默认是 <see cref="T:Fisobs.Core.DefaultIcon"/>。</summary>
+            <remarks>当调用 <see cref="M:Fisobs.Creatures.Critob.LoadResources(RainWorld)"/> 时，如果存在名为 <c>$"icon_{Type}"</c> 的嵌入资源，它将被自动加载为 <see cref="T:Fisobs.Core.SimpleIcon"/>。</remarks>
         </member>
         <member name="P:Fisobs.Creatures.Critob.LoadedPerformanceCost">
-            <summary>The performance cost associated with the creature while it's loaded.</summary>
-            <value>A value of 10 is the default, and the minimum. Scavengers and leviathans use 300, lizards use 50, and batflies use 10.</value>
+            <summary>生物在加载时关联的性能消耗。</summary>
+            <value>值 10 是默认值，也是最小值。拾荒者和利维坦使用 300，蜥蜴使用 50，蝠蝇使用 10。</value>
         </member>
         <member name="P:Fisobs.Creatures.Critob.SandboxPerformanceCost">
             <inheritdoc/>
         </member>
         <member name="P:Fisobs.Creatures.Critob.ShelterDanger">
-            <summary>How much danger the creature poses to a player that shares a shelter with it.</summary>
+            <summary>生物对与其共享避难所的玩家构成多大危险。</summary>
         </member>
         <member name="P:Fisobs.Creatures.Critob.CreatureName">
-            <summary>The creature's user-facing name. Used in debug logs, <see cref="T:Fisobs.Creatures.CreatureFormula"/>, and various Expedition features.</summary>
-            <remarks>Defaults to the creature's type with spaces inserted after each lowercase letter that appears before a capital letter. For example, "BouncingBall" becomes "Bouncing Ball".</remarks>
+            <summary>生物面向用户的名称。用于调试日志、<see cref="T:Fisobs.Creatures.CreatureFormula"/> 以及各种 Expedition 功能。</summary>
+            <remarks>默认值为生物类型，并在每个小写字母后、大写字母前插入空格。例如，"BouncingBall" 会变成 "Bouncing Ball"。</remarks>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CreateState(AbstractCreature)">
-            <summary>Gets a new instance of <see cref="T:CreatureState"/> for <paramref name="acrit"/>. If spawned by a sandbox unlock, the <c>SandboxData</c> section of the creature's state will equal that unlock's <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/> value.</summary>
-            <remarks>By default, this returns a <see cref="T:HealthState"/>.</remarks>
+            <summary>为 <paramref name="acrit"/> 获取新的 <see cref="T:CreatureState"/> 实例。如果由沙盒解锁生成，则生物状态的 <c>SandboxData</c> 部分将等于该解锁的 <see cref="F:Fisobs.Sandbox.SandboxUnlock.Data"/> 值。</summary>
+            <remarks>默认情况下，这会返回 <see cref="T:HealthState"/>。</remarks>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CreateAbstractAI(AbstractCreature)">
-            <summary>Gets a new instance of <see cref="T:AbstractCreatureAI"/> (or <see langword="null"/>) from an abstract creature.</summary>
-            <remarks>If <see cref="F:CreatureTemplate.AI"/> is true for <paramref name="acrit"/>, then null will default to a simple <see cref="T:AbstractCreatureAI"/>. If false, then this method is not called in the first place.</remarks>
+            <summary>从抽象生物获取新的 <see cref="T:AbstractCreatureAI"/> 实例（或 <see langword="null"/>）。</summary>
+            <remarks>如果 <paramref name="acrit"/> 的 <see cref="F:CreatureTemplate.AI"/> 为 true，则 null 将默认为简单的 <see cref="T:AbstractCreatureAI"/>。如果为 false，则根本不会调用此方法。</remarks>
         </member>
         <member name="M:Fisobs.Creatures.Critob.Init(AbstractCreature,World,WorldCoordinate,EntityID)">
-            <summary>Perform arbitrary work after the <see cref="M:AbstractCreature.#ctor(World,CreatureTemplate,Creature,WorldCoordinate,EntityID)"/> constructor runs.</summary>
+            <summary>在 <see cref="M:AbstractCreature.#ctor(World,CreatureTemplate,Creature,WorldCoordinate,EntityID)"/> 构造函数运行后执行任意工作。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.GraspParalyzesPlayer(Creature.Grasp,System.Boolean@)">
-            <summary>Determines if being grasped by this creature should paralyze the player.</summary>
+            <summary>确定被此生物抓取是否应使玩家麻痹。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CorpseIsEdible(Player,Creature,System.Boolean@)">
-            <summary>Determines if a creature's corpse is edible by the given player.</summary>
+            <summary>确定给定玩家是否可以食用生物尸体。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.KillsMatter(System.Boolean@)">
-            <summary>Determines if the creature should be displayed when listing kills in arena and hunter modes.</summary>
+            <summary>确定在竞技场和猎手模式中列出击杀时是否应显示该生物。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.ArenaFallback">
-            <summary>If this creature would be spawned in arena mode but isn't unlocked yet, the creature returned by this method is spawned instead.</summary>
-            <remarks>By default, this returns the creature's ancestor, or <see langword="null"/> if it has none.</remarks>
-            <returns>The creature type to spawn, or <see langword="null"/> to spawn nothing.</returns>
+            <summary>如果此生物会在竞技场模式中生成但尚未解锁，则改为生成此方法返回的生物。</summary>
+            <remarks>默认情况下，这会返回生物的祖先；如果没有祖先，则返回 <see langword="null"/>。</remarks>
+            <returns>要生成的生物类型，如果要生成空内容则返回 <see langword="null"/>。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.ExpeditionScore">
-            <summary>The creature's score when killed in Expedition mode.</summary>
-            <remarks>By default, this returns a relevant sandbox unlock score, or 0 if that's not applicable.</remarks>
+            <summary>在 Expedition 模式中击杀该生物时的得分。</summary>
+            <remarks>默认情况下，这会返回相关的沙盒解锁得分；如果不适用，则返回 0。</remarks>
         </member>
         <member name="M:Fisobs.Creatures.Critob.Properties(Creature)">
-            <summary>Gets the custom properties of a creature.</summary>
-            <returns>An instance of <see cref="T:Fisobs.Properties.ItemProperties"/> or null.</returns>
+            <summary>获取生物的自定义属性。</summary>
+            <returns><see cref="T:Fisobs.Properties.ItemProperties"/> 的实例或 null。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.WorldFileAliases">
-            <summary>Extra names used for this creature in world files. Case-insensitive.</summary>
-            <remarks>By default, this returns only <see cref="P:Fisobs.Creatures.Critob.CreatureName"/> with all spaces removed.</remarks>
-            <returns>An assortment of aliases. For example, DaddyLongLegs can also be called Daddy.</returns>
+            <summary>此生物在世界文件中使用的额外名称。不区分大小写。</summary>
+            <remarks>默认情况下，这仅返回移除了所有空格的 <see cref="P:Fisobs.Creatures.Critob.CreatureName"/>。</remarks>
+            <returns>一组别名。例如，DaddyLongLegs 也可以称为 Daddy。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.DevtoolsRoomAttraction">
-            <summary>What categories of room attraction this creature falls under.</summary>
-            <returns>An assortment of categories. For example, vultures classify as Flying and LikesOutside.</returns>
+            <summary>此生物属于哪些房间吸引力类别。</summary>
+            <returns>一组类别。例如，秃鹫归类为 Flying 和 LikesOutside。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.DevtoolsMapName(AbstractCreature)">
-            <summary>The name that shows for this creature in the devtools map.</summary>
-            <remarks>By default, this returns up to the first three characters from the creature's type.</remarks>
-            <returns>An abbreviated name that should be a few characters long.</returns>
+            <summary>此生物在开发工具地图中显示的名称。</summary>
+            <remarks>默认情况下，这返回生物类型最多前三个字符。</remarks>
+            <returns>一个应为几个字符长的缩写名称。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.DevtoolsMapColor(AbstractCreature)">
-            <summary>The color that shows for this creature in the devtools map.</summary>
-            <remarks>By default, this returns the creature's icon color.</remarks>
-            <returns>A color that should help in identifying the creature.</returns>
+            <summary>此生物在开发工具地图中显示的颜色。</summary>
+            <remarks>默认情况下，这会返回生物的图标颜色。</remarks>
+            <returns>一种有助于识别生物的颜色。</returns>
         </member>
         <member name="M:Fisobs.Creatures.Critob.ConnectionIsAllowed(AImap,MovementConnection,System.Nullable{System.Boolean}@)">
-            <summary>Modifies what movements creatures are allowed to make. Setting <paramref name="allow"/> to a non-null value will forcefully allow/disallow the connection.</summary>
+            <summary>修改允许生物进行的移动。将 <paramref name="allow"/> 设置为非 null 值将强制允许/禁止该连接。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.TileIsAllowed(AImap,RWCustom.IntVector2,System.Nullable{System.Boolean}@)">
-            <summary>Modifies what tiles creatures are allowed to move into. Setting <paramref name="allow"/> to a non-null value will forcefully allow/disallow the tile.</summary>
+            <summary>修改允许生物移动进入的地块。将 <paramref name="allow"/> 设置为非 null 值将强制允许/禁止该地块。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CreateRealizedAI(AbstractCreature)">
-            <summary>Gets a new instance of <see cref="T:ArtificialIntelligence"/> (or <see langword="null"/>) from an abstract creature.</summary>
-            <remarks>If <see cref="F:CreatureTemplate.AI"/> is true for <paramref name="acrit"/>, then this must return a non-null object.</remarks>
+            <summary>从抽象生物获取新的 <see cref="T:ArtificialIntelligence"/> 实例（或 <see langword="null"/>）。</summary>
+            <remarks>如果 <paramref name="acrit"/> 的 <see cref="F:CreatureTemplate.AI"/> 为 true，则这必须返回非 null 对象。</remarks>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CreateRealizedCreature(AbstractCreature)">
-            <summary>Gets a new instance of <see cref="T:Creature"/> from an abstract creature.</summary>
+            <summary>从抽象生物获取新的 <see cref="T:Creature"/> 实例。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.CreateTemplate">
-            <summary>Establishes creature templates for this critob. The <see cref="T:Fisobs.Creatures.CreatureFormula"/> type is recommended for this.</summary>
+            <summary>为此 critob 建立生物模板。推荐使用 <see cref="T:Fisobs.Creatures.CreatureFormula"/> 类型来完成此操作。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.EstablishRelationships">
-            <summary>Establishes relationships between creatures. The <see cref="T:Fisobs.Creatures.Relationships"/> type is recommended for this.</summary>
+            <summary>建立生物之间的关系。推荐使用 <see cref="T:Fisobs.Creatures.Relationships"/> 类型来完成此操作。</summary>
         </member>
         <member name="M:Fisobs.Creatures.Critob.LoadResources(RainWorld)">
             <summary>
-            Used to load <see cref="T:FAtlas"/> and <see cref="T:FAtlasElement"/> sprites. Called once.
+            用于加载 <see cref="T:FAtlas"/> 和 <see cref="T:FAtlasElement"/> 精灵。仅调用一次。
             </summary>
-            <param name="rainWorld">The current <see cref="T:RainWorld"/> instance.</param>
+            <param name="rainWorld">当前的 <see cref="T:RainWorld"/> 实例。</param>
         </member>
         <member name="M:Fisobs.Creatures.Critob.RegisterUnlock(Fisobs.Sandbox.KillScore,MultiplayerUnlocks.SandboxUnlockID,MultiplayerUnlocks.SandboxUnlockID,System.Int32)">
             <summary>
-            Registers a sandbox unlock under this critob.
+            在此 critob 下注册沙盒解锁。
             </summary>
-            <param name="type">The sandbox unlock type.</param>
-            <param name="parent">The sandbox's parent unlock. If the parent type's token has been collected in story mode, then this item will be unlocked. To unconditionally unlock this item, set <paramref name="parent"/> to <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>.</param>
-            <param name="data">The sandbox unlock's data value. This takes the place of <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> when spawning objects from sandbox mode.</param>
-            <param name="killScore">The creature unlock's kill score. This is ignored for items.</param>
+            <param name="type">沙盒解锁类型。</param>
+            <param name="parent">沙盒的父解锁。如果父类型的代币已在故事模式中收集，则此物品将解锁。要无条件解锁此物品，请将 <paramref name="parent"/> 设置为 <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>。</param>
+            <param name="data">沙盒解锁的数据值。当从沙盒模式生成对象时，这将取代 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>。</param>
+            <param name="killScore">生物解锁的击杀得分。对于物品，此参数会被忽略。</param>
         </member>
         <member name="T:Fisobs.Creatures.CritobRegistry">
             <summary>
-            A registry that stores <see cref="T:Fisobs.Creatures.Critob"/> instances and the hooks relevant to them.
+            一个存储 <see cref="T:Fisobs.Creatures.Critob"/> 实例及相关钩子的注册表。
             </summary>
         </member>
         <member name="P:Fisobs.Creatures.CritobRegistry.Instance">
             <summary>
-            The singleton instance of this class.
+            此类的单例实例。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.CritobRegistry.Process(Fisobs.Core.IContent)">
@@ -516,165 +516,165 @@
         </member>
         <member name="T:Fisobs.Creatures.PreBakedPathing">
             <summary>
-            The kind of prebaked pathing used by a creature template. Can be <see cref="P:Fisobs.Creatures.PreBakedPathing.None"/> (<see langword="default"/>), <see cref="P:Fisobs.Creatures.PreBakedPathing.Original"/>, or <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/>.
+            生物模板使用的预烘焙寻路类型。可以是 <see cref="P:Fisobs.Creatures.PreBakedPathing.None"/>（<see langword="default"/>）、<see cref="P:Fisobs.Creatures.PreBakedPathing.Original"/> 或 <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/>。
             </summary>
         </member>
         <member name="P:Fisobs.Creatures.PreBakedPathing.None">
             <summary>
-            Creatures with this do not use prebaked pathing. Slugcats and garbage worms use this option.
+            使用此项的生物不使用预烘焙寻路。蛞蝓猫和垃圾虫使用此选项。
             </summary>
         </member>
         <member name="P:Fisobs.Creatures.PreBakedPathing.Original">
             <summary>
-            Creatures with this use their own, original prebaked pathing.
+            使用此项的生物使用它们自己的原始预烘焙寻路。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)">
             <summary>
-            Creatures with this use prebaked pathing from another creature.
+            使用此项的生物使用另一个生物的预烘焙寻路。
             </summary>
-            <param name="ancestor">The creature to inherit pathing from.</param>
+            <param name="ancestor">要继承寻路的生物。</param>
         </member>
         <member name="P:Fisobs.Creatures.PreBakedPathing.IsNone">
             <summary>
-            True if this is <see cref="P:Fisobs.Creatures.PreBakedPathing.None"/>.
+            如果这是 <see cref="P:Fisobs.Creatures.PreBakedPathing.None"/>，则为 true。
             </summary>
         </member>
         <member name="P:Fisobs.Creatures.PreBakedPathing.IsOriginal">
             <summary>
-            True if this is <see cref="P:Fisobs.Creatures.PreBakedPathing.Original"/>.
+            如果这是 <see cref="P:Fisobs.Creatures.PreBakedPathing.Original"/>，则为 true。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.PreBakedPathing.IsAncestral(CreatureTemplate.Type@)">
             <summary>
-            True if this is <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/>.
+            如果这是 <see cref="M:Fisobs.Creatures.PreBakedPathing.Ancestral(CreatureTemplate.Type)"/>，则为 true。
             </summary>
-            <param name="ancestor">The creature this pathing inherits from.</param>
+            <param name="ancestor">此寻路继承自的生物。</param>
         </member>
         <member name="T:Fisobs.Creatures.Relationships">
             <summary>
-            A wrapper around a <see cref="T:CreatureTemplate.Relationship"/> used to establish creature relationships.
+            一个围绕 <see cref="T:CreatureTemplate.Relationship"/> 的包装器，用于建立生物关系。
             </summary>
         </member>
         <member name="M:Fisobs.Creatures.Relationships.#ctor(CreatureTemplate.Type)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Creatures.Relationships"/> instance wrapping <paramref name="self"/>.
+            创建新的 <see cref="T:Fisobs.Creatures.Relationships"/> 实例，包装 <paramref name="self"/>。
             </summary>
         </member>
         <member name="T:Fisobs.Creatures.ShelterDanger">
             <summary>
-            Represents how much danger a creature poses to a player that shares a shelter with it.
+            表示生物对与其共享避难所的玩家构成多大危险。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.ShelterDanger.Safe">
-            <summary>Likely won't pose harm to the player.</summary>
+            <summary>可能不会对玩家造成伤害。</summary>
         </member>
         <member name="F:Fisobs.Creatures.ShelterDanger.Hostile">
-            <summary>Almost certainly poses harm to the player. Excludes lizards.</summary>
-            <remarks>After sleeping in a shelter with a player, these creatures are killed.</remarks>
+            <summary>几乎肯定会对玩家造成伤害。不包括蜥蜴。</summary>
+            <remarks>在与玩家一起在避难所睡觉后，这些生物会被杀死。</remarks>
         </member>
         <member name="F:Fisobs.Creatures.ShelterDanger.TooLarge">
-            <summary>Too big to sanely stuff into a shelter. Includes rain deer, vultures, daddy long legs, and more.</summary>
-            <remarks>After sleeping in a shelter with a player, these creatures are killed and sent back to their den.</remarks>
+            <summary>太大，无法合理地塞进避难所。包括雨鹿、秃鹫、Daddy Long Legs 等。</summary>
+            <remarks>在与玩家一起在避难所睡觉后，这些生物会被杀死并送回它们的巢穴。</remarks>
         </member>
         <member name="T:Fisobs.Creatures.TileResist">
             <summary>
-            Resistance to pathfinding over certain tiles.
+            对在某些地块上寻路的抗性。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.OffScreen">
             <summary>
-            Abstract pathfinding.
+            抽象寻路。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Floor">
             <summary>
-            The air just above solid tiles.
+            固体地块正上方的空气。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Corridor">
             <summary>
-            Tight corridors. These are the very thin and long "tunnels" creatures crawl through. Pipe cleaners love it here.
+            狭窄走廊。这些是生物爬行通过的非常细长的“隧道”。管道清洁工喜欢这里。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Climb">
             <summary>
-            Climbable tiles like poles.
+            可攀爬的地块，例如杆子。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Wall">
             <summary>
-            The air just to the left and right of solid tiles.
+            固体地块左右两侧的空气。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Ceiling">
             <summary>
-            The air just below solid tiles.
+            固体地块正下方的空气。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Air">
             <summary>
-            The air not adjacent to any solid tiles.
+            不与任何固体地块相邻的空气。
             </summary>
         </member>
         <member name="F:Fisobs.Creatures.TileResist.Solid">
             <summary>
-            Impassable solid tiles. Unless your creature can phase through walls, don't set this.
+            不可通行的固体地块。除非你的生物能穿墙，否则不要设置此项。
             </summary>
         </member>
         <member name="T:Fisobs.Items.Fisob">
             <summary>
-            Represents the "metadata" for a custom item.
+            表示自定义物品的“元数据”。
             </summary>
         </member>
         <member name="M:Fisobs.Items.Fisob.#ctor(AbstractPhysicalObject.AbstractObjectType)">
             <summary>
-            Creates a new <see cref="T:Fisobs.Items.Fisob"/> instance for the given <paramref name="type"/>.
+            为给定的 <paramref name="type"/> 创建新的 <see cref="T:Fisobs.Items.Fisob"/> 实例。
             </summary>
         </member>
         <member name="P:Fisobs.Items.Fisob.Type">
-            <summary>The fisob's type.</summary>
+            <summary>fisob 的类型。</summary>
         </member>
         <member name="P:Fisobs.Items.Fisob.Icon">
-            <summary>The fisob's icon; a <see cref="T:Fisobs.Core.DefaultIcon"/> by default.</summary>
-            <remarks>When <see cref="M:Fisobs.Items.Fisob.LoadResources(RainWorld)"/> is called, an embedded resource with the name <c>$"icon_{Type}"</c> will be auto-loaded as a <see cref="T:Fisobs.Core.SimpleIcon"/>, if it exists.</remarks>
+            <summary>fisob 的图标；默认是 <see cref="T:Fisobs.Core.DefaultIcon"/>。</summary>
+            <remarks>当调用 <see cref="M:Fisobs.Items.Fisob.LoadResources(RainWorld)"/> 时，如果存在名为 <c>$"icon_{Type}"</c> 的嵌入资源，它将被自动加载为 <see cref="T:Fisobs.Core.SimpleIcon"/>。</remarks>
         </member>
         <member name="P:Fisobs.Items.Fisob.SandboxPerformanceCost">
             <inheritdoc/>
         </member>
         <member name="M:Fisobs.Items.Fisob.Parse(World,Fisobs.Core.EntitySaveData,Fisobs.Sandbox.SandboxUnlock)">
             <summary>
-            Gets a new <see cref="T:AbstractPhysicalObject"/> instance from custom data.
+            从自定义数据获取新的 <see cref="T:AbstractPhysicalObject"/> 实例。
             </summary>
-            <param name="world">The world the entity lives in.</param>
-            <param name="entitySaveData">The entity's save data.</param>
-            <param name="unlock">The sandbox unlock that spawned this entity, or <see langword="null"/> if the entity wasn't spawned by one.</param>
+            <param name="world">实体所在的世界。</param>
+            <param name="entitySaveData">实体的存档数据。</param>
+            <param name="unlock">生成此实体的沙盒解锁；如果实体不是由沙盒解锁生成的，则为 <see langword="null"/>。</param>
         </member>
         <member name="M:Fisobs.Items.Fisob.Properties(PhysicalObject)">
             <inheritdoc/>
         </member>
         <member name="M:Fisobs.Items.Fisob.LoadResources(RainWorld)">
             <summary>
-            Loads <see cref="T:FAtlas"/> and <see cref="T:FAtlasElement"/> sprites. Called once.
+            加载 <see cref="T:FAtlas"/> 和 <see cref="T:FAtlasElement"/> 精灵。仅调用一次。
             </summary>
-            <param name="rainWorld">The current <see cref="T:RainWorld"/> instance.</param>
+            <param name="rainWorld">当前的 <see cref="T:RainWorld"/> 实例。</param>
         </member>
         <member name="M:Fisobs.Items.Fisob.RegisterUnlock(MultiplayerUnlocks.SandboxUnlockID,MultiplayerUnlocks.SandboxUnlockID,System.Int32)">
             <summary>
-            Registers a sandbox unlock under this fisob.
+            在此 fisob 下注册沙盒解锁。
             </summary>
-            <param name="type">The sandbox unlock type.</param>
-            <param name="parent">The sandbox's parent unlock. If the parent type's token has been collected in story mode, then this item will be unlocked. To unconditionally unlock this item, set <paramref name="parent"/> to <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>.</param>
-            <param name="data">The sandbox unlock's data value. This takes the place of <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> when spawning objects from sandbox mode.</param>
+            <param name="type">沙盒解锁类型。</param>
+            <param name="parent">沙盒的父解锁。如果父类型的代币已在故事模式中收集，则此物品将解锁。要无条件解锁此物品，请将 <paramref name="parent"/> 设置为 <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>。</param>
+            <param name="data">沙盒解锁的数据值。当从沙盒模式生成对象时，这将取代 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>。</param>
         </member>
         <member name="T:Fisobs.Items.FisobRegistry">
             <summary>
-            A registry that stores <see cref="T:Fisobs.Items.Fisob"/> instances and the hooks relevant to them.
+            一个存储 <see cref="T:Fisobs.Items.Fisob"/> 实例及相关钩子的注册表。
             </summary>
         </member>
         <member name="P:Fisobs.Items.FisobRegistry.Instance">
             <summary>
-            The singleton instance of this class.
+            此类的单例实例。
             </summary>
         </member>
         <member name="M:Fisobs.Items.FisobRegistry.Process(Fisobs.Core.IContent)">
@@ -685,111 +685,111 @@
         </member>
         <member name="T:Fisobs.Properties.IPropertyHandler">
             <summary>
-            Used by <see cref="T:Fisobs.Properties.PropertyRegistry"/> to manage an item's properties.
+            由 <see cref="T:Fisobs.Properties.PropertyRegistry"/> 用于管理物品属性。
             </summary>
         </member>
         <member name="P:Fisobs.Properties.IPropertyHandler.Type">
             <summary>
-            The type of item. Only items of this type will be passed into <see cref="M:Fisobs.Properties.IPropertyHandler.Properties(PhysicalObject)"/>.
+            物品类型。只有此类型的物品会传递给 <see cref="M:Fisobs.Properties.IPropertyHandler.Properties(PhysicalObject)"/>。
             </summary>
         </member>
         <member name="M:Fisobs.Properties.IPropertyHandler.Properties(PhysicalObject)">
             <summary>
-            Gets the custom properties of an item.
+            获取物品的自定义属性。
             </summary>
-            <param name="forObject">The item in question.</param>
-            <returns>An instance of <see cref="T:Fisobs.Properties.ItemProperties"/> or null.</returns>
+            <param name="forObject">所讨论的物品。</param>
+            <returns><see cref="T:Fisobs.Properties.ItemProperties"/> 的实例或 null。</returns>
         </member>
         <member name="T:Fisobs.Properties.ItemProperties">
             <summary>
-            Defines properties for custom item types, like how scavengers interact with an item and if players can grab it.
+            定义自定义物品类型的属性，例如拾荒者如何与物品互动以及玩家是否可以抓取它。
             </summary>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.ScavCollectScore(Scavenger,System.Int32@)">
             <summary>
-            How valuable the item is as a collectible.
+            物品作为收藏品的价值。
             </summary>
-            <remarks>Pearls score 10, spears score 3, shrooms score 2, unwanted items score 0.</remarks>
-            <param name="scav">The scavenger.</param>
-            <param name="score">Items with higher scores will be picked up first.</param>
+            <remarks>珍珠得 10 分，矛得 3 分，蘑菇得 2 分，不需要的物品得 0 分。</remarks>
+            <param name="scav">拾荒者。</param>
+            <param name="score">分数更高的物品会先被拾取。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.ScavWeaponPickupScore(Scavenger,System.Int32@)">
             <summary>
-            How valuable the item is as a weapon.
+            物品作为武器的价值。
             </summary>
-            <remarks>Spears score 3, explosive spears score 4, spore puffs score 1.</remarks>
-            <param name="scav">The scavenger.</param>
-            <param name="score">Items with higher scores will be picked up first.</param>
+            <remarks>矛得 3 分，爆炸矛得 4 分，孢子 puff 得 1 分。</remarks>
+            <param name="scav">拾荒者。</param>
+            <param name="score">分数更高的物品会先被拾取。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.ScavWeaponUseScore(Scavenger,System.Int32@)">
             <summary>
-            How readily the item will be used as a weapon. This may depend on the scavenger's current violence type (<see cref="F:ScavengerAI.currentViolenceType"/>).
+            物品作为武器被使用的意愿程度。这可能取决于拾荒者当前的暴力类型（<see cref="F:ScavengerAI.currentViolenceType"/>）。
             </summary>
             <remarks>
             <code>
             +——————————————+————————+———————————+
-            | ITEM         | LETHAL | NONLETHAL |
+            | 物品         | 致命   | 非致命    |
             +==============+========+===========+
-            | normal spear | 3      | 2         |
+            | 普通矛       | 3      | 2         |
             +——————————————+————————+———————————+
-            | expld. spear | 4      | 1         |
+            | 爆炸矛       | 4      | 1         |
             +——————————————+————————+———————————+
-            | jellyfish    | 2      | 3         |
+            | 水母         | 2      | 3         |
             +——————————————+————————+———————————+
-            | spore puff   | 1      | 1         |
+            | 孢子 puff    | 1      | 1         |
             +——————————————+————————+———————————+
-            | rock         | 2      | 4*        |
+            | 石头         | 2      | 4*        |
             +——————————————+————————+———————————+
-            | bomb         | 3**    | 0         |
+            | 炸弹         | 3**    | 0         |
             +——————————————+————————+———————————+
             
-            *  2 if the scav has rocks
-            ** 1 if the scav is scared and next to the target, else 0 if there are friends next to the target
+            *  如果拾荒者有石头，则为 2
+            ** 如果拾荒者害怕且紧邻目标，则为 1；否则如果目标旁边有朋友，则为 0
             </code>
             </remarks>
-            <param name="scav">The scavenger.</param>
-            <param name="score">Items with higher scores will be used first.</param>
+            <param name="scav">拾荒者。</param>
+            <param name="score">分数更高的物品会先被使用。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.LethalWeapon(Scavenger,System.Boolean@)">
             <summary>
-            Determines if scavengers will purposely miss when using this item if they don't mean to kill their target.
+            确定拾荒者在不打算杀死目标时，使用此物品是否会故意打偏。
             </summary>
             <remarks>
-            Only <see cref="T:Spear"/> and <see cref="T:ScavengerBomb"/> objects are considered lethal in vanilla.
+            在原版中，只有 <see cref="T:Spear"/> 和 <see cref="T:ScavengerBomb"/> 对象被视为致命。
             </remarks>
-            <param name="scav">The scavenger.</param>
-            <param name="isLethal">True if the item is lethal.</param>
+            <param name="scav">拾荒者。</param>
+            <param name="isLethal">如果物品致命，则为 true。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.Grabability(Player,Player.ObjectGrabability@)">
             <summary>
-            Determines if the player can pick up the item.
+            确定玩家是否可以拾取该物品。
             </summary>
-            <param name="player">The player.</param>
-            <param name="grabability">How difficult carrying the item is. Spears, for example, are <see cref="F:Player.ObjectGrabability.BigOneHand"/> items.</param>
+            <param name="player">玩家。</param>
+            <param name="grabability">携带该物品的难度。例如，矛是 <see cref="F:Player.ObjectGrabability.BigOneHand"/> 物品。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.Throwable(Player,System.Boolean@)">
             <summary>
-            Determines if the player can throw or toss the item.
+            确定玩家是否可以投掷或抛出该物品。
             </summary>
-            <param name="player">The player.</param>
-            <param name="throwable">True if the item can be thrown. Vulture masks, for example, cannot be thrown.</param>
+            <param name="player">玩家。</param>
+            <param name="throwable">如果物品可以投掷，则为 true。例如，秃鹫面具不能投掷。</param>
         </member>
         <member name="M:Fisobs.Properties.ItemProperties.Nourishment(Player,System.Int32@)">
             <summary>
-            This determines if the item gives full pips to the hunter slugcat when eaten.
+            这决定物品被吃时是否为猎手蛞蝓猫提供完整食物格。
             </summary>
-            <remarks>This is ignored unless the item implements the <see cref="T:IPlayerEdible"/> interface.</remarks>
-            <param name="player">The player.</param>
-            <param name="quarterPips">The amount of quarter pips the food should give. If eaten by Saint, a value of -1 will stun the player.</param>
+            <remarks>除非物品实现 <see cref="T:IPlayerEdible"/> 接口，否则此设置会被忽略。</remarks>
+            <param name="player">玩家。</param>
+            <param name="quarterPips">食物应提供的四分之一食物格数量。如果被圣徒吃掉，值 -1 会使玩家眩晕。</param>
         </member>
         <member name="T:Fisobs.Properties.PropertyRegistry">
             <summary>
-            A registry that stores <see cref="T:Fisobs.Properties.IPropertyHandler"/> instances and the hooks relevant to them.
+            一个存储 <see cref="T:Fisobs.Properties.IPropertyHandler"/> 实例及相关钩子的注册表。
             </summary>
         </member>
         <member name="P:Fisobs.Properties.PropertyRegistry.Instance">
             <summary>
-            The singleton instance of this class.
+            此类的单例实例。
             </summary>
         </member>
         <member name="M:Fisobs.Properties.PropertyRegistry.Process(Fisobs.Core.IContent)">
@@ -800,98 +800,98 @@
         </member>
         <member name="T:Fisobs.Sandbox.ISandboxHandler">
             <summary>
-            Used by <see cref="T:Fisobs.Sandbox.SandboxRegistry"/> to manage a set of sandbox unlocks.
+            由 <see cref="T:Fisobs.Sandbox.SandboxRegistry"/> 用于管理一组沙盒解锁。
             </summary>
         </member>
         <member name="P:Fisobs.Sandbox.ISandboxHandler.Type">
             <summary>
-            The physob these unlocks spawn.
+            这些解锁生成的 physob。
             </summary>
         </member>
         <member name="P:Fisobs.Sandbox.ISandboxHandler.SandboxPerformanceCost">
             <summary>
-            The performance cost associated with the entity in sandbox mode.
+            实体在沙盒模式中关联的性能消耗。
             </summary>
-            <value>A value of 0.2 for linear and 0 for exponential is the default. Some examples:
+            <value>线性为 0.2、指数为 0 是默认值。一些示例：
             <list type="bullet">
-            <item>Scavengers have 0.5 for linear and 0.925 for exponential.</item>
-            <item>Leviathans have 4.0 for linear and 1.2 for exponential.</item>
-            <item>Leeches have 0.3 for linear and 0.1 for exponential.</item>
-            <item>Batflies have 0.5 for linear and 0.1 for exponential.</item>
-            <item>Scavenger bombs have 1.2 for linear and 0 for exponential.</item>
+            <item>拾荒者的线性为 0.5，指数为 0.925。</item>
+            <item>利维坦的线性为 4.0，指数为 1.2。</item>
+            <item>水蛭的线性为 0.3，指数为 0.1。</item>
+            <item>蝠蝇的线性为 0.5，指数为 0.1。</item>
+            <item>拾荒者炸弹的线性为 1.2，指数为 0。</item>
             </list>
             </value>
         </member>
         <member name="P:Fisobs.Sandbox.ISandboxHandler.SandboxUnlocks">
             <summary>
-            The sandbox unlocks associated with the entity.
+            与实体关联的沙盒解锁。
             </summary>
         </member>
         <member name="M:Fisobs.Sandbox.ISandboxHandler.ParseFromSandbox(World,Fisobs.Core.EntitySaveData,Fisobs.Sandbox.SandboxUnlock)">
             <summary>
-            Gets a new <see cref="T:AbstractWorldEntity"/> instance for when an entity is spawned in sandbox mode.
+            获取当实体在沙盒模式中生成时的新 <see cref="T:AbstractWorldEntity"/> 实例。
             </summary>
-            <param name="world">The arena mode world.</param>
-            <param name="data">The entity's data.</param>
-            <param name="unlock">The unlock which spawned this entity.</param>
+            <param name="world">竞技场模式世界。</param>
+            <param name="data">实体的数据。</param>
+            <param name="unlock">生成此实体的解锁。</param>
         </member>
         <member name="T:Fisobs.Sandbox.KillScore">
             <summary>
-            Determines how many points a player earns when killing a creature as The Hunter and in arena mode.
+            确定玩家作为猎手以及在竞技场模式中击杀生物时获得多少分。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.KillScore.Value">
             <summary>
-            The score gained when the creature is killed.
+            生物被击杀时获得的分数。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.KillScore.IsConfigurable">
             <summary>
-            True if this value was created through <see cref="M:Fisobs.Sandbox.KillScore.Configurable(System.Int32)"/>.
+            如果此值是通过 <see cref="M:Fisobs.Sandbox.KillScore.Configurable(System.Int32)"/> 创建的，则为 true。
             </summary>
         </member>
         <member name="M:Fisobs.Sandbox.KillScore.Configurable(System.Int32)">
             <summary>
-            Creates a kill score that players can configure in the sandbox menu.
+            创建一个玩家可以在沙盒菜单中配置的击杀得分。
             </summary>
-            <param name="defaultScore">The score awarded to a player that kills this creature unless the value is overridden in sandbox mode.</param>
+            <param name="defaultScore">除非在沙盒模式中覆盖该值，否则授予击杀此生物的玩家的默认分数。</param>
         </member>
         <member name="M:Fisobs.Sandbox.KillScore.Constant(System.Int32)">
             <summary>
-            Creates a kill score that's hidden from the player and cannot be configured.
+            创建一个对玩家隐藏且无法配置的击杀得分。
             </summary>
-            <param name="score">The score awarded to a player that kills this creature.</param>
+            <param name="score">授予击杀此生物的玩家的分数。</param>
         </member>
         <member name="T:Fisobs.Sandbox.SandboxPerformanceCost">
             <summary>
-            Represents an item or creature's performance impact in sandbox mode.
+            表示物品或生物在沙盒模式中的性能影响。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxPerformanceCost.Linear">
             <summary>
-            A higher value means many creatures will proportionally degrade performance.
+            值越高意味着许多生物会按比例降低性能。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxPerformanceCost.Exponential">
             <summary>
-            A higher value means many creatures will explosively degrade performance.
+            值越高意味着许多生物会爆炸性地降低性能。
             </summary>
         </member>
         <member name="M:Fisobs.Sandbox.SandboxPerformanceCost.#ctor(System.Single,System.Single)">
             <summary>
-            Creates a new instance of the <see cref="T:Fisobs.Sandbox.SandboxPerformanceCost"/> class.
+            创建 <see cref="T:Fisobs.Sandbox.SandboxPerformanceCost"/> 类的新实例。
             </summary>
-            <param name="linear">A higher value indicates having many of a creature will proportionally degrade performance.</param>
-            <param name="exponential">A higher value indicates having many of a creature will explosively degrade performance.</param>
+            <param name="linear">值越高表示拥有许多某种生物会按比例降低性能。</param>
+            <param name="exponential">值越高表示拥有许多某种生物会爆炸性地降低性能。</param>
         </member>
         <member name="T:Fisobs.Sandbox.SandboxRegistry">
             <summary>
-            A registry that stores <see cref="T:Fisobs.Sandbox.ISandboxHandler"/> instances and the hooks relevant to them.
+            一个存储 <see cref="T:Fisobs.Sandbox.ISandboxHandler"/> 实例及相关钩子的注册表。
             </summary>
         </member>
         <member name="P:Fisobs.Sandbox.SandboxRegistry.Instance">
             <summary>
-            The singleton instance of this class.
+            此类的单例实例。
             </summary>
         </member>
         <member name="M:Fisobs.Sandbox.SandboxRegistry.Process(Fisobs.Core.IContent)">
@@ -902,38 +902,38 @@
         </member>
         <member name="T:Fisobs.Sandbox.SandboxUnlock">
             <summary>
-            Represents a sandbox unlock.
+            表示一个沙盒解锁。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxUnlock.Type">
             <summary>
-            The sandbox unlock type.
+            沙盒解锁类型。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxUnlock.Parent">
             <summary>
-            The sandbox's parent unlock. If the parent type's token has been collected in story mode, then this item will be unlocked.
+            沙盒的父解锁。如果父类型的代币已在故事模式中收集，则此物品将解锁。
             </summary>
-            <remarks>If this is set to <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>, the item is unconditionally unlocked.</remarks>
+            <remarks>如果将其设置为 <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>，则物品无条件解锁。</remarks>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxUnlock.Data">
             <summary>
-            The sandbox unlock's data value. This takes the place of <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> when spawning objects from sandbox mode.
+            沙盒解锁的数据值。当从沙盒模式生成对象时，这将取代 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>。
             </summary>
         </member>
         <member name="F:Fisobs.Sandbox.SandboxUnlock.KillScore">
             <summary>
-            The creature unlock's default kill score. This is ignored for items.
+            生物解锁的默认击杀得分。对于物品，此参数会被忽略。
             </summary>
         </member>
         <member name="M:Fisobs.Sandbox.SandboxUnlock.#ctor(MultiplayerUnlocks.SandboxUnlockID,MultiplayerUnlocks.SandboxUnlockID,System.Int32,Fisobs.Sandbox.KillScore)">
             <summary>
-            Creates a new instance of the <see cref="T:Fisobs.Sandbox.SandboxUnlock"/> class.
+            创建 <see cref="T:Fisobs.Sandbox.SandboxUnlock"/> 类的新实例。
             </summary>
-            <param name="type">The sandbox unlock type.</param>
-            <param name="parent">The sandbox's parent unlock. If the parent type's token has been collected in story mode, then this item will be unlocked. To unconditionally unlock this item, set <paramref name="parent"/> to <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>.</param>
-            <param name="data">The sandbox unlock's data value. This takes the place of <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/> when spawning objects from sandbox mode.</param>
-            <param name="killScore">The creature unlock's kill score. This is ignored for items.</param>
+            <param name="type">沙盒解锁类型。</param>
+            <param name="parent">沙盒的父解锁。如果父类型的代币已在故事模式中收集，则此物品将解锁。要无条件解锁此物品，请将 <paramref name="parent"/> 设置为 <see cref="F:MultiplayerUnlocks.SandboxUnlockID.Slugcat"/>。</param>
+            <param name="data">沙盒解锁的数据值。当从沙盒模式生成对象时，这将取代 <see cref="M:Fisobs.Core.Icon.Data(AbstractPhysicalObject)"/>。</param>
+            <param name="killScore">生物解锁的击杀得分。对于物品，此参数会被忽略。</param>
         </member>
     </members>
 </doc>
