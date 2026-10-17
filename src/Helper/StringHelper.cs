@@ -41,7 +41,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Watcher;
 using static Player.ObjectGrabability;
-using static SlugBase.Features.FeatureTypes;
 #endregion
 
 namespace CommonUtils.Core;

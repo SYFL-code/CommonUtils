@@ -11,7 +11,6 @@ global using Vector2 = UnityEngine.Vector2;
 using BepInEx;
 using CommonUtils.Debug;
 using SlugBase.Features;
-using static SlugBase.Features.FeatureTypes;
 
 
 namespace CommonUtils

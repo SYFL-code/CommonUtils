@@ -1,0 +1,1126 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp</name>
+    </assembly>
+    <members>
+        <!-- ==================== 类 ==================== -->
+        <member name="T:RWCustom.Custom">
+            <summary>《雨世界》通用工具类，提供数学、几何、颜色、字符串、缓动、字体、校验等辅助功能。</summary>
+        </member>
+
+        <!-- ==================== 字段 ==================== -->
+        <member name="F:RWCustom.Custom.NewLine">
+            <summary>换行符 "\r\n"。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.rainWorld">
+            <summary>全局 RainWorld 单例引用。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.eightDirections">
+            <summary>八个方向（含对角）。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.eightDirectionsDiagonalsLast">
+            <summary>八个方向，对角放在后面。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.zeroAndEightDirectionsDiagonalsLast">
+            <summary>零方向加八个方向，对角最后。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.eightDirectionsAndZero">
+            <summary>八个方向加零方向。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.fourDirections">
+            <summary>四个正交方向。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.fourDirectionsInt2">
+            <summary>四个正交方向（Unity.Mathematics.int2）。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.fourDirectionsAndZero">
+            <summary>四个正交方向加零方向。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.diagonals">
+            <summary>四个对角方向。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.leftRightUpDown">
+            <summary>左右上下四个方向。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.FadableVectorCircleColors">
+            <summary>可淡入淡出的矢量圆颜色。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.Logger">
+            <summary>日志器。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.rootFolderDirectory">
+            <summary>资源根目录。</summary>
+        </member>
+        <member name="F:RWCustom.Custom.encrptString">
+            <summary>加密/校验用基础字符串。</summary>
+        </member>
+
+        <!-- ==================== 属性 ==================== -->
+        <member name="P:RWCustom.Custom.EncryptionString">
+            <summary>从 encrptString 截取的加密字符串。</summary>
+        </member>
+        <member name="P:RWCustom.Custom.CheckSumSalt">
+            <summary>从 encrptString 截取的校验盐。</summary>
+        </member>
+
+        <!-- ==================== 方法 ==================== -->
+        <member name="M:RWCustom.Custom.ParseEnum``1(System.String)">
+            <summary>将字符串解析为指定枚举类型。</summary>
+            <typeparam name="T">目标枚举类型。</typeparam>
+            <param name="value">要解析的字符串。</param>
+            <returns>解析后的枚举值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.IsDigitString(System.String)">
+            <summary>判断字符串是否只包含数字。</summary>
+            <param name="str">输入字符串。</param>
+            <returns>如果全是数字则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ReplaceLineDelimeters(System.String)">
+            <summary>替换 &lt;LINE&gt; 与 &lt;WWLINE&gt; 为换行标记。</summary>
+            <param name="s">输入字符串。</param>
+            <returns>替换后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ReplaceWordWrapLineDelimeters(System.String)">
+            <summary>替换自动换行相关标记。</summary>
+            <param name="s">输入字符串。</param>
+            <returns>替换后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.TruncateString(System.String,System.Int32)">
+            <summary>截断字符串并添加省略号。</summary>
+            <param name="s">输入字符串。</param>
+            <param name="maxLength">最大长度。</param>
+            <returns>截断后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Log(System.String[])">
+            <summary>空日志方法。</summary>
+            <param name="values">日志内容。</param>
+        </member>
+        <member name="M:RWCustom.Custom.LogImportant(System.String[])">
+            <summary>条件输出重要日志。</summary>
+            <param name="values">日志内容。</param>
+        </member>
+        <member name="M:RWCustom.Custom.LogWarning(System.String[])">
+            <summary>条件输出警告日志。</summary>
+            <param name="values">日志内容。</param>
+        </member>
+        <member name="M:RWCustom.Custom.Dist(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>计算两点欧几里得距离。</summary>
+            <param name="p1">第一个点。</param>
+            <param name="p2">第二个点。</param>
+            <returns>距离值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistNoSqrt(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>计算两点距离平方，不执行开方。</summary>
+            <param name="p1">第一个点。</param>
+            <param name="p2">第二个点。</param>
+            <returns>距离平方。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistLess(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>判断两点距离是否小于给定值。</summary>
+            <param name="p1">第一个点。</param>
+            <param name="p2">第二个点。</param>
+            <param name="dst">距离阈值。</param>
+            <returns>如果距离小于阈值则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistLess(IntVector2,IntVector2,System.Single)">
+            <summary>判断两个 IntVector2 距离是否小于给定值。</summary>
+            <param name="p1">第一个点。</param>
+            <param name="p2">第二个点。</param>
+            <param name="dst">距离阈值。</param>
+            <returns>如果距离小于阈值则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistLess(WorldCoordinate,WorldCoordinate,System.Single)">
+            <summary>判断两个 WorldCoordinate 是否同房间且距离小于给定值。</summary>
+            <param name="a">第一个世界坐标。</param>
+            <param name="b">第二个世界坐标。</param>
+            <param name="dst">距离阈值。</param>
+            <returns>如果同房间且距离小于阈值则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.VectorIsCloser(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断 A 是否比 B 更接近比较点。</summary>
+            <param name="A">点 A。</param>
+            <param name="B">点 B。</param>
+            <param name="comparePoint">比较点。</param>
+            <returns>如果 A 更接近则为 true。</returns>
+        </member>
+		<member name="M:RWCustom.Custom.DirVec(UnityEngine.Vector2,UnityEngine.Vector2)">
+  		  <summary>
+			计算从点 <paramref name="p1"/> 指向点 <paramref name="p2"/> 的单位方向向量。
+   		    如果两个点相同，则返回默认方向 <c>(0, 1)</c>。
+  		  </summary>
+  		  <param name="p1">起始点。</param>
+  		  <param name="p2">目标点。</param>
+    		<returns>从 <paramref name="p1"/> 到 <paramref name="p2"/> 的归一化方向向量；若两点重合，则返回 <c>(0, 1)</c>。</returns>
+		</member>
+        <member name="M:RWCustom.Custom.DirVec(Unity.Mathematics.float2,UnityEngine.Vector2)">
+            <summary>求 float2 到 Vector2 的方向单位向量。</summary>
+            <param name="p1">起点。</param>
+            <param name="p2">终点。</param>
+            <returns>方向单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DirVec(UnityEngine.Vector2,Unity.Mathematics.float2)">
+            <summary>求 Vector2 到 float2 的方向单位向量。</summary>
+            <param name="p1">起点。</param>
+            <param name="p2">终点。</param>
+            <returns>方向单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DirVec(Unity.Mathematics.float2,Unity.Mathematics.float2)">
+            <summary>求两个 float2 的方向单位向量。</summary>
+            <param name="p1">起点。</param>
+            <param name="p2">终点。</param>
+            <returns>方向单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>将数值从一个范围线性映射到另一个范围。</summary>
+            <param name="n">输入值。</param>
+            <param name="oldMin">原范围最小值。</param>
+            <param name="oldMax">原范围最大值。</param>
+            <param name="newMin">目标范围最小值。</param>
+            <param name="newMax">目标范围最大值。</param>
+            <returns>映射后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MapRangeClamped(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>线性映射并钳制到目标范围。</summary>
+            <param name="n">输入值。</param>
+            <param name="oldMin">原范围最小值。</param>
+            <param name="oldMax">原范围最大值。</param>
+            <param name="newMin">目标范围最小值。</param>
+            <param name="newMax">目标范围最大值。</param>
+            <returns>映射并钳制后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Factorial(System.Int32)">
+            <summary>计算阶乘。</summary>
+            <param name="n">非负整数。</param>
+            <returns>n 的阶乘。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.CirclesCollisionTime(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>计算两个圆的碰撞时间。</summary>
+            <param name="x1">圆1圆心 X。</param>
+            <param name="y1">圆1圆心 Y。</param>
+            <param name="x2">圆2圆心 X。</param>
+            <param name="y2">圆2圆心 Y。</param>
+            <param name="vx1">圆1速度 X。</param>
+            <param name="vy1">圆1速度 Y。</param>
+            <param name="r1">圆1半径。</param>
+            <param name="r2">圆2半径。</param>
+            <returns>碰撞时间。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DegToVec(System.Single)">
+            <summary>角度转 Vector2。</summary>
+            <param name="ang">角度（度）。</param>
+            <returns>单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DegToFloat2(System.Single)">
+            <summary>角度转 float2。</summary>
+            <param name="ang">角度（度）。</param>
+            <returns>单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.IntVector2ToVector2(IntVector2)">
+            <summary>IntVector2 转 Vector2。</summary>
+            <param name="ivect2">整数向量。</param>
+            <returns>浮点向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.AimFromOneVectorToAnother(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>求从 p1 到 p2 的瞄准角度。</summary>
+            <param name="p1">起点。</param>
+            <param name="p2">终点。</param>
+            <returns>角度（度）。</returns>
+        </member>
+<member name="M:RWCustom.Custom.VecToDeg(UnityEngine.Vector2)">
+    <summary>
+        将二维向量 <paramref name="v"/> 转换为以度为单位的朝向角度。
+        角度以 Y 轴正方向(0,1)为 0°，顺时针为正，取值范围为 <c>[-180, 180]</c>。
+    </summary>
+    <param name="v">要转换的二维向量。</param>
+    <returns>该向量对应的角度（单位：度）。</returns>
+</member>
+        <member name="M:RWCustom.Custom.Float2ToDeg(Unity.Mathematics.float2)">
+            <summary>float2 转角度。</summary>
+            <param name="v">输入向量。</param>
+            <returns>角度（度）。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Angle(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>计算两个向量的带符号夹角。</summary>
+            <param name="A">向量 A。</param>
+            <param name="B">向量 B。</param>
+            <returns>夹角（度）。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PerpendicularVector(UnityEngine.Vector2)">
+            <summary>求垂直向量。</summary>
+            <param name="v">输入向量。</param>
+            <returns>垂直单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PerpendicularVector(Unity.Mathematics.float2)">
+            <summary>求 float2 的垂直向量。</summary>
+            <param name="v">输入向量。</param>
+            <returns>垂直单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PerpendicularVector(UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>求两点连线的垂直向量。</summary>
+            <param name="v1">点1。</param>
+            <param name="v2">点2。</param>
+            <returns>垂直单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PerpendicularVector(Unity.Mathematics.float2,Unity.Mathematics.float2)">
+            <summary>求两个 float2 连线的垂直向量。</summary>
+            <param name="v1">点1。</param>
+            <param name="v2">点2。</param>
+            <returns>垂直单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RotateAroundVector(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>绕指定支点旋转向量。</summary>
+            <param name="vec">要旋转的向量。</param>
+            <param name="pivot">支点。</param>
+            <param name="degAng">旋转角度（度）。</param>
+            <returns>旋转后的向量。</returns>
+        </member>
+<member name="M:RWCustom.Custom.RotateAroundOrigo(UnityEngine.Vector2,System.Single)">
+    <summary>
+        将二维向量 <paramref name="vec"/> 围绕原点旋转指定的角度。
+    </summary>
+    <param name="vec">要旋转的二维向量。</param>
+    <param name="degAng">旋转角度，单位为度。正角度表示顺时针旋转。</param>
+    <returns>旋转后的新二维向量。</returns>
+    <remarks>
+        该方法内部将角度取负后转换为弧度，因此传入正角度时实际执行的是顺时针旋转。
+        旋转不改变向量的长度，仅改变其方向。
+    </remarks>
+</member>
+        <member name="M:RWCustom.Custom.RotateAroundOrigo(Unity.Mathematics.float2,System.Single)">
+            <summary>绕原点旋转 float2。</summary>
+            <param name="vec">要旋转的向量。</param>
+            <param name="degAng">旋转角度（度）。</param>
+            <returns>旋转后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.FlattenVectorAlongAxis(UnityEngine.Vector2,System.Single,System.Single)">
+            <summary>沿指定轴压扁向量。</summary>
+            <param name="vec">输入向量。</param>
+            <param name="axis">轴角度。</param>
+            <param name="fac">压扁系数。</param>
+            <returns>压扁后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpAndTick(System.Single,System.Single,System.Single,System.Single)">
+            <summary>插值并逐步逼近目标。</summary>
+            <param name="from">起始值。</param>
+            <param name="to">目标值。</param>
+            <param name="lerp">插值系数。</param>
+            <param name="tick">每步增量。</param>
+            <returns>插值后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InitializeRootFolderDirectory">
+            <summary>初始化资源根目录。</summary>
+        </member>
+        <member name="M:RWCustom.Custom.RootFolderDirectory">
+            <summary>获取资源根目录。</summary>
+            <returns>资源根目录路径。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LegacyRootFolderDirectory">
+            <summary>获取旧版资源根目录。</summary>
+            <returns>旧版资源根目录路径。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.IntClamp(System.Int32,System.Int32,System.Int32)">
+            <summary>整数钳制。</summary>
+            <param name="val">输入值。</param>
+            <param name="inclMin">最小包含值。</param>
+            <param name="inclMax">最大包含值。</param>
+            <returns>钳制后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Multiply(UnityEngine.Color,UnityEngine.Color)">
+            <summary>颜色相乘。</summary>
+            <param name="A">颜色 A。</param>
+            <param name="B">颜色 B。</param>
+            <returns>相乘后的颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Screen(UnityEngine.Color,UnityEngine.Color)">
+            <summary>颜色滤色混合。</summary>
+            <param name="A">颜色 A。</param>
+            <param name="B">颜色 B。</param>
+            <returns>混合后的颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ApplyDepthOnVector(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>对向量应用深度缩放。</summary>
+            <param name="v">输入向量。</param>
+            <param name="depthPoint">深度参考点。</param>
+            <param name="d">深度值。</param>
+            <returns>缩放后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ApplyDepthOnRect(UnityEngine.Rect,UnityEngine.Vector2,System.Single)">
+            <summary>对矩形应用深度缩放。</summary>
+            <param name="rect">输入矩形。</param>
+            <param name="depthPoint">深度参考点。</param>
+            <param name="d">深度值。</param>
+            <returns>缩放后的矩形。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetDepthScale(System.Single)">
+            <summary>获取深度缩放值。</summary>
+            <param name="d">深度值。</param>
+            <returns>缩放比例。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Decimal(System.Single)">
+            <summary>取浮点数小数部分。</summary>
+            <param name="f">输入浮点数。</param>
+            <returns>小数部分。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Bezier(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>计算贝塞尔曲线上的点。</summary>
+            <param name="A">起点。</param>
+            <param name="cA">起点控制点。</param>
+            <param name="B">终点。</param>
+            <param name="cB">终点控制点。</param>
+            <param name="f">插值系数。</param>
+            <returns>曲线上的点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierDerivative(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>计算贝塞尔曲线导数。</summary>
+            <param name="A">起点。</param>
+            <param name="cA">起点控制点。</param>
+            <param name="B">终点。</param>
+            <param name="cB">终点控制点。</param>
+            <param name="f">插值系数。</param>
+            <returns>导数向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierLength(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,System.Int32)">
+            <summary>计算贝塞尔曲线长度。</summary>
+            <param name="A">起点。</param>
+            <param name="cA">起点控制点。</param>
+            <param name="B">终点。</param>
+            <param name="cB">终点控制点。</param>
+            <param name="segments">分段数。</param>
+            <returns>曲线长度。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierLengthRecursive(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,System.Single,System.Int32,System.Int32)">
+            <summary>递归估算贝塞尔曲线长度。</summary>
+            <param name="A">起点。</param>
+            <param name="cA">起点控制点。</param>
+            <param name="B">终点。</param>
+            <param name="cB">终点控制点。</param>
+            <param name="error">误差。</param>
+            <param name="increment">增量。</param>
+            <param name="initialSegments">初始分段数。</param>
+            <returns>估算长度。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierSplit(BezierCurve,System.Single,BezierCurve@,BezierCurve@)">
+            <summary>分割贝塞尔曲线。</summary>
+            <param name="input">输入曲线。</param>
+            <param name="f">分割系数。</param>
+            <param name="out1">输出曲线1。</param>
+            <param name="out2">输出曲线2。</param>
+        </member>
+        <member name="M:RWCustom.Custom.BezierYatX(BezierCurve,System.Single)">
+            <summary>根据 X 求贝塞尔曲线上的 Y。</summary>
+            <param name="bezier">贝塞尔曲线。</param>
+            <param name="x">X 坐标。</param>
+            <returns>Y 坐标。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierXatY(BezierCurve,System.Single)">
+            <summary>根据 Y 求贝塞尔曲线上的 X。</summary>
+            <param name="bezier">贝塞尔曲线。</param>
+            <param name="y">Y 坐标。</param>
+            <returns>X 坐标。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierRelativeToAbsolute(BezierCurve)">
+            <summary>贝塞尔相对坐标转绝对坐标。</summary>
+            <param name="relative">相对坐标曲线。</param>
+            <returns>绝对坐标曲线。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierAbsoluteToRelative(BezierCurve)">
+            <summary>贝塞尔绝对坐标转相对坐标。</summary>
+            <param name="absolute">绝对坐标曲线。</param>
+            <returns>相对坐标曲线。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BezierThroughHandles(UnityEngine.Vector2,UnityEngine.Vector2@,UnityEngine.Vector2,UnityEngine.Vector2@)">
+            <summary>通过手柄点调整贝塞尔控制点。</summary>
+            <param name="A">起点。</param>
+            <param name="cA">起点控制点。</param>
+            <param name="B">终点。</param>
+            <param name="cB">终点控制点。</param>
+        </member>
+        <member name="M:RWCustom.Custom.RestrictInRect(IntVector2,IntRect)">
+            <summary>将 IntVector2 限制在整数矩形内。</summary>
+            <param name="vec">输入向量。</param>
+            <param name="rect">矩形。</param>
+            <returns>限制后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RestrictInRect(UnityEngine.Vector2,FloatRect)">
+            <summary>将 Vector2 限制在浮点矩形内。</summary>
+            <param name="vec">输入向量。</param>
+            <param name="rect">矩形。</param>
+            <returns>限制后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MoveTowards(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>朝目标点移动指定距离。</summary>
+            <param name="A">当前位置。</param>
+            <param name="B">目标位置。</param>
+            <param name="speed">移动速度。</param>
+            <returns>移动后的位置。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.IntVectorsOpposite(IntVector2,IntVector2)">
+            <summary>判断两个整数向量是否相反。</summary>
+            <param name="a">向量 A。</param>
+            <param name="b">向量 B。</param>
+            <returns>如果相反则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InsideRect(IntVector2,IntRect)">
+            <summary>判断 IntVector2 是否在整数矩形内。</summary>
+            <param name="vec">输入向量。</param>
+            <param name="rect">矩形。</param>
+            <returns>如果在内部则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.VectorRectDistance(UnityEngine.Vector2,FloatRect)">
+            <summary>点到矩形的距离。</summary>
+            <param name="vec">点。</param>
+            <param name="rect">矩形。</param>
+            <returns>距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InsideRect(System.Int32,System.Int32,IntRect)">
+            <summary>判断坐标是否在整数矩形内。</summary>
+            <param name="x">X 坐标。</param>
+            <param name="y">Y 坐标。</param>
+            <param name="rect">矩形。</param>
+            <returns>如果在内部则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InRange(System.Single,System.Single,System.Single)">
+            <summary>判断浮点数是否在给定范围内。</summary>
+            <param name="f">输入值。</param>
+            <param name="xA">边界 A。</param>
+            <param name="xB">边界 B。</param>
+            <returns>如果在范围内则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RectZone(UnityEngine.Vector2,FloatRect)">
+            <summary>判断点相对矩形的位置区域。</summary>
+            <param name="pos">点。</param>
+            <param name="rect">矩形。</param>
+            <returns>区域向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.VisibleCornersOnRect(UnityEngine.Vector2,FloatRect)">
+            <summary>获取矩形上可见的角。</summary>
+            <param name="viewPos">视点。</param>
+            <param name="rect">矩形。</param>
+            <returns>可见角标签数组。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PushOutOfInvisibleArea(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,FloatRect,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>将点推出不可见区域。</summary>
+            <param name="viewPoint">视点。</param>
+            <param name="point">当前点。</param>
+            <param name="lastPoint">上一点。</param>
+            <param name="rct">矩形。</param>
+            <param name="useAcorner">使用角 A。</param>
+            <param name="useBcorner">使用角 B。</param>
+            <param name="useCcorner">使用角 C。</param>
+            <param name="useDcorner">使用角 D。</param>
+            <returns>推出后的点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RandomPointInRect(FloatRect)">
+            <summary>矩形内随机点。</summary>
+            <param name="rct">矩形。</param>
+            <returns>随机点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RectCollision(UnityEngine.Vector2,UnityEngine.Vector2,FloatRect)">
+            <summary>计算线段与矩形的碰撞。</summary>
+            <param name="pos">当前位置。</param>
+            <param name="lastPos">上一位置。</param>
+            <param name="rct">矩形。</param>
+            <returns>碰撞信息矩形。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.TriContainsPoint(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断三角形是否包含点。</summary>
+            <param name="p">点。</param>
+            <param name="a">顶点 A。</param>
+            <param name="b">顶点 B。</param>
+            <param name="c">顶点 C。</param>
+            <returns>如果包含则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.QuadPolyContainsPoint(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断四边形是否包含点。</summary>
+            <param name="p">点。</param>
+            <param name="a">顶点 A。</param>
+            <param name="b">顶点 B。</param>
+            <param name="c">顶点 C。</param>
+            <param name="d">顶点 D。</param>
+            <returns>如果包含则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.AreIntVectorsNeighbors(IntVector2,IntVector2)">
+            <summary>判断两个整数向量是否四邻接。</summary>
+            <param name="A">向量 A。</param>
+            <param name="B">向量 B。</param>
+            <returns>如果四邻接则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.AreIntVectorsDiagonalNeighbors(IntVector2,IntVector2)">
+            <summary>判断两个整数向量是否对角邻接。</summary>
+            <param name="A">向量 A。</param>
+            <param name="B">向量 B。</param>
+            <returns>如果对角邻接则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.IsPointBetweenPoints(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断点是否在两点之间。</summary>
+            <param name="A">点 A。</param>
+            <param name="B">点 B。</param>
+            <param name="v2">待判断点。</param>
+            <returns>如果在之间则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.VerticalCrossPoint(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>求线段与垂直线的交点。</summary>
+            <param name="A">线段起点。</param>
+            <param name="B">线段终点。</param>
+            <param name="X">垂直线 X 坐标。</param>
+            <returns>交点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.HorizontalCrossPoint(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>求线段与水平线的交点。</summary>
+            <param name="A">线段起点。</param>
+            <param name="B">线段终点。</param>
+            <param name="Y">水平线 Y 坐标。</param>
+            <returns>交点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LineIntersection(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>求两条直线的交点。</summary>
+            <param name="A1">直线1点A。</param>
+            <param name="B1">直线1点B。</param>
+            <param name="A2">直线2点A。</param>
+            <param name="B2">直线2点B。</param>
+            <returns>交点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PointBehindRect(UnityEngine.Vector2,UnityEngine.Vector2,FloatRect)">
+            <summary>判断点是否在矩形后方。</summary>
+            <param name="lookingPoint">视点。</param>
+            <param name="lookedAtPoint">被观察点。</param>
+            <param name="rect">矩形。</param>
+            <returns>如果在后方则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PerpIntVec(IntVector2)">
+            <summary>求整数垂直向量。</summary>
+            <param name="intVec">输入整数向量。</param>
+            <returns>垂直整数向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ClosestPointOnLine(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>求直线上最近点。</summary>
+            <param name="A">直线点 A。</param>
+            <param name="B">直线点 B。</param>
+            <param name="P">目标点。</param>
+            <returns>最近点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ManhattanDistance(IntVector2,IntVector2)">
+            <summary>计算两个 IntVector2 的曼哈顿距离。</summary>
+            <param name="a">向量 A。</param>
+            <param name="b">向量 B。</param>
+            <returns>曼哈顿距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ManhattanDistance(WorldCoordinate,WorldCoordinate)">
+            <summary>计算两个 WorldCoordinate 的曼哈顿距离。</summary>
+            <param name="a">世界坐标 A。</param>
+            <param name="b">世界坐标 B。</param>
+            <returns>曼哈顿距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.WorldCoordFloatDist(WorldCoordinate,WorldCoordinate)">
+            <summary>计算两个世界坐标的浮点距离。</summary>
+            <param name="a">世界坐标 A。</param>
+            <param name="b">世界坐标 B。</param>
+            <returns>浮点距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BetweenRoomsDistance(World,WorldCoordinate,WorldCoordinate)">
+            <summary>计算两个房间之间的近似距离。</summary>
+            <param name="world">世界对象。</param>
+            <param name="a">世界坐标 A。</param>
+            <param name="b">世界坐标 B。</param>
+            <returns>房间间距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistanceToLine(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>点到直线距离。</summary>
+            <param name="V">点。</param>
+            <param name="l2">直线点2。</param>
+            <param name="l1">直线点1。</param>
+            <returns>距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistanceToLine(Unity.Mathematics.float2,Unity.Mathematics.float2,Unity.Mathematics.float2)">
+            <summary>点到直线距离（float2）。</summary>
+            <param name="V">点。</param>
+            <param name="l2">直线点2。</param>
+            <param name="l1">直线点1。</param>
+            <returns>距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BetweenLines(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断点是否在两条线之间。</summary>
+            <param name="V">点。</param>
+            <param name="lA1">线 A 点1。</param>
+            <param name="lA2">线 A 点2。</param>
+            <param name="lB1">线 B 点1。</param>
+            <param name="lB2">线 B 点2。</param>
+            <returns>如果在之间则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PointInTriangle(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断点是否在三角形内。</summary>
+            <param name="pt">点。</param>
+            <param name="v1">顶点1。</param>
+            <param name="v2">顶点2。</param>
+            <param name="v3">顶点3。</param>
+            <returns>如果在内部则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MakeWorldCoordinate(IntVector2,System.Int32)">
+            <summary>创建世界坐标。</summary>
+            <param name="pos">位置。</param>
+            <param name="room">房间索引。</param>
+            <returns>世界坐标。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MakeWorldCoordinate(IntVector2,System.Int32,System.Int32)">
+            <summary>创建带节点的世界坐标。</summary>
+            <param name="pos">位置。</param>
+            <param name="room">房间索引。</param>
+            <param name="node">节点索引。</param>
+            <returns>世界坐标。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.MinusOneToOneRangeFloatInfluence(System.Single,System.Single)">
+            <summary>计算 -1 到 1 范围的影响值。</summary>
+            <param name="f">输入值。</param>
+            <param name="infl">影响值。</param>
+            <returns>影响后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ClampAngle(UnityEngine.Vector2,UnityEngine.Vector2,System.Single,System.Single,System.Single)">
+            <summary>将向量角度钳制到指定范围。</summary>
+            <param name="target">目标向量。</param>
+            <param name="vector">输入向量。</param>
+            <param name="minAngle">最小角度。</param>
+            <param name="maxAngle">最大角度。</param>
+            <param name="mixFactor">混合系数。</param>
+            <returns>钳制后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.SCurve(System.Single,System.Single)">
+            <summary>S 曲线函数。</summary>
+            <param name="x">输入值。</param>
+            <param name="k">曲线参数。</param>
+            <returns>S 曲线值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.BackwardsSCurve(System.Single,System.Single)">
+            <summary>反向 S 曲线函数。</summary>
+            <param name="x">输入值。</param>
+            <param name="k">曲线参数。</param>
+            <returns>反向 S 曲线值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InverseKinematic(UnityEngine.Vector2,UnityEngine.Vector2,System.Single,System.Single,System.Single)">
+            <summary>二段逆运动学求解。</summary>
+            <param name="va">起点。</param>
+            <param name="vc">终点。</param>
+            <param name="A">第一段长度。</param>
+            <param name="B">第二段长度。</param>
+            <param name="flip">翻转方向。</param>
+            <returns>关节位置。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RandomDeviation(System.Single)">
+            <summary>随机偏差。</summary>
+            <param name="k">偏差参数。</param>
+            <returns>随机偏差值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ClampedRandomVariation(System.Single,System.Single,System.Single)">
+            <summary>钳制随机变化。</summary>
+            <param name="baseValue">基础值。</param>
+            <param name="maxDeviation">最大偏差。</param>
+            <param name="k">曲线参数。</param>
+            <returns>变化后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.WrappedRandomVariation(System.Single,System.Single,System.Single)">
+            <summary>环绕随机变化。</summary>
+            <param name="baseValue">基础值。</param>
+            <param name="maxDeviation">最大偏差。</param>
+            <param name="k">曲线参数。</param>
+            <returns>变化后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RNV">
+            <summary>随机单位 Vector2。</summary>
+            <returns>随机单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RNVf2">
+            <summary>随机单位 float2。</summary>
+            <returns>随机单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RNV3">
+            <summary>随机单位 Vector3。</summary>
+            <returns>随机单位向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpMap(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>范围映射插值。</summary>
+            <param name="val">输入值。</param>
+            <param name="fromA">源范围下限。</param>
+            <param name="toA">源范围上限。</param>
+            <param name="fromB">目标范围下限。</param>
+            <param name="toB">目标范围上限。</param>
+            <returns>映射后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpMap(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>带指数的范围映射插值。</summary>
+            <param name="val">输入值。</param>
+            <param name="fromA">源范围下限。</param>
+            <param name="toA">源范围上限。</param>
+            <param name="fromB">目标范围下限。</param>
+            <param name="toB">目标范围上限。</param>
+            <param name="exponent">指数。</param>
+            <returns>映射后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ExponentMap(System.Single,System.Single,System.Single,System.Single)">
+            <summary>指数映射。</summary>
+            <param name="val">输入值。</param>
+            <param name="rangeLower">范围下限。</param>
+            <param name="rangeHigher">范围上限。</param>
+            <param name="exponent">指数。</param>
+            <returns>映射后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Screen(System.Single,System.Single)">
+            <summary>浮点滤色混合。</summary>
+            <param name="A">值 A。</param>
+            <param name="B">值 B。</param>
+            <returns>混合后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PushFromHalf(System.Single,System.Single)">
+            <summary>从 0.5 向两端推开。</summary>
+            <param name="val">输入值。</param>
+            <param name="pushExponent">推开指数。</param>
+            <returns>推开后的值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.HSL2RGB(System.Single,System.Single,System.Single)">
+            <summary>HSL 转 RGB。</summary>
+            <param name="h">色相。</param>
+            <param name="sl">饱和度。</param>
+            <param name="l">亮度。</param>
+            <returns>RGB 颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.HSL2RGB(System.Single,System.Single,System.Single,System.Single)">
+            <summary>HSL 转 RGBA。</summary>
+            <param name="h">色相。</param>
+            <param name="sl">饱和度。</param>
+            <param name="l">亮度。</param>
+            <param name="a">透明度。</param>
+            <returns>RGBA 颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RGB2RGBA(UnityEngine.Color,System.Single)">
+            <summary>RGB 转 RGBA。</summary>
+            <param name="col">RGB 颜色。</param>
+            <param name="alpha">透明度。</param>
+            <returns>RGBA 颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RGBA2RGB(UnityEngine.Color)">
+            <summary>RGBA 转 RGB。</summary>
+            <param name="col">RGBA 颜色。</param>
+            <returns>RGB 颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ColorToVec3(UnityEngine.Color)">
+            <summary>颜色转 Vector3。</summary>
+            <param name="col">颜色。</param>
+            <returns>Vector3。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Vec3ToColor(UnityEngine.Vector3)">
+            <summary>Vector3 转颜色。</summary>
+            <param name="vec">Vector3。</param>
+            <returns>颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Desaturate(UnityEngine.Color,System.Single)">
+            <summary>降低饱和度。</summary>
+            <param name="col">颜色。</param>
+            <param name="desaturate">降低程度。</param>
+            <returns>处理后的颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Saturate(UnityEngine.Color,System.Single)">
+            <summary>增加饱和度。</summary>
+            <param name="col">颜色。</param>
+            <param name="saturate">增加程度。</param>
+            <returns>处理后的颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.QuickSaturation(UnityEngine.Color)">
+            <summary>快速获取饱和度。</summary>
+            <param name="col">颜色。</param>
+            <returns>饱和度。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.DistanceBetweenZeroToOneFloats(System.Single,System.Single)">
+            <summary>计算 0 到 1 浮点数之间的距离。</summary>
+            <param name="a">值 A。</param>
+            <param name="b">值 B。</param>
+            <returns>距离。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ClosestPointOnLineSegment(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>求线段上最近点。</summary>
+            <param name="A">线段起点。</param>
+            <param name="B">线段终点。</param>
+            <param name="testPos">测试点。</param>
+            <returns>最近点。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Vec3FromVec2(UnityEngine.Vector2,System.Single)">
+            <summary>从 Vector2 和 z 值构造 Vector3。</summary>
+            <param name="v">Vector2。</param>
+            <param name="f">Z 值。</param>
+            <returns>Vector3。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.xorEncrypt(System.String,System.Int32)">
+            <summary>异或加密字符串。</summary>
+            <param name="sA">输入字符串。</param>
+            <param name="displace">位移量。</param>
+            <returns>加密后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Md5Sum(System.String)">
+            <summary>计算带盐的 MD5 校验和。</summary>
+            <param name="strToEncrypt">输入字符串。</param>
+            <returns>MD5 校验和。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ToLiteral(System.String)">
+            <summary>将字符串转为字面量转义形式。</summary>
+            <param name="input">输入字符串。</param>
+            <returns>转义后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetFont">
+            <summary>获取当前语言字体名。</summary>
+            <returns>字体资源名。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetDisplayFont">
+            <summary>获取当前语言显示字体名。</summary>
+            <returns>显示字体资源名。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.SignZero(System.Single)">
+            <summary>带零的符号函数。</summary>
+            <param name="val">输入值。</param>
+            <returns>符号值。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.rotateVectorDeg(UnityEngine.Vector2,System.Single)">
+            <summary>按角度旋转向量。</summary>
+            <param name="vec">输入向量。</param>
+            <param name="degAng">旋转角度。</param>
+            <returns>旋转后的向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.hexToColor(System.String)">
+            <summary>十六进制字符串转颜色。</summary>
+            <param name="hex">十六进制字符串。</param>
+            <returns>颜色。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.colorToHex(UnityEngine.Color)">
+            <summary>颜色转十六进制字符串。</summary>
+            <param name="col">颜色。</param>
+            <returns>十六进制字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RGB2HSL(UnityEngine.Color)">
+            <summary>RGB 转 HSL。</summary>
+            <param name="color">RGB 颜色。</param>
+            <returns>HSL 向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RGB2Vec3(UnityEngine.Color)">
+            <summary>RGB 转 Vector3。</summary>
+            <param name="color">颜色。</param>
+            <returns>Vector3。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.EncodeFloatRG(System.Single)">
+            <summary>将浮点编码到 RG 通道。</summary>
+            <param name="v">输入浮点数。</param>
+            <returns>编码向量。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.Mod(System.Single,System.Single)">
+            <summary>浮点取模，结果非负。</summary>
+            <param name="f">被除数。</param>
+            <param name="d">除数。</param>
+            <returns>取模结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.PointInPoly4(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>判断四边形是否包含点。</summary>
+            <param name="p">点。</param>
+            <param name="r1">顶点1。</param>
+            <param name="r2">顶点2。</param>
+            <param name="r3">顶点3。</param>
+            <param name="r4">顶点4。</param>
+            <returns>如果包含则为 true。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.TriArea(UnityEngine.Vector2,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>计算三角形面积。</summary>
+            <param name="p1">顶点1。</param>
+            <param name="p2">顶点2。</param>
+            <param name="p3">顶点3。</param>
+            <returns>面积。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ToTitleCase(System.String)">
+            <summary>转为标题大小写。</summary>
+            <param name="str">输入字符串。</param>
+            <returns>标题大小写字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetBaseFileNameWithoutPrefix(System.String,System.String)">
+            <summary>获取去掉指定前缀的文件名。</summary>
+            <param name="path">文件路径。</param>
+            <param name="prefix">前缀。</param>
+            <returns>文件名。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.ValidateSpacedDelimiter(System.String,System.String)">
+            <summary>验证并补充分隔符空格。</summary>
+            <param name="s">输入字符串。</param>
+            <param name="delimiter">分隔符。</param>
+            <returns>处理后的字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpQuadEaseIn(System.Single,System.Single,System.Single)">
+            <summary>二次缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpQuadEaseOut(System.Single,System.Single,System.Single)">
+            <summary>二次缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpSinEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>正弦缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpExpEaseIn(System.Single,System.Single,System.Single)">
+            <summary>指数缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpExpEaseOut(System.Single,System.Single,System.Single)">
+            <summary>指数缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpQuadEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>二次缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpQuadEaseOutIn(System.Single,System.Single,System.Single)">
+            <summary>二次缓出缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpCircEaseIn(System.Single,System.Single,System.Single)">
+            <summary>圆形缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpCircEaseOut(System.Single,System.Single,System.Single)">
+            <summary>圆形缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpCircEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>圆形缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpCircEaseOutIn(System.Single,System.Single,System.Single)">
+            <summary>圆形缓出缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpExpEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>指数缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpExpEaseOutIn(System.Single,System.Single,System.Single)">
+            <summary>指数缓出缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpBackEaseIn(System.Single,System.Single,System.Single)">
+            <summary>回退缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpBackEaseOut(System.Single,System.Single,System.Single)">
+            <summary>回退缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpBackEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>回退缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpBackEaseOutIn(System.Single,System.Single,System.Single)">
+            <summary>回退缓出缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpElasticEaseIn(System.Single,System.Single,System.Single)">
+            <summary>弹性缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpElasticEaseOut(System.Single,System.Single,System.Single)">
+            <summary>弹性缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpElasticEaseInOut(System.Single,System.Single,System.Single)">
+            <summary>弹性缓入缓出插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.LerpElasticEaseOutIn(System.Single,System.Single,System.Single)">
+            <summary>弹性缓出缓入插值。</summary>
+            <param name="start">起始值。</param>
+            <param name="end">结束值。</param>
+            <param name="perc">进度。</param>
+            <returns>插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.InverseLerpUnclamped(System.Single,System.Single,System.Single)">
+            <summary>无钳制反向插值。</summary>
+            <param name="a">起始值。</param>
+            <param name="b">结束值。</param>
+            <param name="t">当前值。</param>
+            <returns>反向插值结果。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetScreenOffsets">
+            <summary>获取屏幕偏移。</summary>
+            <returns>偏移数组。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.SecondsToMinutesAndSecondsString(System.Int32)">
+            <summary>秒转分秒时间字符串。</summary>
+            <param name="seconds">秒数。</param>
+            <returns>时间字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.GetIGTFormat(System.TimeSpan,System.Boolean)">
+            <summary>将 TimeSpan 格式化为 IGT 时间字符串。</summary>
+            <param name="timeSpan">时间跨度。</param>
+            <param name="includeMilliseconds">是否包含毫秒。</param>
+            <returns>格式化后的时间字符串。</returns>
+        </member>
+        <member name="M:RWCustom.Custom.RotateLerp(UnityEngine.Vector2,UnityEngine.Vector2,System.Single)">
+            <summary>旋转插值。</summary>
+            <param name="a">起始向量。</param>
+            <param name="b">目标向量。</param>
+            <param name="t">插值系数。</param>
+            <returns>插值后的向量。</returns>
+        </member>
+    </members>
+</doc>

@@ -48,7 +48,7 @@ public static class HookManager
 							{
 								data.InitializeHooks();
 								data.isInitialized = true;
-								Log.LogDebug($"Initialized hooks for {kv.Key}");
+								Log.LogDebug($"Initialized hooks for {kv.Key} (multi-threaded)");
 							}
 						}
 					}
@@ -73,7 +73,7 @@ public static class HookManager
 				{
 					data.InitializeHooks();
 					data.isInitialized = true;
-					Log.LogDebug($"Initialized {kv.Key} (single-threaded), priority {data.Priority})");
+					Log.LogDebug($"Initialized {kv.Key}, priority {data.Priority})");
 				}
 				catch (Exception ex)
 				{
@@ -116,24 +116,15 @@ public static class HookManager
 	}
 
 
-	//private static int _hookCounter = 0;
 
-	public static void Register(bool RequireSingleThread = true, [CallerLineNumber] int Priority = 0,
+	public static void Register(bool RequireSingleThread = true, bool RegisterFunction = false, [CallerLineNumber] int Priority = 0,
 		Action? Hook = null, Action? UnHook = null,
 		[CallerArgumentExpression(nameof(Hook))] string hookExpression = "",
 		[CallerArgumentExpression(nameof(UnHook))] string UnHookExpression = "",
-		[CallerFilePath] string filePath = "")
+		[CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "")
 	{
 		try
 		{
-			HookData data = new HookData
-			{
-				RequireSingleThread = RequireSingleThread,
-				Priority = Priority,
-				InitializeHooks = Hook,
-				UnInitializeHooks = UnHook
-			};
-
 			int arrowIndex = hookExpression.IndexOf("=>");
 			string hookCode = arrowIndex >= 0 ? hookExpression[(arrowIndex + "=>".Length)..].Trim() : hookExpression;
 
@@ -141,7 +132,28 @@ public static class HookManager
 			string hookName = hookCodeParts.Length > 1 ? hookCodeParts[1].Trim() : "";
 			string[] hookNameParts = Regex.Split(hookName, @"\.");
 			string className = hookNameParts.Length > 0 ? hookNameParts[0].Trim() : "null";
-			//string className = Path.GetFileNameWithoutExtension(filePath);
+			string FileName = Path.GetFileNameWithoutExtension(filePath);
+
+
+			if (RegisterFunction)
+			{
+				Log.LogError($"RegisterFunction:{RegisterFunction} hookCode:{hookCode} #{Priority}");
+				Log.LogError($"没有完成");
+				return;
+
+				if (Hook != null && UnHook == null)
+				{
+					Log.LogDebug($"hookCode:{hookCode} #{Priority}");
+					Hook();
+
+					return;
+				}
+			}
+			if (!FileName.Contains("Hook"))
+			{
+				className = FileName;
+			}
+
 
 			if (hookExpression.Contains("+="))
 			{
@@ -162,6 +174,13 @@ public static class HookManager
 				return;
 			}
 
+			HookData data = new HookData
+			{
+				RequireSingleThread = RequireSingleThread,
+				Priority = Priority,
+				InitializeHooks = Hook,
+				UnInitializeHooks = UnHook
+			};
 			Log.LogDebug($"hookCode:{hookCode} #{Priority}");
 			Register($"{hookCode} ({className})", data);
 		}
